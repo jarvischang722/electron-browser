@@ -6,7 +6,7 @@
 #define MyAppPublisher "TripeOneTech"
 #define MyAppURL "http://www.tripleonetech.com/"
 #define MyAppExeName "smart.exe"
-#define ProjectHomeBase "E:\Code\SmartBrowsering"
+#define ProjectHomeBase "C:\projects\safetybroswer"
 #define FlashInstall "flashplayer21pp_ha_install.exe"
 #define CertInstall "install_root_cert.bat"
 #define PluginFile "safe_admin_plugin.crx"

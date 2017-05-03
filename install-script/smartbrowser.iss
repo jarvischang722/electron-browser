@@ -7,7 +7,7 @@
 #define MyAppPublisher "TripeOneTech"
 #define MyAppURL "http://www.tripleonetech.com/"
 #define MyAppExeName "safety-browser.exe"
-#define ProjectHomeBase "C:\Code\SmartBrowsering"
+#define ProjectHomeBase "C:\projects\safetybrowser"
 #define FlashInstall "flashplayer21pp_ha_install.exe"
 #define CertInstall "install_root_cert.bat"
 #define PluginFile "safe_admin_plugin.crx"
@@ -44,7 +44,7 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf32}\{#APP_INSTALL_DIR}
-OutputDir={#ProjectHomeBase}
+OutputDir={#ProjectHomeBase}\{#OUT_SETUP_DIR}
 OutputBaseFilename={#OUT_SETUP_FILENAME}
 Compression=lzma
 SolidCompression=yes
