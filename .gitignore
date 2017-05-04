@@ -7,6 +7,8 @@ install-script/dwinshs/examples/Output/*
 /site
 /bin-release/debug.log
 /bin-release/Dictionaries
+/bin-release/resources/app.asar
+/bin-release/safety-browser.exe
 
 *.sublime-*
 
