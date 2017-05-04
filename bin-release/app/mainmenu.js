@@ -1,6 +1,4 @@
-const { Menu } = require('electron')
-const electron = require('electron')
-const app = electron.app
+const { Menu, app } = require('electron')
 
 var i18n = new (require('./lang/i18n'))
 

@@ -1,31 +1,32 @@
-const electron = require('electron');
-// Module to control application life.
-const { app } = electron;
-// Module to create native browser window.
-const { BrowserWindow } = electron;
-const fs = require('fs');
 const path = require("path")
-
-var clientInfo = JSON.parse(fs.readFileSync(path.join(__dirname, 'lib', 'client.json'), 'utf8'))
-var enabled_flash= clientInfo['enabled_flash'];
-var enabled_proxy= clientInfo['enabled_proxy'];
+const { app, BrowserWindow } = require('electron')
+const { enabled_flash, enabled_proxy, proxyOptions, homeUrl } = require('./lib/client.json')
 
 function _interopRequireWildcard(obj) {
-    if (obj && obj.__esModule) { return obj; } else {
+    if (obj && obj.__esModule) {
+         return obj; 
+    } else {
         var newObj = {};
-        if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } }
+        if (obj != null) {
+            for (var key in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                    newObj[key] = obj[key]; 
+                }
+            }
+        }
         newObj.default = obj;
         return newObj;
     }
 }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+    return obj && obj.__esModule ? obj : { default: obj };
+}
 
 // start local ss
 var _ssLocal = require('./lib/ssLocal');
 var ssLocal = _interopRequireWildcard(_ssLocal);
 
-var proxyOptions = clientInfo.proxyOptions;
 //console.log('start ss local');
 var sslocalServer = ssLocal.startServer(proxyOptions, true);
 
@@ -46,7 +47,7 @@ switch (process.platform) {
 }
 let flash_path = path.join(__dirname, pluginName); //'file://'+__dirname+'/'+pluginName;
 
-if(enabled_flash){    
+if (enabled_flash) {    
     // console.log(flash_path);
     app.commandLine.appendSwitch('ppapi-flash-path', flash_path)
     //app.commandLine.appendSwitch('ppapi-flash-path', "C:\\Windows\\SysWOW64\\Macromed\\Flash\\pepflashplayer32_24_0_0_221.dll")
@@ -86,18 +87,14 @@ function createWindow() {
 
     require('./mainmenu');
 
-    if(enabled_proxy){    
-
+    if (enabled_proxy) {
         win.webContents.session.setProxy({ pacScript: 'file://' + __dirname + '/default.pac' }, function () {
             // win.loadURL('http://www.adobe.com/software/flash/about/');
-            win.loadURL(clientInfo.homeUrl);
+            win.loadURL(homeUrl);
             // win.loadURL('file://' + __dirname + '/html_src/home.html');
         });
-        
-    }else{
-
-        win.loadURL(clientInfo.homeUrl);
-
+    } else {
+        win.loadURL(homeUrl);
     }
 
     win.maximize();
