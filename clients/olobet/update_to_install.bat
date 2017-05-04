@@ -1,6 +1,6 @@
 rem change icon
 
-copy ..\..\bin-release\safety-browser.exe safety-browser.exe
+copy ..\..\bin-release\electron.exe safety-browser.exe
 
 rcedit "safety-browser.exe" --set-icon "safety-browser.ico" 
 rcedit "safety-browser.exe" --set-version-string "CompanyName" "Olobet" 
@@ -33,6 +33,8 @@ copy /Y client_info.iss ..\..\install-script\client_info.iss
 
 rem copy icon
 copy /Y safety-browser.ico ..\..\install-script\safety-browser.ico
+
+call asar pack ..\..\bin-release\app ..\..\bin-release\resources\app.asar
 
 cd ..\..\install-script
 
