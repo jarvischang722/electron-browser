@@ -7,8 +7,9 @@
 		"no-console": 0,
 		"no-cond-assign": 0,
 		"no-unused-vars": 1,
-		"no-extra-semi": "warn",
-		"semi": 0
+		"no-extra-semi": 1,
+		"semi": [1, "never"],
+		"no-trailing-spaces": 1
 	},
 	"extends": "eslint:recommended"
 }

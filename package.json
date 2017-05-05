@@ -1,0 +1,28 @@
+{
+  "name": "safetybrowser",
+  "version": "2.8.88",
+  "description": "Tripleonetech safety browser",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "asar": "^0.13.0",
+    "electron": "^1.6.6",
+    "eslint": "^3.19.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ./bin-release/app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.smartbackend.com:browser/safetybrowser.git"
+  },
+  "keywords": [
+    "safety",
+    "browser"
+  ],
+  "author": "Tripleonetech"
+}
