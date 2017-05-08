@@ -11,9 +11,7 @@ var FindProxyForURL = function(init, profiles) {
 }("+safe", {
     "+safe": function(url, host, scheme) {
         "use strict";
-        if (/(?:^|\.)740477\.com$/.test(host)) return "+proxy";
-        if (/(?:^|\.)594569\.com$/.test(host)) return "+proxy";
-        if (/(?:^|\.)792349\.com$/.test(host)) return "+proxy";
+        if (/(?:^|\.)macaopj.t1t\.games$/.test(host)) return "+proxy";
         return "DIRECT";
     },
     "+proxy": function(url, host, scheme) {
