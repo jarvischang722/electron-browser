@@ -2,13 +2,21 @@ smartbrowser-setup.exe
 smartbrowsering-setup.exe
 smartbrowserbin.zip
 smartbrowserbin.7z
-install-script/dwinshs/examples/Output/*
+/install-script/dwinshs/examples/Output/*
+/install-script/client_info.iss
+/install-script/safety-browser.ico
+
 /download
 /site
 /bin-release/debug.log
 /bin-release/Dictionaries
 /bin-release/resources/app.asar
 /bin-release/safety-browser.exe
+/bin-release/app/lang/*.json
+/bin-release/app/default.pac
+/bin-release/app/lib/client.json
+/bin-release/app/package.json
+
 
 *.sublime-*
 
