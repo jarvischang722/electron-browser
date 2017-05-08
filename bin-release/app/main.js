@@ -1,34 +1,12 @@
 const path = require("path")
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const { enabled_flash, enabled_proxy, proxyOptions, homeUrl } = require('./lib/client.json')
+const cookieAuth = require('./lib/cookie-auth')
 
-function _interopRequireWildcard(obj) {
-    if (obj && obj.__esModule) {
-         return obj
-    } else {
-        var newObj = {}
-        if (obj != null) {
-            for (var key in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                    newObj[key] = obj[key]
-                }
-            }
-        }
-        newObj.default = obj
-        return newObj
-    }
-}
-
-function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : { default: obj }
-}
-
-// start local ss
-var _ssLocal = require('./lib/ssLocal')
-var ssLocal = _interopRequireWildcard(_ssLocal)
+const ssLocal = require('./lib/ssLocal')
 
 //console.log('start ss local');
-var sslocalServer = ssLocal.startServer(proxyOptions, true)
+const sslocalServer = ssLocal.startServer(proxyOptions, true)
 
 //console.log(app.getLocale())
 
@@ -88,8 +66,7 @@ function createWindow() {
     require('./mainmenu')
 
     if (enabled_proxy) {
-        win.webContents.session.setProxy({ pacScript: 'file://' + __dirname + '/default.pac' }, function () {
-            // win.loadURL('http://www.adobe.com/software/flash/about/');
+        win.webContents.session.setProxy({ pacScript: `file://${__dirname}/default.pac` }, function () {
             win.loadURL(homeUrl)
             // win.loadURL('file://' + __dirname + '/html_src/home.html');
         })
@@ -97,7 +74,7 @@ function createWindow() {
         win.loadURL(homeUrl)
     }
 
-    win.maximize()
+    // win.maximize()
 
     // if (process.platform === 'win32') {
     //     var counter = 0;
@@ -118,6 +95,59 @@ function createWindow() {
 
     //win.openDevTools();
 
+}
+
+function createWindow2() {
+    const Config = {
+
+    }
+	let appUrl = 'https://tripleonetech.net';
+	let lastLocation = ''
+	if ( lastLocation ) {
+		appUrl += lastLocation;
+	}
+
+    win = new BrowserWindow({
+        width: 1024,
+        height: 768,
+        webPreferences: {
+            nodeIntegration: false,
+            webSecurity: false,
+            allowRunningInsecureContent: false,
+            plugins: true
+        }
+    })
+
+	cookieAuth( win, function() {
+		win.webContents.send( 'cookie-auth-complete' );
+	} );
+
+	win.webContents.on( 'did-finish-load', function() {
+		win.webContents.send( 'app-config', Config, true, {} );
+
+		ipcMain.on( 'mce-contextmenu', function( ev ) {
+			win.send( 'mce-contextmenu', ev );
+		});
+
+	} );
+
+	win.webContents.session.webRequest.onBeforeRequest( function( details, callback ) {
+		if ( details.resourceType === 'script' && details.url.startsWith( 'http://' ) && ! details.url.startsWith( Config.server_url + ':' + Config.server_port + '/' ) ) {
+			callback( { redirectURL: details.url.replace( 'http', 'https' ) } );
+		} else {
+			callback( {} );
+		}
+	} );
+
+    console.log(appUrl)
+	// win.loadURL( appUrl );
+    win.loadURL(`file://${__dirname}/index.html`)
+	//win.openDevTools();
+
+
+	win.on( 'closed', function() {
+		win = null;
+	} );
 }
 
 // This method will be called when Electron has finished
