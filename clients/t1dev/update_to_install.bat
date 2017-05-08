@@ -34,6 +34,8 @@ copy /Y client_info.iss ..\..\install-script\client_info.iss
 rem copy icon
 copy /Y safety-browser.ico ..\..\install-script\safety-browser.ico
 
+REM call ..\..\node_modules\.bin\asar pack ..\..\bin-release\app ..\..\bin-release\resources\app.asar
+
 call asar pack ..\..\bin-release\app ..\..\bin-release\resources\app.asar
 
 cd ..\..\install-script
