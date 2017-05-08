@@ -20,6 +20,12 @@
   #define APP_NAME "SmartBrowserName_mgm"
 #elif CLIENT=="olobet"
   #define APP_NAME "SmartBrowserName_olobet"
+#elif CLIENT=="xpj"
+  #define APP_NAME "SmartBrowserName_xpj"
+#elif CLIENT=="agtop"
+  #define APP_NAME "SmartBrowserName_agtop"
+#elif CLIENT=="macaopj"
+  #define APP_NAME "SmartBrowserName_macaopj"
 #else
   #define APP_NAME "SmartBrowserName"
 #endif
@@ -126,6 +132,12 @@ english.SmartBrowserName_mgm=MGM Safety Browser
 chinesesimplified.SmartBrowserName_mgm=美高梅浏览器
 english.SmartBrowserName_olobet=Olobet Safety Browser
 chinesesimplified.SmartBrowserName_olobet=Olobet Safety Browser
+english.SmartBrowserName_xpj=XPJ Safety Browser
+chinesesimplified.SmartBrowserName_xpj=新葡京安全浏览器
+english.SmartBrowserName_agtop=AgTop Safety Browser
+chinesesimplified.SmartBrowserName_agtop=澳门新葡京安全浏览器
+english.SmartBrowserName_macaopj=MacaoPJ Safety Browser
+chinesesimplified.SmartBrowserName_macaopj=澳门葡京安全浏览器
 english.InstallCert=Install Certificate
 chinesesimplified.InstallCert=安装安全证书
 english.InstallSafeService=Install Safe Service
