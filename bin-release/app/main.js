@@ -74,7 +74,7 @@ function createWindow() {
         win.loadURL(homeUrl)
     }
 
-    // win.maximize()
+    win.maximize()
 
     // if (process.platform === 'win32') {
     //     var counter = 0;
