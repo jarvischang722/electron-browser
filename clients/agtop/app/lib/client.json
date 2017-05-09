@@ -9,6 +9,6 @@
         "timeout": 180
     },
     "enabled_flash": true,
-    "enabled_proxy": true,
+    "enabled_proxy": false,
     "homeUrl": "http://www.agtop.t1t.games/"
 }
