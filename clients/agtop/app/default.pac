@@ -11,7 +11,7 @@ var FindProxyForURL = function(init, profiles) {
 }("+safe", {
     "+safe": function(url, host, scheme) {
         "use strict";
-        if (/(?:^|\.)agtop.t1t\.games$/.test(host)) return "+proxy";
+        if (/(?:^|\.)agtop\.t1t\.games$/g.test(host)) return "+proxy";
         return "DIRECT";
     },
     "+proxy": function(url, host, scheme) {
