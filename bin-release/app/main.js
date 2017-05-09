@@ -10,6 +10,8 @@ const sslocalServer = ssLocal.startServer(proxyOptions, true)
 
 //console.log(app.getLocale())
 
+// global.sharedObj = { homeUrl }
+
 let pluginName
 //console.log(process.platform);
 switch (process.platform) {
@@ -139,21 +141,27 @@ function createWindow2() {
 		}
 	} );
 
-    console.log(appUrl)
 	// win.loadURL( appUrl );
     win.loadURL(`file://${__dirname}/index.html`)
 	//win.openDevTools();
-
+    win.show()
 
 	win.on( 'closed', function() {
-		win = null;
-	} );
+		win = null
+	})
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', createWindow2)
+
+app.on('login', (event, webContents, request, authInfo, callback) => {
+  event.preventDefault()
+  console.log('xxxxxxxxxxxxxxxxxxxx');
+  callback('username', 'secret')
+})
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
