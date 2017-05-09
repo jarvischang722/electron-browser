@@ -32,12 +32,11 @@
     </div>
 	  <!-- script references -->
     <script>
-      // const { remote } = require('electron');
+      const { remote } = require('electron');
       function login() {
           const userName = document.getElementById('username').value
           const password = document.getElementById('password').value
-          // const homeUrl = remote.getGlobal('sharedObj').homeUrl || "http://www.demo.tripleonetech.com/";
-          const homeUrl = "http://www.demo.tripleonetech.com/";
+          const homeUrl = remote.getGlobal('sharedObj').homeUrl || "http://www.demo.tripleonetech.com/";
           if (userName.toLowerCase() === 'admin' && password === 'admin') {
             window.location.href = homeUrl
           } else {

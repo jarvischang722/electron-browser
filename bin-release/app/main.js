@@ -10,7 +10,7 @@ const sslocalServer = ssLocal.startServer(proxyOptions, true)
 
 //console.log(app.getLocale())
 
-// global.sharedObj = { homeUrl }
+global.sharedObj = { homeUrl }
 
 let pluginName
 //console.log(process.platform);
@@ -113,7 +113,7 @@ function createWindow2() {
         width: 1024,
         height: 768,
         webPreferences: {
-            nodeIntegration: false,
+            nodeIntegration: true,
             webSecurity: false,
             allowRunningInsecureContent: false,
             plugins: true
