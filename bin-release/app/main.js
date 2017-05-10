@@ -118,13 +118,21 @@ function createWindow2() {
             plugins: true
         }
     })
+    const webContents = win.webContents
+
+    webContents.on('login', (event, webContents, request, authInfo, callback) => {
+        console.log('zzzzzzzzzzzz');
+        event.preventDefault()
+        callback('username', 'secret')
+    })
+
 
 	cookieAuth( win, function() {
-		win.webContents.send( 'cookie-auth-complete' );
+		webContents.send( 'cookie-auth-complete' );
 	} );
 
-	win.webContents.on( 'did-finish-load', function() {
-		win.webContents.send( 'app-config', Config, true, {} );
+	webContents.on( 'did-finish-load', function() {
+		webContents.send( 'app-config', Config, true, {} );
 
 		ipcMain.on( 'mce-contextmenu', function( ev ) {
 			win.send( 'mce-contextmenu', ev );
@@ -132,7 +140,7 @@ function createWindow2() {
 
 	} );
 
-	win.webContents.session.webRequest.onBeforeRequest( function( details, callback ) {
+	webContents.session.webRequest.onBeforeRequest( function( details, callback ) {
 		if ( details.resourceType === 'script' && details.url.startsWith( 'http://' ) && ! details.url.startsWith( Config.server_url + ':' + Config.server_port + '/' ) ) {
 			callback( { redirectURL: details.url.replace( 'http', 'https' ) } );
 		} else {
