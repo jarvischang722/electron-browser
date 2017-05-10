@@ -33,15 +33,30 @@
 	  <!-- script references -->
     <script>
       const { remote } = require('electron');
+      const request = require('request')
       function login() {
-          const userName = document.getElementById('username').value
+          const username = document.getElementById('username').value
           const password = document.getElementById('password').value
           const homeUrl = remote.getGlobal('sharedObj').homeUrl || "http://www.demo.tripleonetech.com/";
-          if (userName.toLowerCase() === 'admin' && password === 'admin') {
-            window.location.href = homeUrl
-          } else {
-            alert('Login failed')
-          }
+          request({
+            url: 'http://localhost:3000/login',
+            method: 'POST',
+            json: { username, password },
+          }, (err, res, body) => {
+            if (err || res.statusCode !== 200) {
+              alert('Login failed')
+            } else {
+              const { localServer, port } = body.data
+              // TODO: send shadowsocks info back to main.js
+              window.location.href = homeUrl
+            }
+          })
+
+          // if (userName.toLowerCase() === 'admin' && password === 'admin') {
+          //   window.location.href = homeUrl
+          // } else {
+          //   alert('Login failed')
+          // }
       }
 
       document.getElementById("password")
@@ -51,6 +66,10 @@
               document.getElementById("loginBtn").click();
           }
       });
+
+      window.onload = function() {
+        document.getElementById("username").focus();
+      };
     </script>
 		<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>-->
 		<!--<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
