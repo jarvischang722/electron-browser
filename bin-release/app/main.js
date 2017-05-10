@@ -113,7 +113,6 @@ function createWindow2() {
         width: 1024,
         height: 768,
         webPreferences: {
-            nodeIntegration: true,
             webSecurity: false,
             allowRunningInsecureContent: false,
             plugins: true
