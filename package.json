@@ -6,7 +6,9 @@
   "directories": {
     "doc": "doc"
   },
-  "dependencies": {},
+  "dependencies": {
+    "request": "^2.81.0"
+  },
   "devDependencies": {
     "asar": "^0.13.0",
     "electron": "^1.6.6",
