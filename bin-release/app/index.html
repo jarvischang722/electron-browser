@@ -32,22 +32,24 @@
     </div>
 	  <!-- script references -->
     <script>
-      const { remote } = require('electron');
+      const { remote, ipcRenderer } = require('electron');
       const request = require('request')
+      let homeUrl = "http://www.demo.tripleonetech.com/"
+      ipcRenderer.on('home-url', (event, data) => {
+        homeUrl = data
+      })
       function login() {
           const username = document.getElementById('username').value
           const password = document.getElementById('password').value
-          const homeUrl = remote.getGlobal('sharedObj').homeUrl || "http://www.demo.tripleonetech.com/";
           request({
-            url: 'http://localhost:3000/login',
+            url: 'http://139.162.6.216:7002/login',
             method: 'POST',
             json: { username, password },
           }, (err, res, body) => {
             if (err || res.statusCode !== 200) {
               alert('Login failed')
             } else {
-              const { localServer, port } = body.data
-              // TODO: send shadowsocks info back to main.js
+              ipcRenderer.send('ssinfo', body.data)
               window.location.href = homeUrl
             }
           })
