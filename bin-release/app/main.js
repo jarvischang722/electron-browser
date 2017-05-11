@@ -44,6 +44,7 @@ function createWindow() {
     win = new BrowserWindow({
         width: 1024,
         height: 768,
+        title: app.getName(),
         webPreferences: {
             nodeIntegration: false,
             webSecurity: false,
@@ -52,6 +53,9 @@ function createWindow() {
         }
     })
 
+    win.on('page-title-updated', (event) => {
+        event.preventDefault()
+    })
     win.on('closed', () => {
         win = null
     })
@@ -76,11 +80,15 @@ function createWindow2() {
     win = new BrowserWindow({
         width: 1024,
         height: 768,
+        title: app.getName(),
         webPreferences: {
             webSecurity: false,
             allowRunningInsecureContent: false,
             plugins: true
         }
+    })
+    win.on('page-title-updated', (event) => {
+        event.preventDefault()
     })
     const webContents = win.webContents
     webContents.on('did-finish-load', () => {
