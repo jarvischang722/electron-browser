@@ -49,7 +49,9 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={pf32}\{#APP_INSTALL_DIR}
+;DisableDirPage=no
+;AlwaysShowDirOnReadyPage=yes
+DefaultDirName={localappdata}\{#APP_INSTALL_DIR}
 OutputDir={#ProjectHomeBase}\{#OUT_SETUP_DIR}
 OutputBaseFilename={#OUT_SETUP_FILENAME}
 Compression=lzma
@@ -75,6 +77,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 ;Source: "{#ProjectHomeBase}\bin-release\smart.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectHomeBase}\bin-release\*"; Excludes: "electron.exe"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#ProjectHomeBase}\bin-release\cert\*"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectHomeBase}\bin-release\locales\*"; Excludes: "electron.exe,app\*"; DestDir: "{app}\locales"; Flags: ignoreversion
 Source: "{#ProjectHomeBase}\bin-release\resources\app.asar"; DestDir: "{app}\resources"; Flags: ignoreversion
 Source: "{#ProjectHomeBase}\bin-release\resources\electron.asar"; DestDir: "{app}\resources"; Flags: ignoreversion
@@ -106,7 +109,7 @@ Name: "{group}\{cm:InstallCert}"; Filename: "{app}\{#CertInstall}"; WorkingDir: 
 Name: "{commondesktop}\{cm:{#APP_NAME}}"; Filename: "{app}\{#MyAppExeName}"; Parameters: """{app}\app"""; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\CertMgr.exe"; Parameters: "-add -all -c .\root_smart.crt -s -r localMachine root"; WorkingDir: "{app}"; Flags: waituntilterminated; StatusMsg: "{cm:InstallSafeCert}"
+;Filename: "{app}\CertMgr.exe"; Parameters: "-add -all -c .\root_smart.crt -s -r localMachine root"; WorkingDir: "{app}"; Flags: waituntilterminated; StatusMsg: "{cm:InstallSafeCert}"
 ;Filename: "{app}\instsrv.exe"; Parameters: "{#SmartServiceName} ""{app}\srvany.exe"""; WorkingDir: "{app}"; Flags: waituntilterminated; StatusMsg: "{cm:InstallSafeService}"
 Filename: "{app}\{#MyAppExeName}"; Parameters: """{app}\app"""; Flags: nowait shellexec; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"
 ;Filename: "{app}\{#MyAppExeName}"; Flags: nowait postinstall; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"
