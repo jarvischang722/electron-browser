@@ -3,8 +3,8 @@
 
 #define MyAppName "Smart Browser"
 #define MyAppVersion "2.10.8"
-#define MyAppPublisher "TripeOneTech"
-#define MyAppURL "http://www.tripleonetech.com/"
+#define MyAppPublisher "TripleOneTech"
+#define MyAppURL "https://www.tripleonetech.com/"
 #define MyAppExeName "smart.exe"
 #define ProjectHomeBase "C:\projects\safetybroswer"
 #define FlashInstall "flashplayer21pp_ha_install.exe"
