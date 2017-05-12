@@ -26,6 +26,14 @@
   #define APP_NAME "SmartBrowserName_agtop"
 #elif CLIENT=="macaopj"
   #define APP_NAME "SmartBrowserName_macaopj"
+#elif CLIENT=="xc33"
+  #define APP_NAME "SmartBrowserName_xc33"
+#elif CLIENT=="yuanbao361"
+  #define APP_NAME "SmartBrowserName_yuanbao361"
+#elif CLIENT=="le18"
+  #define APP_NAME "SmartBrowserName_le18"
+#elif CLIENT=="twinbet"
+  #define APP_NAME "SmartBrowserName_twinbet"
 #else
   #define APP_NAME "SmartBrowserName"
 #endif
@@ -141,6 +149,14 @@ english.SmartBrowserName_agtop=AgTop Safety Browser
 chinesesimplified.SmartBrowserName_agtop=澳门新葡京安全浏览器
 english.SmartBrowserName_macaopj=MacaoPJ Safety Browser
 chinesesimplified.SmartBrowserName_macaopj=澳门葡京安全浏览器
+english.SmartBrowserName_xc33=XC33 Safety Browser
+chinesesimplified.SmartBrowserName_xc33=新橙娱乐安全浏览器
+english.SmartBrowserName_le18=Le18 Safety Browser
+chinesesimplified.SmartBrowserName_le18=乐赢安全浏览器
+english.SmartBrowserName_twinbet=Twinbet Safety Browser
+chinesesimplified.SmartBrowserName_twinbet=Twinbet安全浏览器
+english.SmartBrowserName_yuanbao361=Yuanbao361 Safety Browser
+chinesesimplified.SmartBrowserName_yuanbao361=元宝娱乐安全浏览器
 english.InstallCert=Install Certificate
 chinesesimplified.InstallCert=安装安全证书
 english.InstallSafeService=Install Safe Service
