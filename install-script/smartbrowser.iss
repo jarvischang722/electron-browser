@@ -4,8 +4,8 @@
 
 #define MyAppName "Safety Browser"
 #define MyAppVersion "2.88.8"
-#define MyAppPublisher "TripeOneTech"
-#define MyAppURL "http://www.tripleonetech.com/"
+#define MyAppPublisher "TripleOneTech"
+#define MyAppURL "https://www.tripleonetech.com/"
 #define MyAppExeName "safety-browser.exe"
 #define ProjectHomeBase "C:\projects\safetybrowser"
 #define FlashInstall "flashplayer21pp_ha_install.exe"
@@ -49,8 +49,8 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-;DisableDirPage=no
-;AlwaysShowDirOnReadyPage=yes
+DisableDirPage=yes
+AlwaysShowDirOnReadyPage=no
 DefaultDirName={localappdata}\{#APP_INSTALL_DIR}
 OutputDir={#ProjectHomeBase}\{#OUT_SETUP_DIR}
 OutputBaseFilename={#OUT_SETUP_FILENAME}
