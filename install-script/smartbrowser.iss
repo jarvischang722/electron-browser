@@ -86,9 +86,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ;Source: "{#ProjectHomeBase}\bin-release\smart.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectHomeBase}\bin-release\*"; Excludes: "electron.exe"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "{#ProjectHomeBase}\bin-release\cert\*"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectHomeBase}\bin-release\locales\*"; Excludes: "electron.exe,app\*"; DestDir: "{app}\locales"; Flags: ignoreversion
-Source: "{#ProjectHomeBase}\bin-release\resources\app.asar"; DestDir: "{app}\resources"; Flags: ignoreversion
-Source: "{#ProjectHomeBase}\bin-release\resources\electron.asar"; DestDir: "{app}\resources"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\bin-release\locales\*"; DestDir: "{app}\locales"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\bin-release\plugins\*"; DestDir: "{app}\plugins"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\bin-release\resources\*"; DestDir: "{app}\resources"; Flags: ignoreversion
 ;Source: "{#ProjectHomeBase}\bin-release\openssl\*"; DestDir: "{sys}"; Flags: recursesubdirs
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
