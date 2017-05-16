@@ -71,7 +71,6 @@ function createWindow() {
     win.webContents.on('new-window', function(event, url) {
         event.preventDefault()
         const win = new BrowserWindow({
-            show: false,
             webPreferences: {
                 nodeIntegration: false,
                 webSecurity: false,
