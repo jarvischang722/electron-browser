@@ -88,7 +88,8 @@ Source: "{#ProjectHomeBase}\bin-release\*"; Excludes: "electron.exe"; DestDir: "
 ;Source: "{#ProjectHomeBase}\bin-release\cert\*"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectHomeBase}\bin-release\locales\*"; DestDir: "{app}\locales"; Flags: ignoreversion
 Source: "{#ProjectHomeBase}\bin-release\plugins\*"; DestDir: "{app}\plugins"; Flags: ignoreversion
-Source: "{#ProjectHomeBase}\bin-release\resources\*"; DestDir: "{app}\resources"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\bin-release\resources\*"; Excludes: "app.asar"; DestDir: "{app}\resources"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\bin-release\app\*"; DestDir: "{app}\app"; Flags: ignoreversion recursesubdirs createallsubdirs
 ;Source: "{#ProjectHomeBase}\bin-release\openssl\*"; DestDir: "{sys}"; Flags: recursesubdirs
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
