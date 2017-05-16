@@ -38,6 +38,7 @@ safetybrowser*setup.exe
 node_modules
 
 /clients/*.exe.zip
+/clients/*/safety-browser.exe
 safetybrowser*.zip
 
 *.tmp
