@@ -1,7 +1,7 @@
 const path = require("path")
 const { app, BrowserWindow, ipcMain } = require('electron')
 const { enabled_flash, enabled_proxy, proxyOptions, homeUrl } = require('./lib/client.json')
-const cookieAuth = require('./lib/cookie-auth')
+// const cookieAuth = require('./lib/cookie-auth')
 
 const ssLocal = require('./lib/ssLocal')
 
@@ -20,9 +20,20 @@ ipcMain.on('ssinfo', (event, data) => {
 })
 
 let pluginName
+let flashVersion
+
 switch (process.platform) {
     case 'win32':
-        pluginName = 'pepflashplayer32_24_0_0_221.dll'
+        switch (process.arch) {
+            case 'x64':
+                pluginName='pepflashplayer64_25_0_0_171.dll'
+                flashVersion = '25.0.0.171'
+                break
+            case 'ia32':
+                pluginName='pepflashplayer32_25_0_0_171.dll'
+                flashVersion = '25.0.0.171'
+                break
+        }
         break
     case 'darwin':
         pluginName = 'PepperFlashPlayer.plugin'
@@ -31,11 +42,11 @@ switch (process.platform) {
         pluginName = 'libpepflashplayer.so'
         break
 }
-let flash_path = path.join(__dirname, pluginName)
+let flashPath = path.join(__dirname, '../plugins', pluginName)
 
 if (enabled_flash) {
-    app.commandLine.appendSwitch('ppapi-flash-path', flash_path)
-    app.commandLine.appendSwitch('ppapi-flash-version', '24.0.0.221')
+    app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
+    app.commandLine.appendSwitch('ppapi-flash-version', flashVersion)
 }
 
 let win
@@ -48,7 +59,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: false,
             webSecurity: false,
-            allowRunningInsecureContent: false,
+            allowRunningInsecureContent: true,
             plugins: true
         }
     })
@@ -56,6 +67,23 @@ function createWindow() {
     win.on('page-title-updated', (event) => {
         event.preventDefault()
     })
+
+    win.webContents.on('new-window', function(event, url) {
+        event.preventDefault()
+        const win = new BrowserWindow({
+            show: false,
+            webPreferences: {
+                nodeIntegration: false,
+                webSecurity: false,
+                allowRunningInsecureContent: true,
+                plugins: true
+            }
+        })
+        win.once('ready-to-show', () => win.show())
+        win.loadURL(url)
+        event.newGuest = win
+    })
+
     win.on('closed', () => {
         win = null
     })
