@@ -1,0 +1,5 @@
+#define CLIENT "hxpj"
+#define OUT_SETUP_DIR "clients\\hxpj\\"
+#define OUT_SETUP_FILENAME "safetybrowser-hxpj-setup"
+#define APP_INSTALL_DIR "safetybrowser-hxpj"
+#define CLIENT_GUID "{3EDAB5C4-7282-495B-A0C0-D4345843EC48}"

@@ -24,6 +24,8 @@
   #define APP_NAME "SmartBrowserName_xpj"
 #elif CLIENT=="agtop"
   #define APP_NAME "SmartBrowserName_agtop"
+#elif CLIENT=="hxpj"
+  #define APP_NAME "SmartBrowserName_hxpj"
 #elif CLIENT=="macaopj"
   #define APP_NAME "SmartBrowserName_macaopj"
 #elif CLIENT=="xc33"
@@ -148,6 +150,8 @@ english.SmartBrowserName_xpj=XPJ Safety Browser
 chinesesimplified.SmartBrowserName_xpj=新葡京安全浏览器
 english.SmartBrowserName_agtop=AgTop Safety Browser
 chinesesimplified.SmartBrowserName_agtop=澳门新葡京安全浏览器
+english.SmartBrowserName_hxpj=HXPJ Safety Browser
+chinesesimplified.SmartBrowserName_hxpj=澳门新葡京安全浏览器
 english.SmartBrowserName_macaopj=MacaoPJ Safety Browser
 chinesesimplified.SmartBrowserName_macaopj=澳门葡京安全浏览器
 english.SmartBrowserName_xc33=XC33 Safety Browser
