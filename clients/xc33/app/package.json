@@ -12,5 +12,6 @@
         "socks": "^1.1.9",
         "winston": "^2.2.0",
         "electron-context-menu": "*"
-    }
+    },
+    "client": "xc33"
 }
