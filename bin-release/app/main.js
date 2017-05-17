@@ -1,6 +1,7 @@
 const path = require("path")
 const { app, BrowserWindow, ipcMain } = require('electron')
 const { enabled_flash, enabled_proxy, proxyOptions, homeUrl } = require('./lib/client.json')
+const utils = require('./utils')
 // const cookieAuth = require('./lib/cookie-auth')
 
 const ssLocal = require('./lib/ssLocal')
@@ -21,9 +22,11 @@ ipcMain.on('ssinfo', (event, data) => {
 
 let pluginName
 let flashVersion
+let platform
 
 switch (process.platform) {
     case 'win32':
+        platform = 'windows'
         switch (process.arch) {
             case 'x64':
                 pluginName='pepflashplayer64_25_0_0_171.dll'
@@ -36,6 +39,7 @@ switch (process.platform) {
         }
         break
     case 'darwin':
+        platform = 'mac'
         pluginName = 'PepperFlashPlayer.plugin'
         break
     case 'linux':
@@ -52,6 +56,7 @@ if (enabled_flash) {
 let win
 
 function createWindow() {
+    // utils.autoUpdate(app, platform)
     win = new BrowserWindow({
         width: 1024,
         height: 768,
