@@ -1,16 +1,15 @@
 const path = require("path")
 const { app, BrowserWindow, ipcMain } = require('electron')
-const { enabled_flash, enabled_proxy, proxyOptions, homeUrl } = require('./lib/client.json')
+const { enabled_flash, enabled_proxy, homeUrl } = require('./lib/client.json')
 const utils = require('./utils')
-// const cookieAuth = require('./lib/cookie-auth')
-
 const ssLocal = require('./lib/ssLocal')
 
 let sslocalServer
-ipcMain.on('ssinfo', (event, data) => {
+
+const startShadowsocks = (addr, port) => {
     const opt = {
-        localAddr: data.localServer,
-        localPort: data.port,
+        localAddr: addr,
+        localPort: port,
         serverAddr: "119.9.91.119",
         serverPort: 19999,
         password: "0367E21094d36315",
@@ -18,6 +17,20 @@ ipcMain.on('ssinfo', (event, data) => {
         timeout: 180
     }
     sslocalServer = ssLocal.startServer(opt, true)
+}
+
+const cookieName = 'TripleonetechSafetyBrowserCookie'
+
+ipcMain.on('ssinfo', (event, data) => {
+    if (data) startShadowsocks(data.localServer, data.port)
+    // save token to session
+    const ses = win.webContents.session
+    ses.cookies.set({
+        url: homeUrl,
+        name: cookieName,
+        value: data.token,
+        expirationDate: Math.ceil(Date.now() / 1000) + 7200, 
+    }, () => {})
 })
 
 let pluginName
@@ -106,9 +119,6 @@ function createWindow() {
 }
 
 function createWindow2() {
-    const Config = {
-
-    }
     win = new BrowserWindow({
         width: 1024,
         height: 768,
@@ -131,14 +141,21 @@ function createWindow2() {
 	// 	webContents.send('cookie-auth-complete')
 	// })
 
-	// webContents.session.webRequest.onBeforeRequest(function(details, callback) {
-	// 	if (details.resourceType === 'script' && details.url.startsWith('http://') && ! details.url.startsWith(Config.server_url + ':' + Config.server_port + '/')) {
-	// 		callback({ redirectURL: details.url.replace('http', 'https') })
-	// 	} else {
-	// 		callback({})
-	// 	}
-	// })
-    win.loadURL(`file://${__dirname}/index.html`)
+    // get token from session
+    const ses = win.webContents.session
+    ses.cookies.get({
+        url: homeUrl,
+        name: cookieName,
+    }, (err, cookies) => {
+        if (err || !cookies || cookies.length <= 0) {
+            win.loadURL(`file://${__dirname}/login.html`)
+        } else {
+            // 接入真实环境之后, 可以使用下面链接进入主页
+            // win.loadURL(`http://player.demo.tripleonetech.com/iframe/auth/login_with_token/${cookies[0].value}?next=${homeUrl}`)
+            win.loadURL(homeUrl)
+        }
+    })
+
     win.show()
     win.maximize()
 	win.on('closed', function() {
