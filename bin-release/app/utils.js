@@ -58,7 +58,7 @@ const autoUpdate = (app, platform) => {
                         needUpdate = true
                     }
                     if (needUpdate) {
-                        const filePath = path.join(__dirname, '..', 'install.exe')
+                        const filePath = path.join(app.getPath('userData'), 'install.exe')
                         download(link, filePath, (err) => {
                             if (!err) exec(filePath)
                         })
