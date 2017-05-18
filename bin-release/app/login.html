@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合众科技</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="http://player.demo.tripleonetech.com/player_dashboard3/style.css">
+    <link rel="stylesheet" type="text/css" href="http://player.demo.tripleonetech.com/player_dashboard3/styles/base-theme-green.css">
+    <link rel="stylesheet" type="text/css" href="http://player.demo.tripleonetech.com/player_dashboard3/dashboard-style.css">
+    <link rel="stylesheet" type="text/css" href="http://player.demo.tripleonetech.com/player_dashboard3/css/bootstrap-tour.min.css">
+    <link rel="stylesheet" type="text/css" href="http://player.demo.tripleonetech.com/player_dashboard3/css/font-awesome.min.css">
+</head>
+<body ng-app="playerDashboard">
+<header class="main-navigation">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="top-header player-center">
+        </div>
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <img src="http://player.demo.tripleonetech.com/player_dashboard3/img/icons/bars.svg"  alt="Menu"/>
+                </button>
+                <a class="navbar-brand" ><img src="http://player.demo.tripleonetech.com/player_dashboard3/img/logo.png" /></a>
+            </div>
+        </div>
+    </nav>
+</header>
+<div id="alert_message"></div>
+<div class="container mt100">
+    <div class="cstm-mod login-mod" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title f24" id="myModalLabel">Login Your Account</h4>
+                <p class="mb0"></p>
+            </div>
+            <div class="modal-body">
+                <div class="form-group form-inline relative">
+                    <!--<label><i class="icon-user"></i></label>-->
+                    <input type="text" name="username" id="username" class="form-control" placeholder="Username" value="">
+                </div>
+                <div class="form-group form-inline relative">
+                    <!--<label><i class="icon-pass"></i></label>-->
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Password">
+                </div>
+                <span id="errmsg" style="color:red"></span>
+                <button type="submit" class="btn btn-primary login" onclick="login()" id="loginBtn">Sign In</button>
+                <div class="row">
+                    <div class="col-md-6">
+                    </div>
+                    <div class="col-md-6">
+                        <div class="pr10">
+                            <a href="http://player.demo.tripleonetech.com/player_center/iframe_register" class="mt10 block text-right">Register</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const { remote, ipcRenderer } = require('electron');
+    const request = require('request')
+    let homeUrl = "http://www.demo.tripleonetech.com/"
+    ipcRenderer.on('home-url', (event, data) => {
+        homeUrl = data
+    })
+    function login() {
+        let username = document.getElementById('username').value
+        if (username) username = username.trim()
+        const password = document.getElementById('password').value
+        request({
+            url: 'http://146.196.52.47:7002/user/test',
+            method: 'POST',
+            json: { username, password },
+        }, (err, res, body) => {
+            if (err || res.statusCode !== 200) {
+                document.getElementById("errmsg").innerHTML = "Login Failed.";
+            } else {
+                ipcRenderer.send('ssinfo', body.data)
+                window.location.href = homeUrl
+            }
+        })
+    }
+
+    document.getElementById("password")
+        .addEventListener("keyup", function(event) {
+            event.preventDefault();
+            if (event.keyCode == 13) {
+                document.getElementById("loginBtn").click();
+            }
+    });
+
+    window.onload = function() {
+        document.getElementById("username").focus();
+    };
+</script>
+    <!-- games -->
+    <div class="gamesProviders">
+        <div class="container">
+            <div class="col-md-2 col-xs-4">
+                <img src="http://player.demo.tripleonetech.com/player_dashboard3/img/gameProviders/ag.png">
+            </div>
+            <div class="col-md-2 col-xs-4">
+                <img src="http://player.demo.tripleonetech.com/player_dashboard3/img/gameProviders/playtech.png">
+            </div>
+            <div class="col-md-2 col-xs-4">
+                <img src="http://player.demo.tripleonetech.com/player_dashboard3/img/gameProviders/micro.png">
+            </div>
+            <div class="col-md-2 col-xs-4">
+                <img src="http://player.demo.tripleonetech.com/player_dashboard3/img/gameProviders/games.png">
+            </div>
+            <div class="col-md-2 col-xs-4">
+                <img src="http://player.demo.tripleonetech.com/player_dashboard3/img/gameProviders/toptrend.png">
+            </div>
+            <div class="col-md-2 col-xs-4">
+                <img src="http://player.demo.tripleonetech.com/player_dashboard3/img/gameProviders/gameplay.png">
+            </div>
+
+        </div>
+    </div>
+    <!-- copyright -->
+    <div class="copyright">
+    <p class="mb0">© 2016 TheGameClub. All rights reserved.</p>
+    </div>
+    <div id="div_loader"></div>
+</body>
+</html>
