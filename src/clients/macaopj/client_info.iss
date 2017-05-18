@@ -1,0 +1,5 @@
+#define CLIENT "macaopj"
+#define OUT_SETUP_DIR "clients\\macaopj\\"
+#define OUT_SETUP_FILENAME "safetybrowser-macaopj-setup"
+#define APP_INSTALL_DIR "safetybrowser-macaopj"
+#define CLIENT_GUID "{54222CB0-1860-4AD4-938B-BCCFAB974BF1}"

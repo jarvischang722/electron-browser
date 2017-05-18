@@ -1,0 +1,5 @@
+#define CLIENT "agtop"
+#define OUT_SETUP_DIR "clients\\agtop\\"
+#define OUT_SETUP_FILENAME "safetybrowser-agtop-setup"
+#define APP_INSTALL_DIR "safetybrowser-agtop"
+#define CLIENT_GUID "{45FC5CD4-98C3-4346-B9EF-C9BADE4835EC}"

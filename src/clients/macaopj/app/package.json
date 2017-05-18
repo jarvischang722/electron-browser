@@ -1,0 +1,17 @@
+{
+    "name": "safety-browser-macaopj",
+    "productName": "澳门葡京安全浏览器",
+    "version": "2.8.88",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron ."
+    },
+    "dependencies": {
+        "ip": "^1.1.3",
+        "lru-cache": "^4.0.1",
+        "socks": "^1.1.9",
+        "winston": "^2.2.0",
+        "electron-context-menu": "*"
+    },
+    "client": "macaopj"
+}

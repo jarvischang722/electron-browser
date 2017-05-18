@@ -1,0 +1,14 @@
+{
+    "proxyOptions": {
+        "localAddr": "127.0.0.1",
+        "localPort": 21866,
+        "serverAddr": "106.75.147.144",
+        "serverPort": 19999,
+        "password": "0367E21094d36315",
+        "method": "aes-256-cfb",
+        "timeout": 180
+    },
+    "enabled_flash": true,
+    "enabled_proxy": false,
+    "homeUrl": "http://www.hxpj.t1t.games/"
+}

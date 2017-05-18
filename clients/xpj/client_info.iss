@@ -1,5 +1,0 @@
-#define CLIENT "xpj"
-#define OUT_SETUP_DIR "clients\\xpj\\"
-#define OUT_SETUP_FILENAME "safetybrowser-xpj-setup"
-#define APP_INSTALL_DIR "safetybrowser-xpj"
-#define CLIENT_GUID "{371E26E2-8076-4474-B44A-97D60F5660FB}"

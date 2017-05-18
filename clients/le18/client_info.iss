@@ -1,5 +1,0 @@
-#define CLIENT "le18"
-#define OUT_SETUP_DIR "clients\\le18\\"
-#define OUT_SETUP_FILENAME "safetybrowser-le18-setup"
-#define APP_INSTALL_DIR "safetybrowser-le18"
-#define CLIENT_GUID "{E6346234-9A34-4B40-9454-ACAA742BBF87}"
