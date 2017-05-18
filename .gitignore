@@ -12,12 +12,12 @@ smartbrowserbin.7z
 /bin-release/Dictionaries
 /bin-release/resources/app.asar
 /bin-release/safety-browser.exe
+/bin-release/install.exe
 /bin-release/info.json
 /bin-release/app/lang/*.json
 /bin-release/app/default.pac
 /bin-release/app/lib/client.json
 /bin-release/app/package.json
-
 
 *.sublime-*
 
