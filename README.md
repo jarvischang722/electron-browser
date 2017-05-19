@@ -2,5 +2,6 @@
 
 1. npm install
 2. cd src/app & npm install & cd .. & cd ..
-2. cp src/config/local.json.example src/config/local.json, change to local path
-3. npm run build --client=tripleone
+3. cp src/config/local.json.example src/config/local.json, change to local path
+4. local debug: npm run start
+5. build setup file: npm run build --client=tripleone
