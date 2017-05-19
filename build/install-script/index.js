@@ -1,11 +1,14 @@
+const path = require('path')
 const ncp = require('ncp').ncp
 const rcedit = require('rcedit')
 const asar = require('asar')
 const innoSetup = require('innosetup-compiler')
 
-const copy = (source, destination) => {
+const copy = (src, dest) => {
     return new Promise((resolve, reject) => {
-        ncp(source, destination, (err) => {
+        ncp(src, dest, {
+            clobber: false,
+        }, (err) => {
             if (err) return reject(err)
             return resolve()
         })
@@ -23,7 +26,7 @@ const rceditSync = (exePath, options) => {
 
 const asarSync = (src, dest) => {
     return new Promise((resolve, reject) => {
-        asar.createPackage(src, dest, () => {
+        asar.createPackage(src, dest, (err) => {
             if (err) return reject(err)
             return resolve()
         })
@@ -40,37 +43,47 @@ const compiler = (iss, options) => {
 }
 
 const run = async (options) => {
-    const exePath = 'build/electron/safety-browser.exe'
     const rceditOptions = {
         'version-string': {
-            CompanyName: options.CompanyName,
-            FileDescription: options.FileDescription,
-            LegalCopyright: options.LegalCopyright || 'Copyright 2017',
-            ProductName: options.ProductName,
+            CompanyName: options.companyName,
+            FileDescription: options.fileDescription,
+            LegalCopyright: options.legalCopyright || 'Copyright 2017',
+            ProductName: options.productName,
         },
-        'file-version': options.Version,
-        'product-version': options.Version,
+        'file-version': options.version,
+        'product-version': options.version,
         icon: options.icon,
     }
 
-    await copy('build/electron/electron.exe', exePath)
-    await rceditSync(exePath, rceditOptions)
-    await copy('src/lang/*.json', 'build/electron/app/lang/')
-    await copy('src/lib/client.json', 'build/electron/app/lib/client.json')
-    await copy('src/app/package.json', 'build/electron/app/package.json')
-    await copy('src/app/default.pac', 'build/electron/app/default.pac')
-    await copy(options.iss, 'build/install-script/client_info.iss')
-    await copy(options.icon, 'build/install-script/safety-browser.ico')
+    await copy('dist/unpacked/electron.exe', 'dist/unpacked/safety-browser.exe')
+    await rceditSync('dist/unpacked/safety-browser.exe' , rceditOptions)
 
-    await asarSync('src/app', 'build/electron/resources/app.asar')
+    // await copy('src/lang/', 'dist/unpacked/app/lang/')
+    // await copy('src/lib/client.json', 'dist/unpacked/app/lib/client.json')
+    // await copy('src/app/package.json', 'dist/unpacked/app/package.json')
+    // await copy('src/app/default.pac', 'dist/unpacked/app/default.pac')
+    // await copy(options.iss, 'build/install-script/client_info.iss')
+    await copy(options.icon, 'build/install-script/safety-browser.ico')
+    await copy('build/plugins', 'dist/unpacked/plugins')
+
+    await asarSync('src/app', 'dist/unpacked/resources/app.asar')
     await compiler('build/install-script/smartbrowser.iss', {
         gui: false,
         verbose: true,
         signtoolname: 'signtool',
-        signtoolcommand: '"build/install-script/signtool.exe" sign /f "C:\\absolute\\path\\to\\smartbrowser.pfx" /t http://timestamp.globalsign.com/scripts/timstamp.dll /p "MY_PASSWORD" $f'
+        signtoolcommand: '"build/install-script/signtool.exe" sign /f "C:\\projects\\safety-browser\\build\\install-script\\smartbrowser.pfx" /t http://timestamp.globalsign.com/scripts/timstamp.dll /p "MY_PASSWORD" $f'
     })
 
-    console.log(222)
+    console.log('Finished')
 }
 
+
+// TODO: get options from src/options, then different clients only generate different options folder
+// 執行build命令 npm run build, 使用默認config, 
+// 如果傳入參數比如npm run build -c tripleone, 那麽options去找對應的clients的folder,找不到抛錯
+// 給QA使用的UI, 根據輸入的文字(比如主頁), 和上傳的文件(比如圖標), 根據客戶的名字, 生成一個對應文件夾, 如果已存在, 提示是否覆蓋
+// 然後點擊生成安裝文件, 後臺實際上是執行帶參數的命令, 
+// 一些路徑配置在config裏, 比如pre build文件的路徑, clients的主路徑
+const client = process.env.npm_config_client || 'tripleone'
+const options = require('../../src/config')(client)
 run(options)

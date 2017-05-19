@@ -8,22 +8,14 @@
     "doc": "doc"
   },
   "dependencies": {
-    "date-utils": "^1.2.21",
-    "electron": "^1.6.8",
-    "electron-context-menu": "^0.9.0",
-    "electron-json-storage": "^3.0.5",
-    "ip": "^1.1.5",
-    "lru-cache": "^4.0.2",
-    "ncp": "^2.0.0",
-    "rcedit": "^0.9.0",
-    "request": "^2.81.0",
-    "socks": "^1.1.10",
-    "winston": "^2.3.1"
   },
   "devDependencies": {
     "asar": "^0.13.0",
+    "electron": "^1.6.8",
     "eslint": "^3.19.0",
-    "innosetup-compiler": "^5.5.9"
+    "ncp": "^2.0.0",
+    "rcedit": "^0.9.0",
+    "innosetup-compiler": "git+https://github.com/tripleonetech-john/node-innosetup-compiler.git#bb64ae8"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -2,8 +2,9 @@
     "client": "tripleone",
     "homeUrl": "http://www.demo.tripleonetech.com/",
     "companyName": "Tripleonetech",
+    "productName": "Safety Browser",
     "fileDescription": "Safety Browser",
     "legalCopyright": "Copyright 2017",
-    "productName": "Safety Browser",
-    "version": "2.8.88"
+    "version": "2.8.88",
+    "clientId": "45FC5CD4-98C3-4346-B9EF-C9BADE4835EC"
 }

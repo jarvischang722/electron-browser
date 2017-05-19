@@ -1,8 +1,8 @@
 const path = require("path")
 const { app, BrowserWindow, ipcMain } = require('electron')
-const { enabled_flash, enabled_proxy, homeUrl } = require('../lib/client.json')
-const utils = require('./utils')
-const ssLocal = require('../lib/ssLocal')
+const { enabled_flash, enabled_proxy, homeUrl } = require('./client.json')
+const utils = require('./lib/utils')
+const ssLocal = require('./node_modules/shadowsocks-js/lib/ssLocal')
 
 let sslocalServer
 

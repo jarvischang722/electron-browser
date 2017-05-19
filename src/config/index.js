@@ -1,5 +1,7 @@
 
 module.exports = (client) => {
     if (!client) client = 'tripleone'
-    return require(`./clients/${client}/package.json`) 
+    const config = require(`./clients/${client}/package.json`)
+    config.icon = `src/config/clients/${client}/icon.ico`
+    return config
 }

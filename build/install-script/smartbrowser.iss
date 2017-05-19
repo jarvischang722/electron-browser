@@ -70,7 +70,7 @@ PrivilegesRequired=admin
 ChangesEnvironment=true
 DisableProgramGroupPage=yes
 
-SignTool=byparam "{#ProjectHomeBase}\install-script\signtool.exe" sign /f "{#ProjectHomeBase}\install-script\smartbrowser.pfx" /t http://timestamp.verisign.com/scripts/timstamp.dll /p 12345678 $f
+;SignTool=byparam "{#ProjectHomeBase}\build\install-script\signtool.exe" sign /f "{#ProjectHomeBase}\build\install-script\smartbrowser.pfx" /t http://timestamp.verisign.com/scripts/timstamp.dll /p 12345678 $f
 DisableWelcomePage=True
 
 VersionInfoDescription={cm:{#APP_NAME}}
@@ -85,26 +85,26 @@ Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.i
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-;Source: "{#ProjectHomeBase}\bin-release\smart.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectHomeBase}\bin-release\*"; Excludes: "electron.exe"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#ProjectHomeBase}\bin-release\cert\*"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#ProjectHomeBase}\bin-release\locales\*"; DestDir: "{app}\locales"; Flags: ignoreversion
-Source: "{#ProjectHomeBase}\bin-release\resources\*"; DestDir: "{app}\resources"; Flags: ignoreversion
-Source: "{#ProjectHomeBase}\bin-release\plugins\*"; DestDir: "{app}\resources\plugins"; Flags: ignoreversion
-;Source: "{#ProjectHomeBase}\bin-release\app\*"; DestDir: "{app}\app"; Flags: ignoreversion recursesubdirs createallsubdirs
-;Source: "{#ProjectHomeBase}\bin-release\openssl\*"; DestDir: "{sys}"; Flags: recursesubdirs
+;Source: "{#ProjectHomeBase}\dist\unpacked\smart.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\dist\unpacked\*"; Excludes: "electron.exe"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "{#ProjectHomeBase}\dist\unpacked\cert\*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\dist\unpacked\locales\*"; DestDir: "{app}\locales"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\dist\unpacked\resources\*"; DestDir: "{app}\resources"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\dist\unpacked\plugins\*"; DestDir: "{app}\resources\plugins"; Flags: ignoreversion
+;Source: "{#ProjectHomeBase}\dist\unpacked\app\*"; DestDir: "{app}\app"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "{#ProjectHomeBase}\dist\unpacked\openssl\*"; DestDir: "{sys}"; Flags: recursesubdirs
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 ; install policy templates
-;Source: "{#ProjectHomeBase}\bin-release\policy_templates\*"; DestDir: "{win}\PolicyDefinitions"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "{#ProjectHomeBase}\dist\unpacked\policy_templates\*"; DestDir: "{win}\PolicyDefinitions"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Registry]
 ;Root: "HKLM"; \
     Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; \
     ValueType: expandsz; \
     ValueName: "Path"; \
-    ValueData: "{olddata};{#ProjectHomeBase}\bin-release\openssl"; \
-    Check: NeedsAddPath('{#ProjectHomeBase}\bin-release\openssl')
+    ValueData: "{olddata};{#ProjectHomeBase}\dist\unpacked\openssl"; \
+    Check: NeedsAddPath('{#ProjectHomeBase}\dist\unpacked\openssl')
 
 ;Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Services\t1smartservice\Parameters"; ValueType: string; ValueName: "Application"; ValueData: "{app}\{#SSLocal}"; Flags: deletevalue uninsdeletekeyifempty
 ;Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Services\t1smartservice\Parameters"; ValueType: string; ValueName: "AppDirectory"; ValueData: "{app}"; Flags: deletevalue uninsdeletekeyifempty

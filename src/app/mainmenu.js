@@ -1,8 +1,6 @@
 const { Menu, app } = require('electron')
 
-var i18n = new (require('../lang/i18n'))
-
-// console.log(app.getLocale())
+var i18n = new (require('./lib/i18n'))
 
 require('electron-context-menu')({
     showInspectElement: false,
