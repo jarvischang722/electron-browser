@@ -8,7 +8,6 @@ const clientOpt = require(clientOptFile)
 const homeUrl = clientOpt.homeUrl
 
 let sslocalServer
-console.log(clientOpt)
 
 const startShadowsocks = (addr, port) => {
     const opt = {
@@ -73,7 +72,7 @@ if (clientOpt.enabledFlash) {
 let win
 
 function createWindow() {
-    utils.autoUpdate(app, platform, clientOpt.client, clientOpt.version)
+    // utils.autoUpdate(app, platform, clientOpt.client, clientOpt.version)
     win = new BrowserWindow({
         width: 1024,
         height: 768,

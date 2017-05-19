@@ -69,9 +69,7 @@ const run = async (optionPath) => {
     // await copy('src/app/default.pac', 'dist/unpacked/app/default.pac')
     // await copy(options.iss, 'build/install-script/client_info.iss')
 
-    // copy client info to config/client.json
     await copy(optionFile, 'src/app/config/client.json')
-
     await copy(icon, 'build/install-script/safety-browser.ico')
     await copy('build/plugins', 'dist/unpacked/plugins')
 
@@ -79,6 +77,8 @@ const run = async (optionPath) => {
     await compiler('build/install-script/smartbrowser.iss', {
         gui: false,
         verbose: true,
+        O: `dist/${options.client}`,
+        F: `safety-browser-setup-${options.version}`,
         signtoolname: 'signtool',
         signtoolcommand: '"build/install-script/signtool.exe" sign /f "C:\\projects\\safety-browser\\build\\install-script\\smartbrowser.pfx" /t http://timestamp.globalsign.com/scripts/timstamp.dll /p "MY_PASSWORD" $f'
     })
