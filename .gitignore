@@ -41,3 +41,4 @@ safetybrowser*.zip
 *.tmp
 
 /dist/
+/src/app/config/client.json

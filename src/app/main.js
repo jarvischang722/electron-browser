@@ -3,7 +3,7 @@ const path = require("path")
 const { app, BrowserWindow, ipcMain } = require('electron')
 const utils = require('./lib/utils')
 const ssLocal = require('./node_modules/shadowsocks-js/lib/ssLocal')
-const clientOptFile = fs.existsSync('./config/client.json') ? './config/client.json' : './config/default.json'
+const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
 const homeUrl = clientOpt.homeUrl
 
