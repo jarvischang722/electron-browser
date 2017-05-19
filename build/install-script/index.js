@@ -4,14 +4,19 @@ const rcedit = require('rcedit')
 const asar = require('asar')
 const innoSetup = require('innosetup-compiler')
 
-const copy = (src, dest) => {
+const copy = (src, dest, options) => {
     return new Promise((resolve, reject) => {
-        ncp(src, dest, {
-            clobber: false,
-        }, (err) => {
-            if (err) return reject(err)
-            return resolve()
-        })
+        if (options) {
+            ncp(src, dest, options, (err) => {
+                if (err) return reject(err)
+                return resolve()
+            })
+        } else {
+            ncp(src, dest, (err) => {
+                if (err) return reject(err)
+                return resolve()
+            })
+        }
     })
 }
 
@@ -42,7 +47,10 @@ const compiler = (iss, options) => {
     })
 }
 
-const run = async (options) => {
+const run = async (optionPath) => {
+    const optionFile = `${optionPath}/client.json`
+    const icon = `${optionPath}/icon.ico`
+    const options = require(optionFile)
     const rceditOptions = {
         'version-string': {
             CompanyName: options.companyName,
@@ -52,18 +60,19 @@ const run = async (options) => {
         },
         'file-version': options.version,
         'product-version': options.version,
-        icon: options.icon,
+        icon,
     }
 
-    await copy('dist/unpacked/electron.exe', 'dist/unpacked/safety-browser.exe')
+    await copy('dist/unpacked/electron.exe', 'dist/unpacked/safety-browser.exe', { clobber: false })
     await rceditSync('dist/unpacked/safety-browser.exe' , rceditOptions)
 
-    // await copy('src/lang/', 'dist/unpacked/app/lang/')
-    // await copy('src/lib/client.json', 'dist/unpacked/app/lib/client.json')
-    // await copy('src/app/package.json', 'dist/unpacked/app/package.json')
     // await copy('src/app/default.pac', 'dist/unpacked/app/default.pac')
     // await copy(options.iss, 'build/install-script/client_info.iss')
-    await copy(options.icon, 'build/install-script/safety-browser.ico')
+
+    // copy client info to config/client.json
+    await copy(optionFile, 'src/app/config/client.json')
+
+    await copy(icon, 'build/install-script/safety-browser.ico')
     await copy('build/plugins', 'dist/unpacked/plugins')
 
     await asarSync('src/app', 'dist/unpacked/resources/app.asar')
@@ -85,5 +94,7 @@ const run = async (options) => {
 // 然後點擊生成安裝文件, 後臺實際上是執行帶參數的命令, 
 // 一些路徑配置在config裏, 比如pre build文件的路徑, clients的主路徑
 const client = process.env.npm_config_client || 'tripleone'
-const options = require('../../src/config')(client)
-run(options)
+const optionPath = path.join(__dirname, '../..', `src/clients/${client}`)
+
+
+run(optionPath)

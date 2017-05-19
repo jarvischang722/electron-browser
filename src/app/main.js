@@ -1,10 +1,14 @@
+const fs = require('fs')
 const path = require("path")
 const { app, BrowserWindow, ipcMain } = require('electron')
-const { enabled_flash, enabled_proxy, homeUrl } = require('./client.json')
 const utils = require('./lib/utils')
 const ssLocal = require('./node_modules/shadowsocks-js/lib/ssLocal')
+const clientOptFile = fs.existsSync('./config/client.json') ? './config/client.json' : './config/default.json'
+const clientOpt = require(clientOptFile)
+const homeUrl = clientOpt.homeUrl
 
 let sslocalServer
+console.log(clientOpt)
 
 const startShadowsocks = (addr, port) => {
     const opt = {
@@ -61,7 +65,7 @@ switch (process.platform) {
 }
 let flashPath = path.join(__dirname, '../plugins', pluginName)
 
-if (enabled_flash) {
+if (clientOpt.enabledFlash) {
     app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
     app.commandLine.appendSwitch('ppapi-flash-version', flashVersion)
 }
@@ -69,11 +73,11 @@ if (enabled_flash) {
 let win
 
 function createWindow() {
-    // utils.autoUpdate(app, platform)
+    utils.autoUpdate(app, platform, clientOpt.client, clientOpt.version)
     win = new BrowserWindow({
         width: 1024,
         height: 768,
-        title: app.getName(),
+        title: clientOpt.productName,
         webPreferences: {
             nodeIntegration: false,
             webSecurity: false,
@@ -107,7 +111,7 @@ function createWindow() {
 
     require('./mainmenu')
 
-    if (enabled_proxy) {
+    if (clientOpt.enabledProxy) {
         win.webContents.session.setProxy({ pacScript: `file://${__dirname}/default.pac` }, function () {
             win.loadURL(homeUrl)
         })
@@ -122,7 +126,7 @@ function createWindow2() {
     win = new BrowserWindow({
         width: 1024,
         height: 768,
-        title: app.getName(),
+        title: clientOpt.productName,
         webPreferences: {
             webSecurity: false,
             allowRunningInsecureContent: false,

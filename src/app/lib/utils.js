@@ -4,6 +4,7 @@ const path = require('path')
 const request = require('request')
 const exec = require('child_process').execFile
 const storage = require('electron-json-storage')
+const config = require('../config/common.json')
 
 const download = (link, dest, callback) => {
     const file = fs.createWriteStream(dest)
@@ -33,16 +34,13 @@ const runFirstTimeToday = (callback) => {
     })
 }
 
-const autoUpdate = (app, platform) => {
+const autoUpdate = (app, platform, client, currentVer) => {
     try {
-        if (!platform || platform !== 'windows') return
+        if (!platform || platform !== 'windows' || !client) return
         runFirstTimeToday((err, first) => {
             if (err || !first) return
             let needUpdate = false
-            let currentVer = app.getVersion()
-            const { client } = require('./package.json')
-            if (!client) return
-            const apiMain = 'http://146.196.52.47:7002'
+            const apiMain = config.serviceAddr
             const reqUrl = `${apiMain}/browser/version?platform=${platform}&client=${client}`
             request.get(reqUrl, (err, res, body) => {
                 if (!err && body) {
