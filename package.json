@@ -14,17 +14,21 @@
     "electron-json-storage": "^3.0.5",
     "ip": "^1.1.5",
     "lru-cache": "^4.0.2",
+    "ncp": "^2.0.0",
+    "rcedit": "^0.9.0",
     "request": "^2.81.0",
     "socks": "^1.1.10",
     "winston": "^2.3.1"
   },
   "devDependencies": {
     "asar": "^0.13.0",
-    "eslint": "^3.19.0"
+    "eslint": "^3.19.0",
+    "innosetup-compiler": "^5.5.9"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ./src/app"
+    "start": "electron ./src/app",
+    "build": "node ./build/install-script/index.js"
   },
   "repository": {
     "type": "git",
