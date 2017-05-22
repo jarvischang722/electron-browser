@@ -3,4 +3,5 @@
 node_modules
 /src/app/node_modules
 /src/app/config/client.json
+/src/app/config/default.pac
 /dist/

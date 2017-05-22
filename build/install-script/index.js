@@ -1,3 +1,4 @@
+const fs = require('fs')
 const path = require('path')
 const ncp = require('ncp').ncp
 const rcedit = require('rcedit')
@@ -67,7 +68,9 @@ const run = async (optionPath) => {
     await copy('dist/unpacked/electron.exe', 'dist/unpacked/safety-browser.exe', { clobber: false })
     await rceditSync('dist/unpacked/safety-browser.exe' , rceditOptions)
 
-    // await copy('src/app/default.pac', 'dist/unpacked/app/default.pac')
+    if (fs.existsSync(path.join(optionPath, 'default.pac'))) {
+        await copy(path.join(optionPath, 'default.pac'), 'src/app/config/default.pac')
+    }
 
     await copy(optionFile, 'src/app/config/client.json')
     await copy(icon, 'build/install-script/safety-browser.ico')
