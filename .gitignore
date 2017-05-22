@@ -2,5 +2,6 @@
 *.tmp
 node_modules
 /src/app/config/client.json
+/src/app/config/common.json
 /src/app/config/default.pac
 /dist/
