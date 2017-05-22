@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Safety Browser"
-#define MyAppVersion "2.88.8"
+#define MyAppVersion "2.8.89"
 #define MyAppPublisher "TripleOneTech"
 #define MyAppURL "https://www.tripleonetech.com/"
 #define MyAppExeName "safety-browser.exe"
@@ -12,7 +12,7 @@
 #define SSLocal "ss-local.exe"
 #define SmartServiceName "t1smartservice"
 
-#define APP_ICO "safety-browser.ico"
+; #define APP_ICO "safety-browser.ico"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
