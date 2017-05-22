@@ -1,0 +1,22 @@
+{
+    "client": "win007",
+    "homeUrl": "http://www.yibet2.com",
+    "companyName": "亿博",
+    "productName": "亿博安全浏览器",
+    "productNameEn": "Yibet Safety Browser",
+    "fileDescription": "亿博安全浏览器",
+    "legalCopyright": "Copyright 2017",
+    "version": "2.8.89",
+    "enabledFlash": true,
+    "enabledProxy": true,
+    "clientId": "9384166F-7B3D-48A1-AF6E-979D3AE5B340",
+    "proxyOptions": {
+        "localAddr": "127.0.0.1",
+        "localPort": 21863,
+        "serverAddr": "119.9.108.194",
+        "serverPort": 19999,
+        "password": "Y20367E214d36315",
+        "method": "aes-256-cfb",
+        "timeout": 180
+    }
+}

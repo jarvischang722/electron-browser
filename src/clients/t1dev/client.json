@@ -1,15 +1,15 @@
 {
-    "client": "tripleone",
+    "client": "t1dev",
     "homeUrl": "http://www.demo.tripleonetech.com/",
     "companyName": "Tripleonetech",
     "productName": "合众安全浏览器",
     "productNameEn": "Tripleonetech Safety Browser",
-    "fileDescription": "Safety Browser",
+    "fileDescription": "合众安全浏览器",
     "legalCopyright": "Copyright 2017",
     "version": "2.8.89",
     "enabledFlash": true,
     "enabledProxy": false,
-    "clientId": "E3C4E066-950D-47CB-946B-A202FB613878",
+    "clientId": "DA3738C6-8FD8-484B-B97A-4FDE6F75FC81",
     "proxyOptions": {
         "localAddr": "127.0.0.1",
         "localPort": 22861,

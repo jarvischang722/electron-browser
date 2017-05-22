@@ -1,0 +1,22 @@
+{
+    "client": "macaopj",
+    "homeUrl": "http://www.macaopj.t1t.games/",
+    "companyName": "澳门葡京",
+    "productName": "澳门葡京安全浏览器",
+    "productNameEn": "MacaoPJ Safety Browser",
+    "fileDescription": "澳门葡京安全浏览器",
+    "legalCopyright": "Copyright 2017",
+    "version": "2.8.89",
+    "enabledFlash": true,
+    "enabledProxy": false,
+    "clientId": "54222CB0-1860-4AD4-938B-BCCFAB974BF1",
+    "proxyOptions": {
+        "localAddr": "127.0.0.1",
+        "localPort": 21867,
+        "serverAddr": "106.75.147.144",
+        "serverPort": 19999,
+        "password": "0367E21094d36315",
+        "method": "aes-256-cfb",
+        "timeout": 180
+    }
+}

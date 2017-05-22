@@ -1,5 +1,0 @@
-#define CLIENT "xc33"
-#define OUT_SETUP_DIR "clients\\xc33\\"
-#define OUT_SETUP_FILENAME "safetybrowser-xc33-setup"
-#define APP_INSTALL_DIR "safetybrowser-xc33"
-#define CLIENT_GUID "{48DF6BCC-318C-497B-B4BC-4690762B6458}"
