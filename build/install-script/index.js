@@ -48,6 +48,7 @@ const compiler = (iss, options) => {
 }
 
 const run = async (optionPath) => {
+    const commonOpt = require('../../src/app/config/common.json')
     const optionFile = `${optionPath}/client.json`
     const icon = `${optionPath}/icon.ico`
     const options = require(optionFile)
@@ -67,7 +68,6 @@ const run = async (optionPath) => {
     await rceditSync('dist/unpacked/safety-browser.exe' , rceditOptions)
 
     // await copy('src/app/default.pac', 'dist/unpacked/app/default.pac')
-    // await copy(options.iss, 'build/install-script/client_info.iss')
 
     await copy(optionFile, 'src/app/config/client.json')
     await copy(icon, 'build/install-script/safety-browser.ico')
@@ -77,15 +77,18 @@ const run = async (optionPath) => {
     await compiler('build/install-script/smartbrowser.iss', {
         gui: false,
         verbose: true,
+        signtoolname: 'signtool',
+        signtoolcommand: `"build/install-script/signtool.exe" sign /f "${commonOpt.projectHomeBase}\\build\\install-script\\smartbrowser.pfx" /t http://timestamp.globalsign.com/scripts/timstamp.dll /p "12345678" $f`,
         O: `dist/${options.client}`,
         F: `safety-browser-setup-${options.version}`,
-        signtoolname: 'signtool',
-        signtoolcommand: '"build/install-script/signtool.exe" sign /f "C:\\projects\\safety-browser\\build\\install-script\\smartbrowser.pfx" /t http://timestamp.globalsign.com/scripts/timstamp.dll /p "MY_PASSWORD" $f'
+        DCLIENT: options.client,
+        DCLIENT_GUID: `{${options.clientId}}`,
+        DAPP_NAME: 'SmartBrowserName', //  options.client ? `SmartBrowserName_${options.client}` : 'SmartBrowserName',
+        DProjectHomeBase: commonOpt.projectHomeBase,
     })
 
     console.log('Finished')
 }
-
 
 // TODO: get options from src/options, then different clients only generate different options folder
 // 執行build命令 npm run build, 使用默認config, 
@@ -95,6 +98,5 @@ const run = async (optionPath) => {
 // 一些路徑配置在config裏, 比如pre build文件的路徑, clients的主路徑
 const client = process.env.npm_config_client || 'tripleone'
 const optionPath = path.join(__dirname, '../..', `src/clients/${client}`)
-
 
 run(optionPath)
