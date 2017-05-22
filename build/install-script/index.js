@@ -81,10 +81,12 @@ const run = async (optionPath) => {
         signtoolcommand: `"build/install-script/signtool.exe" sign /f "${commonOpt.projectHomeBase}\\build\\install-script\\smartbrowser.pfx" /t http://timestamp.globalsign.com/scripts/timstamp.dll /p "12345678" $f`,
         O: `dist/${options.client}`,
         F: `safety-browser-setup-${options.version}`,
+        DProjectHomeBase: commonOpt.projectHomeBase,
         DCLIENT: options.client,
         DCLIENT_GUID: `{${options.clientId}}`,
-        DAPP_NAME: 'SmartBrowserName', //  options.client ? `SmartBrowserName_${options.client}` : 'SmartBrowserName',
-        DProjectHomeBase: commonOpt.projectHomeBase,
+        DAPP_NAME: 'SmartBrowserName',
+        DAPP_TITLE_EN: options.productNameEn,
+        DAPP_TITLE_CH: options.productName, 
     })
 
     console.log('Finished')
