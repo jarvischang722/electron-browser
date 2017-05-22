@@ -7,15 +7,15 @@
   "directories": {
     "doc": "doc"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "asar": "^0.13.0",
     "electron": "^1.6.8",
     "eslint": "^3.19.0",
+    "innosetup-compiler": "git+https://github.com/tripleonetech-john/node-innosetup-compiler.git#bb64ae8",
+    "log4js": "^1.1.1",
     "ncp": "^2.0.0",
-    "rcedit": "^0.9.0",
-    "innosetup-compiler": "git+https://github.com/tripleonetech-john/node-innosetup-compiler.git#bb64ae8"
+    "rcedit": "^0.9.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
