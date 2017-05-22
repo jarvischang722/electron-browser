@@ -4,6 +4,9 @@ const ncp = require('ncp').ncp
 const rcedit = require('rcedit')
 const asar = require('asar')
 const innoSetup = require('innosetup-compiler')
+const log4js = require('log4js')
+
+const logger = log4js.getLogger()
 
 const copy = (src, dest, options) => {
     return new Promise((resolve, reject) => {
@@ -73,7 +76,6 @@ const run = async (optionPath) => {
     }
 
     await copy(optionFile, 'src/app/config/client.json')
-    await copy(icon, 'build/install-script/safety-browser.ico')
     await copy('build/plugins', 'dist/unpacked/plugins')
 
     await asarSync('src/app', 'dist/unpacked/resources/app.asar')
@@ -89,19 +91,18 @@ const run = async (optionPath) => {
         DCLIENT_GUID: `{${options.clientId}}`,
         DAPP_NAME: 'SmartBrowserName',
         DAPP_TITLE_EN: options.productNameEn,
-        DAPP_TITLE_CH: options.productName, 
+        DAPP_TITLE_CH: options.productName,
+        DAPP_ICO: icon,
     })
 
-    console.log('Finished')
+    logger.info('Build finished successfully.')
 }
 
-// TODO: get options from src/options, then different clients only generate different options folder
-// 執行build命令 npm run build, 使用默認config, 
-// 如果傳入參數比如npm run build -c tripleone, 那麽options去找對應的clients的folder,找不到抛錯
-// 給QA使用的UI, 根據輸入的文字(比如主頁), 和上傳的文件(比如圖標), 根據客戶的名字, 生成一個對應文件夾, 如果已存在, 提示是否覆蓋
-// 然後點擊生成安裝文件, 後臺實際上是執行帶參數的命令, 
-// 一些路徑配置在config裏, 比如pre build文件的路徑, clients的主路徑
 const client = process.env.npm_config_client || 'tripleone'
 const optionPath = path.join(__dirname, '../..', `src/clients/${client}`)
 
-run(optionPath)
+if (fs.existsSync(optionPath)) {
+    run(optionPath)
+} else {
+    logger.warn(`Invalid client ${client}`)
+}
