@@ -71,37 +71,61 @@ if (clientOpt.enabledFlash) {
 
 let win
 
-function createWindow() {
-    // utils.autoUpdate(app, platform, clientOpt.client, clientOpt.version)
-    win = new BrowserWindow({
-        width: 1024,
-        height: 768,
-        title: clientOpt.productName,
-        webPreferences: {
-            nodeIntegration: false,
-            webSecurity: false,
-            allowRunningInsecureContent: true,
-            plugins: true
-        }
-    })
+const winOpt = {
+    width: 1024,
+    height: 768,
+    title: clientOpt.productName,
+    webPreferences: {
+        nodeIntegration: false,
+        webSecurity: false,
+        allowRunningInsecureContent: true,
+        plugins: true,
+    }
+}
 
+function createWindow() {
+    utils.autoUpdate(app, platform, clientOpt.client, clientOpt.version)
+    win = new BrowserWindow(winOpt)
     win.on('page-title-updated', (event) => {
         event.preventDefault()
     })
 
     win.webContents.on('new-window', function(event, url) {
         event.preventDefault()
-        const win = new BrowserWindow({
-            webPreferences: {
-                nodeIntegration: false,
-                webSecurity: false,
-                allowRunningInsecureContent: true,
-                plugins: true
+        const newWin = new BrowserWindow(winOpt)
+        newWin.once('ready-to-show', () => newWin.show())
+        newWin.loadURL(url)
+
+        newWin.webContents.on('new-window', function(event, url) {
+            console.log(url)
+            if (url && (
+                url.toLowerCase().startsWith('https://cashier.turnkey88.com/gamehistory.php')
+            )) {
+                event.preventDefault()
             }
         })
-        win.once('ready-to-show', () => win.show())
-        win.loadURL(url)
-        event.newGuest = win
+
+        newWin.webContents.on('-new-window', function(event, url, frameName, disposition, additionalFeatures, postData) {
+            event.preventDefault()
+            const postWin = new BrowserWindow(winOpt)
+            postWin.once('ready-to-show', () => postWin.show())
+            const loadOptions = {}
+            if (postData != null) {
+                loadOptions.postData = postData
+                loadOptions.extraHeaders = 'content-type: application/x-www-form-urlencoded'
+                if (postData.length > 0) {
+                    const postDataFront = postData[0].bytes.toString()
+                    const boundary = /^--.*[^-\r\n]/.exec(postDataFront)
+                    if (boundary != null) {
+                        loadOptions.extraHeaders = `content-type: multipart/form-data; boundary=${boundary[0].substr(2)}`
+                    }
+                }
+            }
+            postWin.loadURL(url, loadOptions)
+            event.newGuest = postWin
+        })
+
+        event.newGuest = newWin
     })
 
     win.on('closed', () => {
@@ -122,16 +146,7 @@ function createWindow() {
 }
 
 function createWindow2() {
-    win = new BrowserWindow({
-        width: 1024,
-        height: 768,
-        title: clientOpt.productName,
-        webPreferences: {
-            webSecurity: false,
-            allowRunningInsecureContent: false,
-            plugins: true
-        }
-    })
+    win = new BrowserWindow(winOpt)
     win.on('page-title-updated', (event) => {
         event.preventDefault()
     })
