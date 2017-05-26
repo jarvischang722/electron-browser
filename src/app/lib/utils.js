@@ -23,12 +23,13 @@ const download = (link, dest, callback) => {
     })
 }
 
-const runFirstTimeToday = (callback) => {
+const runFirstTimeToday = (client, callback) => {
     const today = new Date().toFormat('YYYYMMDD')
-    storage.get(today, (err, data) => {
+    const key = `${client}_${today}`
+    storage.get(key, (err, data) => {
         if (err) return callback(null, true)
         if (data === '1') return callback(null, false)
-        storage.set(today, '1', (err) => {
+        storage.set(key, '1', () => {
             return callback(null, true)
         })
     })
@@ -37,7 +38,7 @@ const runFirstTimeToday = (callback) => {
 const autoUpdate = (app, platform, client, currentVer) => {
     try {
         if (!platform || platform !== 'windows' || !client) return
-        runFirstTimeToday((err, first) => {
+        runFirstTimeToday(client, (err, first) => {
             if (err || !first) return
             let needUpdate = false
             const apiMain = config.serviceAddr
