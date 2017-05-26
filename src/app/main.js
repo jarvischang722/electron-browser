@@ -5,7 +5,14 @@ const utils = require('./lib/utils')
 const ssLocal = require('shadowsocks-js/lib/ssLocal')
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
-const homeUrl = clientOpt.homeUrl
+let homeUrl
+if (Array.isArray(clientOpt.homeUrl)) {
+    const arrLen = clientOpt.homeUrl.length
+    const rdmIdx = Math.floor(Math.random() * arrLen)
+    homeUrl = clientOpt.homeUrl[rdmIdx]
+} else {
+    homeUrl = clientOpt.homeUrl
+}
 
 let sslocalServer
 
@@ -97,7 +104,6 @@ function createWindow() {
         newWin.loadURL(url)
 
         newWin.webContents.on('new-window', function(event, url) {
-            console.log(url)
             if (url && (
                 url.toLowerCase().startsWith('https://cashier.turnkey88.com/gamehistory.php')
             )) {
