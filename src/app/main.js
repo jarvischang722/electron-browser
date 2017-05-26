@@ -143,7 +143,7 @@ function createWindow() {
         win = null
     })
 
-    require('./menu')
+    require('./menu')(clientOpt.version)
 
     if (clientOpt.enabledProxy) {
         win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, function () {
