@@ -90,6 +90,11 @@ const winOpt = {
     }
 }
 
+const icon = path.join(__dirname, 'config/icon.ico')
+if (fs.existsSync(icon)) {
+    winOpt.icon = icon
+}
+
 function createWindow() {
     utils.autoUpdate(app, platform, clientOpt.client, clientOpt.version)
     win = new BrowserWindow(winOpt)
