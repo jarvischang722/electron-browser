@@ -96,7 +96,7 @@ if (fs.existsSync(icon)) {
 }
 
 function createWindow() {
-    utils.autoUpdate(app, platform, clientOpt.client, clientOpt.version)
+    // utils.autoUpdate(app, platform, clientOpt.client, clientOpt.version)
     win = new BrowserWindow(winOpt)
     win.on('page-title-updated', (event) => {
         event.preventDefault()
