@@ -1,6 +1,9 @@
 {
     "client": "yuanbao361",
-    "homeUrl": "http://www.yuanbao361.com/",
+    "homeUrl": [
+        "http://www.yuanbao361.com/",
+        "http://www.ybao361.com/"
+    ],
     "companyName": "元宝娱乐",
     "productName": "元宝娱乐安全浏览器",
     "productNameEn": "Yuanbao361 Safety Browser",
