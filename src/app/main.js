@@ -177,7 +177,7 @@ function createWindow2() {
         name: cookieName,
     }, (err, cookies) => {
         if (err || !cookies || cookies.length <= 0) {
-            win.loadURL(`file://${__dirname}/login.html`)
+            win.loadURL(`file://${__dirname}/views/login.html`)
         } else {
             // 接入真实环境之后, 可以使用下面链接进入主页
             // win.loadURL(`http://player.demo.tripleonetech.com/iframe/auth/login_with_token/${cookies[0].value}?next=${homeUrl}`)
