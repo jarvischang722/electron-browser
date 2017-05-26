@@ -56,7 +56,7 @@ const autoUpdate = (app, platform, client, currentVer) => {
                     } else {
                         needUpdate = true
                     }
-                    if (needUpdate) {
+                    if (needUpdate && link) {
                         const filePath = path.join(app.getPath('userData'), 'install.exe')
                         download(link, filePath, (err) => {
                             if (!err) exec(filePath)
