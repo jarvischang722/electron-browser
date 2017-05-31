@@ -83,8 +83,7 @@ const run = async (optionPath) => {
     await compiler('build/install-script/smartbrowser.iss', {
         gui: false,
         verbose: true,
-        signtoolname: 'signtool',
-        signtoolcommand: `"build/install-script/signtool.exe" sign /f "${commonOpt.projectHomeBase}\\build\\install-script\\smartbrowser.pfx" /t http://timestamp.globalsign.com/scripts/timstamp.dll /p "12345678" $f`,
+        signtool: 'tripleonesign=$p',
         O: `dist/${options.client}`,
         F: `safety-browser-${options.client}-setup-${options.version}`,
         DProjectHomeBase: commonOpt.projectHomeBase,
