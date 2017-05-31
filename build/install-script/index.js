@@ -53,8 +53,8 @@ const compiler = (iss, options) => {
 
 const run = async (optionPath) => {
     const commonOpt = require('../../src/app/config/common.json')
-    const optionFile = `${optionPath}/client.json`
-    const icon = `${optionPath}/icon.ico`
+    const optionFile = path.join(optionPath, 'client.json')
+    const icon = path.join(optionPath, 'icon.ico')
     const options = require(optionFile)
     const rceditOptions = {
         'version-string': {
