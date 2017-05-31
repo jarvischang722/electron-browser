@@ -10,8 +10,8 @@
 [Setup]
 AppId={{#CLIENT_GUID}
 AppVersion={#APP_VERSION}
-DefaultGroupName={cm:{#APP_NAME}}
-AppName={cm:{#APP_NAME}}
+DefaultGroupName={#APP_TITLE_CH}
+AppName={#APP_TITLE_CH}
 SetupIconFile={#APP_ICO}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
@@ -26,8 +26,8 @@ PrivilegesRequired=admin
 ChangesEnvironment=true
 DisableProgramGroupPage=yes
 DisableWelcomePage=True
-VersionInfoDescription={cm:{#APP_NAME}}
-VersionInfoProductName={cm:{#APP_NAME}}
+VersionInfoDescription={#APP_TITLE_CH}
+VersionInfoProductName={#APP_TITLE_CH}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -43,9 +43,9 @@ Source: "{#ProjectHomeBase}\dist\unpacked\resources\*"; DestDir: "{app}\resource
 Source: "{#ProjectHomeBase}\dist\unpacked\plugins\*"; DestDir: "{app}\resources\plugins"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\{cm:{#APP_NAME}}"; Filename: "{app}\{#MyAppExeName}"; Parameters: """{app}\app""";
+Name: "{group}\{#APP_TITLE_CH}"; Filename: "{app}\{#MyAppExeName}"; Parameters: """{app}\app""";
 Name: "{group}\{cm:InstallCert}"; Filename: "{app}\{#CertInstall}"; WorkingDir: "{app}"
-Name: "{commondesktop}\{cm:{#APP_NAME}}"; Filename: "{app}\{#MyAppExeName}"; Parameters: """{app}\app"""; Tasks: desktopicon
+Name: "{commondesktop}\{#APP_TITLE_CH}"; Filename: "{app}\{#MyAppExeName}"; Parameters: """{app}\app"""; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Parameters: """{app}\app"""; Flags: nowait shellexec; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"

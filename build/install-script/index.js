@@ -90,7 +90,6 @@ const run = async (optionPath) => {
         DProjectHomeBase: commonOpt.projectHomeBase,
         DCLIENT: options.client,
         DCLIENT_GUID: `{${options.clientId}}`,
-        DAPP_NAME: 'SmartBrowserName',
         DAPP_VERSION: options.version,
         DAPP_TITLE_EN: options.productNameEn,
         DAPP_TITLE_CH: options.productName,
