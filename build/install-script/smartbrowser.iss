@@ -11,7 +11,7 @@
 AppId={{#CLIENT_GUID}
 AppVersion={#APP_VERSION}
 DefaultGroupName={#APP_TITLE_CH}
-AppName={#APP_TITLE_CH}
+AppName={cm:SmartBrowserName}
 SetupIconFile={#APP_ICO}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
