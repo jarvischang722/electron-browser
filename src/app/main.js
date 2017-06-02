@@ -1,10 +1,12 @@
 const fs = require('fs')
-const path = require("path")
+const path = require('path')
 const { app, BrowserWindow, ipcMain } = require('electron')
 const utils = require('./lib/utils')
 const ssLocal = require('shadowsocks-js/lib/ssLocal')
+
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
+
 let homeUrl
 if (Array.isArray(clientOpt.homeUrl)) {
     const arrLen = clientOpt.homeUrl.length
@@ -15,16 +17,17 @@ if (Array.isArray(clientOpt.homeUrl)) {
 }
 
 let sslocalServer
+let win
 
 const startShadowsocks = (addr, port) => {
     const opt = {
         localAddr: addr,
         localPort: port,
-        serverAddr: "119.9.91.119",
+        serverAddr: '119.9.91.119',
         serverPort: 19999,
-        password: "0367E21094d36315",
-        method: "aes-256-cfb",
-        timeout: 180
+        password: '0367E21094d36315',
+        method: 'aes-256-cfb',
+        timeout: 180,
     }
     sslocalServer = ssLocal.startServer(opt, true)
 }
@@ -39,7 +42,7 @@ ipcMain.on('ssinfo', (event, data) => {
         url: homeUrl,
         name: cookieName,
         value: data.token,
-        expirationDate: Math.ceil(Date.now() / 1000) + 7200, 
+        expirationDate: Math.ceil(Date.now() / 1000) + 7200,
     }, () => {})
 })
 
@@ -48,35 +51,37 @@ let flashVersion
 let platform
 
 switch (process.platform) {
-    case 'win32':
-        platform = 'windows'
-        switch (process.arch) {
-            case 'x64':
-                pluginName='pepflashplayer64_25_0_0_171.dll'
-                flashVersion = '25.0.0.171'
-                break
-            case 'ia32':
-                pluginName='pepflashplayer32_25_0_0_171.dll'
-                flashVersion = '25.0.0.171'
-                break
-        }
+case 'win32':
+    platform = 'windows'
+    switch (process.arch) {
+    case 'x64':
+        pluginName = 'pepflashplayer64_25_0_0_171.dll'
+        flashVersion = '25.0.0.171'
         break
-    case 'darwin':
-        platform = 'mac'
-        pluginName = 'PepperFlashPlayer.plugin'
+    case 'ia32':
+        pluginName = 'pepflashplayer32_25_0_0_171.dll'
+        flashVersion = '25.0.0.171'
         break
-    case 'linux':
-        pluginName = 'libpepflashplayer.so'
+    default:
         break
+    }
+    break
+case 'darwin':
+    platform = 'mac'
+    pluginName = 'PepperFlashPlayer.plugin'
+    break
+case 'linux':
+    pluginName = 'libpepflashplayer.so'
+    break
+default:
+    break
 }
-let flashPath = path.join(__dirname, '../plugins', pluginName)
+const flashPath = path.join(__dirname, '../plugins', pluginName)
 
 if (clientOpt.enabledFlash) {
     app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
     app.commandLine.appendSwitch('ppapi-flash-version', flashVersion)
 }
-
-let win
 
 const winOpt = {
     width: 1024,
@@ -87,7 +92,7 @@ const winOpt = {
         webSecurity: false,
         allowRunningInsecureContent: true,
         plugins: true,
-    }
+    },
 }
 
 const icon = path.join(__dirname, 'config/icon.ico')
@@ -102,22 +107,22 @@ function createWindow() {
         event.preventDefault()
     })
 
-    win.webContents.on('new-window', function(event, url) {
+    win.webContents.on('new-window', (event, url) => {
         event.preventDefault()
         const newWin = new BrowserWindow(winOpt)
         newWin.once('ready-to-show', () => newWin.show())
         newWin.loadURL(url)
 
-        newWin.webContents.on('new-window', function(event, url) {
-            if (url && (
-                url.toLowerCase().startsWith('https://cashier.turnkey88.com/gamehistory.php')
+        newWin.webContents.on('new-window', (newEvent, newUrl) => {
+            if (newUrl && (
+                newUrl.toLowerCase().startsWith('https://cashier.turnkey88.com/gamehistory.php')
             )) {
-                event.preventDefault()
+                newEvent.preventDefault()
             }
         })
 
-        newWin.webContents.on('-new-window', function(event, url, frameName, disposition, additionalFeatures, postData) {
-            event.preventDefault()
+        newWin.webContents.on('-new-window', (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
+            newEvent.preventDefault()
             const postWin = new BrowserWindow(winOpt)
             postWin.once('ready-to-show', () => postWin.show())
             const loadOptions = {}
@@ -132,8 +137,8 @@ function createWindow() {
                     }
                 }
             }
-            postWin.loadURL(url, loadOptions)
-            event.newGuest = postWin
+            postWin.loadURL(newUrl, loadOptions)
+            newEvent.newGuest = postWin
         })
 
         event.newGuest = newWin
@@ -146,7 +151,7 @@ function createWindow() {
     require('./menu')(clientOpt.version)
 
     if (clientOpt.enabledProxy) {
-        win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, function () {
+        win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, () => {
             win.loadURL(homeUrl)
         })
     } else {
@@ -166,10 +171,6 @@ function createWindow2() {
         webContents.send('home-url', homeUrl)
     })
 
-	// cookieAuth(win, function() {
-	// 	webContents.send('cookie-auth-complete')
-	// })
-
     // get token from session
     const ses = win.webContents.session
     ses.cookies.get({
@@ -187,9 +188,9 @@ function createWindow2() {
 
     win.show()
     win.maximize()
-	win.on('closed', function() {
-		win = null
-	})
+    win.on('closed', () => {
+        win = null
+    })
 }
 
 app.on('ready', createWindow)
@@ -199,7 +200,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('quit', () => {
-    //close all
+    // close all
     if (sslocalServer) {
         sslocalServer.closeAll()
     }

@@ -1,10 +1,9 @@
-const path = require("path")
+const path = require('path')
 const electron = require('electron')
 const fs = require('fs')
-let loadedLanguage
-let app = electron.app ? electron.app : electron.remote.app
 
-module.exports = i18n
+let loadedLanguage
+const app = electron.app ? electron.app : electron.remote.app
 
 function i18n() {
     let locale = app.getLocale()
@@ -18,10 +17,13 @@ function i18n() {
     }
 }
 
-i18n.prototype.__ = function(phrase) {
+/* eslint-disable no-underscore-dangle */
+i18n.prototype.__ = (phrase) => {
     let translation = loadedLanguage[phrase]
     if (!translation) {
         translation = phrase
     }
     return translation
 }
+
+module.exports = i18n

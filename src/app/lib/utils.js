@@ -9,15 +9,15 @@ const config = require('../config/common.json')
 const download = (link, dest, callback) => {
     const file = fs.createWriteStream(dest)
     request.get(link)
-    .on('error', function(err) {
+    .on('error', (err) => {
         return callback(err)
     })
     .pipe(file)
-    file.on('finish', function() {
+    file.on('finish', () => {
         file.close(callback)
     })
 
-    file.on('error', function(err) {
+    file.on('error', (err) => {
         fs.unlink(dest)
         return callback(err)
     })
@@ -43,8 +43,8 @@ const autoUpdate = (app, platform, client, currentVer) => {
             let needUpdate = false
             const apiMain = config.serviceAddr
             const reqUrl = `${apiMain}/browser/version?platform=${platform}&client=${client}`
-            request.get(reqUrl, (err, res, body) => {
-                if (!err && body) {
+            request.get(reqUrl, (requestErr, res, body) => {
+                if (!requestErr && body) {
                     body = JSON.parse(body)
                     const { version, link } = body
                     if (version && currentVer) {
@@ -58,14 +58,14 @@ const autoUpdate = (app, platform, client, currentVer) => {
                     }
                     if (needUpdate && link) {
                         const filePath = path.join(app.getPath('userData'), 'install.exe')
-                        download(link, filePath, (err) => {
-                            if (!err) exec(filePath)
+                        download(link, filePath, (downloadErr) => {
+                            if (!downloadErr) exec(filePath)
                         })
                     }
                 }
             })
         })
-    } catch(err) {
+    } catch (err) {
         return
     }
 }

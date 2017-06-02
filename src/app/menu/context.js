@@ -1,38 +1,39 @@
-const i18n = new (require('../lib/i18n'))
+const i18n = new (require('../lib/i18n'))()
 
+/* eslint-disable no-underscore-dangle */
 module.exports = {
     showInspectElement: false,
     prepend: () => [
         {
             label: i18n.__('Go back'),
-            click: function (menuItem, browserWindow) {
+            click: (menuItem, browserWindow) => {
                 browserWindow.webContents.goBack()
-            }
+            },
         }, {
             label: i18n.__('Forward'),
-            click: function (menuItem, browserWindow) {
+            click: (menuItem, browserWindow) => {
                 browserWindow.webContents.goForward()
-            }
+            },
         }, {
             label: i18n.__('Reload'),
-            role: 'reload'
+            role: 'reload',
         }, {
             label: i18n.__('Clean And Reload'),
-            role: 'forcereload'
+            role: 'forcereload',
         }, {
-            type: 'separator'
+            type: 'separator',
         }, {
             label: i18n.__('Select all'),
-            role: 'selectall'
+            role: 'selectall',
         }, {
             label: i18n.__('Copy'),
-            role: 'copy'
+            role: 'copy',
         }, {
             label: i18n.__('Cut'),
-            role: 'cut'
+            role: 'cut',
         }, {
             label: i18n.__('Paste'),
-            role: 'paste'
-        }
-    ]
+            role: 'paste',
+        },
+    ],
 }

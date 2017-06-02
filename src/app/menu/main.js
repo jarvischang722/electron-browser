@@ -1,35 +1,36 @@
-const i18n = new (require('../lib/i18n'))
+const i18n = new (require('../lib/i18n'))()
 
+/* eslint-disable no-underscore-dangle */
 const getTemplate = (version) => {
-    const menuTemplate =  [
+    const menuTemplate = [
         {
             label: i18n.__('Edit'),
             submenu: [
                 {
                     label: i18n.__('Undo'),
-                    role: 'undo'
+                    role: 'undo',
                 }, {
                     label: i18n.__('Redo'),
-                    role: 'redo'
+                    role: 'redo',
                 }, {
-                    type: 'separator'
+                    type: 'separator',
                 }, {
                     label: i18n.__('Cut'),
-                    role: 'cut'
+                    role: 'cut',
                 }, {
                     label: i18n.__('Copy'),
-                    role: 'copy'
+                    role: 'copy',
                 }, {
                     label: i18n.__('Paste'),
-                    role: 'paste'
+                    role: 'paste',
                 }, {
                     label: i18n.__('Delete'),
-                    role: 'delete'
+                    role: 'delete',
                 }, {
                     label: i18n.__('Select all'),
-                    role: 'selectall'
-                }
-            ]
+                    role: 'selectall',
+                },
+            ],
         }, {
             label: i18n.__('View'),
             submenu: [
@@ -37,45 +38,45 @@ const getTemplate = (version) => {
                     label: i18n.__('Go back'),
                     click: (menuItem, win) => {
                         win.webContents.goBack()
-                    }
+                    },
                 }, {
                     label: i18n.__('Forward'),
                     click: (menuItem, win) => {
                         win.webContents.goForward()
-                    }
+                    },
                 }, {
                     label: i18n.__('Reload'),
-                    role: 'reload'
+                    role: 'reload',
                 }, {
                     label: i18n.__('Clean And Reload'),
-                    role: 'forcereload'
+                    role: 'forcereload',
                 }, {
-                    type: 'separator'
+                    type: 'separator',
                 }, {
                     label: i18n.__('Reset Zoom'),
-                    role: 'resetzoom'
+                    role: 'resetzoom',
                 }, {
                     label: i18n.__('Zoom in'),
-                    role: 'zoomin'
+                    role: 'zoomin',
                 }, {
                     label: i18n.__('Zoom out'),
-                    role: 'zoomout'
+                    role: 'zoomout',
                 }, {
-                    type: 'separator'
+                    type: 'separator',
                 }, {
                     label: i18n.__('Toggle fullscreen'),
-                    role: 'togglefullscreen'
-                }
-            ]
+                    role: 'togglefullscreen',
+                },
+            ],
         }, {
             label: i18n.__('Version'),
             submenu: [
                 {
                     label: i18n.__(`${version}`),
                     enabled: false,
-                }
-            ]
-        }
+                },
+            ],
+        },
     ]
 
     if (process.platform === 'darwin') {
@@ -83,8 +84,8 @@ const getTemplate = (version) => {
             label: i18n.__('AppName'),
             submenu: [{
                 label: i18n.__('Quit'),
-                role: 'quit'
-            }]
+                role: 'quit',
+            }],
         })
     }
     return menuTemplate
@@ -92,5 +93,6 @@ const getTemplate = (version) => {
 
 
 module.exports = (version) => {
-    return getTemplate(version)
+    const template = getTemplate(version)
+    return template
 }
