@@ -16,8 +16,8 @@ if (Array.isArray(clientOpt.homeUrl)) {
     homeUrl = clientOpt.homeUrl
 }
 
-let sslocalServer
 let win
+let sslocalServer
 
 const startShadowsocks = (addr, port) => {
     const opt = {
@@ -151,6 +151,8 @@ function createWindow() {
     require('./menu')(clientOpt.version)
 
     if (clientOpt.enabledProxy) {
+        sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
+
         win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, () => {
             win.loadURL(homeUrl)
         })
