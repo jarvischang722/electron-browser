@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const request = require('request')
 const exec = require('child_process').execFile
+const { dialog } = require('electron')
 const storage = require('electron-json-storage')
 const config = require('../config/common.json')
 
@@ -35,6 +36,19 @@ const runFirstTimeToday = (client, callback) => {
     })
 }
 
+const popupHint = (link, filePath) => {
+    dialog.showMessageBox({
+        message: '有更新可用, 点击确定开始下载',
+        buttons: ['OK', 'Cancel'],
+    }, (res) => {
+        if (res === 0) {
+            download(link, filePath, (err) => {
+                if (!err) exec(filePath)
+            })
+        }
+    })
+}
+
 const autoUpdate = (app, platform, client, currentVer) => {
     try {
         if (!platform || platform !== 'windows' || !client) return
@@ -58,9 +72,7 @@ const autoUpdate = (app, platform, client, currentVer) => {
                     }
                     if (needUpdate && link) {
                         const filePath = path.join(app.getPath('userData'), 'install.exe')
-                        download(link, filePath, (downloadErr) => {
-                            if (!downloadErr) exec(filePath)
-                        })
+                        popupHint(link, filePath)
                     }
                 }
             })
