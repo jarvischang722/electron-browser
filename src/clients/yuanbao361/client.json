@@ -15,7 +15,7 @@
     "clientId": "78CF1DA0-E918-4A8F-9CB3-12CBF54D1859",
     "proxyOptions": {
         "localAddr": "127.0.0.1",
-        "localPort": 21861,
+        "localPort": 21873,
         "serverAddr": "106.75.147.144",
         "serverPort": 19999,
         "password": "dBbQMP8Nd9vyjvN",
