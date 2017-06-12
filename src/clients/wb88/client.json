@@ -1,0 +1,22 @@
+{
+    "client": "wb88",
+    "homeUrl": "https://www.wb88.net/",
+    "companyName": "万博娱乐城",
+    "productName": "万博娱乐城安全浏览器",
+    "productNameEn": "WB88 Safety Browser",
+    "fileDescription": "万博娱乐城安全浏览器",
+    "legalCopyright": "Copyright 2017",
+    "version": "2.9.0",
+    "enabledFlash": true,
+    "enabledProxy": true,
+    "clientId": "5BADDDFA-060D-400B-8ED2-0335D13D1FC0",
+    "proxyOptions": {
+        "localAddr": "127.0.0.1",
+        "localPort": 21869,
+        "serverAddr": "106.75.147.144",
+        "serverPort": 19999,
+        "password": "dBbQMP8Nd9vyjvN",
+        "method": "aes-256-cfb",
+        "timeout": 180
+    }
+}
