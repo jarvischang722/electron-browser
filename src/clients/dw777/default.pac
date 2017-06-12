@@ -11,8 +11,8 @@ var FindProxyForURL = function(init, profiles) {
 }("+safe", {
     "+safe": function(url, host, scheme) {
         "use strict";
-        if (/(?:^|\.)dawang\.la$/.test(host)) return "+proxy";
-        if (/(?:^|\.)dw.*\.com$/.test(host)) return "+proxy";
+        if (/(?:^|\.)dawang\.la$/gi.test(host)) return "+proxy";
+        if (/(?:^|\.)dw.*\.com$/gi.test(host)) return "+proxy";
         return "DIRECT";
     },
     "+proxy": function(url, host, scheme) {

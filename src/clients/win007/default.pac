@@ -11,9 +11,9 @@ var FindProxyForURL = function(init, profiles) {
 }("+safe", {
     "+safe": function(url, host, scheme) {
         "use strict";
-        if (/(?:^|\.)yibet.?\.com$/.test(host)) return "+proxy";
-        if (/(?:^|\.)yibet365\.com$/.test(host)) return "+proxy";
-        if (/(?:^|\.)vip-win007\.com$/.test(host)) return "+proxy";
+        if (/(?:^|\.)yibet.?\.com$/gi.test(host)) return "+proxy";
+        if (/(?:^|\.)yibet365\.com$/gi.test(host)) return "+proxy";
+        if (/(?:^|\.)vip-win007\.com$/gi.test(host)) return "+proxy";
         return "DIRECT";
     },
     "+proxy": function(url, host, scheme) {

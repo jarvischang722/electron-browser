@@ -11,9 +11,9 @@ var FindProxyForURL = function(init, profiles) {
 }("+safe", {
     "+safe": function(url, host, scheme) {
         "use strict";
-        if (/(?:^|\.)olobet.?\.com$/.test(host)) return "+proxy";
-        if (/(?:^|\.)olobet.?\.net$/.test(host)) return "+proxy";
-        if (/(?:^|\.)olobet.?\.org$/.test(host)) return "+proxy";
+        if (/(?:^|\.)olobet.?\.com$/gi.test(host)) return "+proxy";
+        if (/(?:^|\.)olobet.?\.net$/gi.test(host)) return "+proxy";
+        if (/(?:^|\.)olobet.?\.org$/gi.test(host)) return "+proxy";
         return "DIRECT";
     },
     "+proxy": function(url, host, scheme) {

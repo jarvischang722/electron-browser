@@ -11,7 +11,7 @@ var FindProxyForURL = function(init, profiles) {
 }("+safe", {
     "+safe": function(url, host, scheme) {
         "use strict";
-        //if (/(?:^|\.)tripleonetech\.net$/.test(host)) return "+proxy";
+        //if (/(?:^|\.)tripleonetech\.net$/gi.test(host)) return "+proxy";
         return "DIRECT";
     },
     "+proxy": function(url, host, scheme) {

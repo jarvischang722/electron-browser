@@ -11,7 +11,7 @@ var FindProxyForURL = function(init, profiles) {
 }("+safe", {
     "+safe": function(url, host, scheme) {
         "use strict";
-        //if (/(?:^|\.)twinbet\.com$/.test(host)) return "+proxy";
+        //if (/(?:^|\.)twinbet\.com$/gi.test(host)) return "+proxy";
         return "DIRECT";
     },
     "+proxy": function(url, host, scheme) {
