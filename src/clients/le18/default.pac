@@ -16,6 +16,6 @@ var FindProxyForURL = function(init, profiles) {
     },
     "+proxy": function(url, host, scheme) {
         "use strict";
-        return "SOCKS5 127.0.0.1:22861; SOCKS 127.0.0.1:22861; DIRECT;";
+        return "SOCKS5 127.0.0.1:21871; SOCKS 127.0.0.1:21871; DIRECT;";
     }
 });
