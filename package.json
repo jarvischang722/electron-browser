@@ -1,7 +1,7 @@
 {
   "name": "safetybrowser",
   "author": "Tripleonetech",
-  "version": "2.8.89",
+  "version": "2.9.0",
   "description": "Tripleonetech safety browser",
   "main": "main.js",
   "directories": {
