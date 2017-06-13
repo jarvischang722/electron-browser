@@ -16,12 +16,6 @@ var _logger = require('./logger');
 
 var _encryptor = require('./encryptor');
 
-// var _pacServer = require('./pacServer');
-
-var _createUDPRelay = require('./createUDPRelay');
-
-var _createUDPRelay2 = _interopRequireDefault(_createUDPRelay);
-
 var _auth = require('./auth');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -130,8 +124,6 @@ function handleRequest(connection, data, _ref, dstInfo, onConnect, onDestroy, is
         port: serverPort,
         host: serverAddr
     };
-    var isUDPRelay = cmd === 0x03;
-
     var repBuf = void 0;
     var tmp = null;
     var decipher = null;
@@ -139,7 +131,7 @@ function handleRequest(connection, data, _ref, dstInfo, onConnect, onDestroy, is
     var cipher = null;
     var cipheredData = null;
 
-    if (cmd !== 0x01 && !isUDPRelay) {
+    if (cmd !== 0x01) {
         logger.warn('unsupported cmd: ' + cmd);
         return {
             stage: -1
@@ -153,22 +145,6 @@ function handleRequest(connection, data, _ref, dstInfo, onConnect, onDestroy, is
     // +----+-----+-------+------+----------+----------+
     // | 1  |  1  | X'00' |  1   | Variable |    2     |
     // +----+-----+-------+------+----------+----------+
-
-    if (isUDPRelay) {
-        var isUDP4 = dstInfo.atyp === 1;
-
-        repBuf = new Buffer(4);
-        repBuf.writeUInt32BE(isUDP4 ? 0x05000001 : 0x05000004);
-        tmp = new Buffer(2);
-        tmp.writeUInt16BE(localPort);
-        repBuf = Buffer.concat([repBuf, _ip2.default.toBuffer(isUDP4 ? localAddr : localAddrIPv6), tmp]);
-
-        connection.write(repBuf);
-
-        return {
-            stage: -1
-        };
-    }
 
     logger.verbose('connecting: ' + dstInfo.dstAddr.toString('utf8') + (':' + dstInfo.dstPort.readUInt16BE()));
 
@@ -360,8 +336,6 @@ function handleConnection(config, connection) {
 
 function closeAll() {
     (0, _utils.closeSilently)(this.server);
-    (0, _utils.closeSilently)(this.pacServer);
-    this.udpRelay.close();
     if (this.httpProxyServer) {
         this.httpProxyServer.close();
     }
@@ -369,8 +343,6 @@ function closeAll() {
 
 function createServer(config) {
     var server = (0, _net.createServer)(handleConnection.bind(null, config));
-    var udpRelay = (0, _createUDPRelay2.default)(config, false, logger);
-    // var pacServer = (0, _pacServer.createPACServer)(config, logger);
 
     server.on('close', function() {
         logger.warn(NAME + ' server closed');
@@ -386,8 +358,6 @@ function createServer(config) {
 
     return {
         server: server,
-        udpRelay: udpRelay,
-        // pacServer: pacServer,
         closeAll: closeAll
     };
 }

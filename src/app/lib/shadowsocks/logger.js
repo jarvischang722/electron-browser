@@ -18,8 +18,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var LOG_NAMES = exports.LOG_NAMES = {
   LOCAL: 'local.log',
-  SERVER: 'server.log',
-  DAEMON: 'daemon.log'
 };
 
 var PATH_PREFIX = (0, _path.join)(os.tmpdir(), 'logs');
