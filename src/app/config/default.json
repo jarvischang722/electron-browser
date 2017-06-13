@@ -12,10 +12,14 @@
     "proxyOptions": {
         "localAddr": "127.0.0.1",
         "localPort": 22861,
-        "serverAddr": "119.9.91.119",
+        "serverAddr": "106.75.147.144",
         "serverPort": 19999,
         "password": "0367E21094d36315",
         "method": "aes-256-cfb",
         "timeout": 180
-    }
+    }, 
+    "proxyUrls": [
+        "https://www.tripleonetech.com/",
+        "https://www.tripleonetech.net/"
+    ]
 }
