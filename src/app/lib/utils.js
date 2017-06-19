@@ -59,7 +59,11 @@ const autoUpdate = (app, platform, client, currentVer) => {
             const reqUrl = `${apiMain}/browser/version?platform=${platform}&client=${client}`
             request.get(reqUrl, (requestErr, res, body) => {
                 if (!requestErr && body) {
-                    body = JSON.parse(body)
+                    try {
+                        body = JSON.parse(body)
+                    } catch (parseErr) {
+                        return
+                    }
                     const { version, link } = body
                     if (version && currentVer) {
                         const [a, b, c] = currentVer.split('.')
