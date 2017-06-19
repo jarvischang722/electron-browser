@@ -108,6 +108,10 @@ function createWindow() {
     })
 
     win.webContents.on('new-window', (event, url) => {
+        if (url && url.toString().startsWith('https://www.wb88.net/onlineService')) {
+            return
+        }
+
         event.preventDefault()
         const newWin = new BrowserWindow(winOpt)
         newWin.once('ready-to-show', () => newWin.show())
