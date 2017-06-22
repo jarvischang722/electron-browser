@@ -53,7 +53,5 @@ function createLogger() {
   (0, _utils.mkdirIfNotExistSync)(PATH_PREFIX);
   var fileName = (0, _path.join)(PATH_PREFIX, logName);
   
-  // console.log(fileName);
-
   return new _winston2.default.Logger(createLogData(level, fileName, willLogToConsole));
 }

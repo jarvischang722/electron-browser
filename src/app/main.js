@@ -108,11 +108,17 @@ function createWindow() {
     })
 
     win.webContents.on('new-window', (event, url) => {
-        if (url && url.toString().startsWith('https://www.wb88.net/onlineService')) {
+        if (url && (
+            url.toLowerCase().startsWith('https://www.wb88.net/onlineservice')
+            || url.toLowerCase().startsWith('http://player.yuanbao361.com/iframe_module/autodeposit3rdparty')
+            || url.toLowerCase().startsWith('http://player.ybao361.com/iframe_module/autodeposit3rdparty')
+            )
+        ) {
             return
         }
 
         event.preventDefault()
+
         const newWin = new BrowserWindow(winOpt)
         newWin.once('ready-to-show', () => newWin.show())
         newWin.loadURL(url)
@@ -165,6 +171,7 @@ function createWindow() {
     }
 
     win.maximize()
+    // win.openDevTools()
 }
 
 function createWindow2() {
