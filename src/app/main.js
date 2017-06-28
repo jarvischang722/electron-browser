@@ -1,8 +1,9 @@
 const fs = require('fs')
 const path = require('path')
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, session } = require('electron')
 const utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
+const ifaces = require('os').networkInterfaces()
 
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
@@ -172,6 +173,18 @@ function createWindow() {
 
     win.maximize()
     // win.openDevTools()
+
+    session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+        let address
+        for (const dev in ifaces) {
+            ifaces[dev].filter((d) => d.family === 'IPv4' && d.internal === false ? address = d.address : undefined)
+        }
+        details.requestHeaders['SS-CLIENT-ADDR'] = address
+        callback({
+            cancel: false,
+            requestHeaders: details.requestHeaders,
+        })
+    })
 }
 
 function createWindow2() {
