@@ -167,24 +167,24 @@ function createWindow() {
         win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, () => {
             win.loadURL(homeUrl)
         })
+
+        session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+            let address
+            for (const dev in ifaces) {
+                ifaces[dev].filter((d) => d.family === 'IPv4' && d.internal === false ? address = d.address : undefined)
+            }
+            details.requestHeaders['SS-CLIENT-ADDR'] = address
+            callback({
+                cancel: false,
+                requestHeaders: details.requestHeaders,
+            })
+        })
     } else {
         win.loadURL(homeUrl)
     }
 
     win.maximize()
     // win.openDevTools()
-
-    session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-        let address
-        for (const dev in ifaces) {
-            ifaces[dev].filter((d) => d.family === 'IPv4' && d.internal === false ? address = d.address : undefined)
-        }
-        details.requestHeaders['SS-CLIENT-ADDR'] = address
-        callback({
-            cancel: false,
-            requestHeaders: details.requestHeaders,
-        })
-    })
 }
 
 function createWindow2() {
