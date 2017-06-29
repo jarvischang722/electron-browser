@@ -1,21 +1,21 @@
 {
     "client": "xc33",
-    "homeUrl": "http://www.xc33.com/",
+    "homeUrl": "http://www.xcyl.t1t.games/",
     "companyName": "新橙娱乐",
     "productName": "新橙娱乐安全浏览器",
     "productNameEn": "XC33 Safety Browser",
     "fileDescription": "新橙娱乐安全浏览器",
     "legalCopyright": "Copyright 2017",
-    "version": "2.9.0",
+    "version": "2.9.2",
     "enabledFlash": true,
-    "enabledProxy": false,
+    "enabledProxy": true,
     "clientId": "48DF6BCC-318C-497B-B4BC-4690762B6458",
     "proxyOptions": {
         "localAddr": "127.0.0.1",
         "localPort": 21872,
-        "serverAddr": "119.9.91.119",
+        "serverAddr": "106.75.147.144",
         "serverPort": 19999,
-        "password": "0367E21094d36315",
+        "password": "dBbQMP8Nd9vyjvN",
         "method": "aes-256-cfb",
         "timeout": 180
     }
