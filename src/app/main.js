@@ -173,7 +173,7 @@ function createWindow() {
             for (const dev in ifaces) {
                 ifaces[dev].filter((d) => d.family === 'IPv4' && d.internal === false ? address = d.address : undefined)
             }
-            details.requestHeaders['SS-CLIENT-ADDR'] = address
+            details.requestHeaders['X-SS-CLIENT-ADDR'] = address
             callback({
                 cancel: false,
                 requestHeaders: details.requestHeaders,
