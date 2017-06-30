@@ -7,6 +7,7 @@ const ifaces = require('os').networkInterfaces()
 
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
+const commonOpt = require('./config/common.json')
 
 let homeUrl
 if (Array.isArray(clientOpt.homeUrl)) {
@@ -102,7 +103,7 @@ if (fs.existsSync(icon)) {
 }
 
 function createWindow() {
-    utils.autoUpdate(app, platform, clientOpt.client, clientOpt.version)
+    utils.autoUpdate(app, platform, clientOpt.client)
     win = new BrowserWindow(winOpt)
     win.on('page-title-updated', (event) => {
         event.preventDefault()
@@ -159,7 +160,7 @@ function createWindow() {
         win = null
     })
 
-    require('./menu')(clientOpt.version)
+    require('./menu')(commonOpt.version)
 
     if (clientOpt.enabledProxy) {
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)

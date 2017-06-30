@@ -49,13 +49,14 @@ const popupHint = (link, filePath) => {
     })
 }
 
-const autoUpdate = (app, platform, client, currentVer) => {
+const autoUpdate = (app, platform, client) => {
     try {
         if (!platform || platform !== 'windows' || !client) return
         runFirstTimeToday(client, (err, first) => {
             if (err || !first) return
             let needUpdate = false
             const apiMain = config.serviceAddr
+            const currentVer = config.version
             const reqUrl = `${apiMain}/browser/version?platform=${platform}&client=${client}`
             request.get(reqUrl, (requestErr, res, body) => {
                 if (!requestErr && body) {

@@ -109,11 +109,11 @@ const run = async (optionPath) => {
         'version-string': {
             CompanyName: options.companyName,
             FileDescription: options.fileDescription,
-            LegalCopyright: options.legalCopyright || 'Copyright 2017',
+            LegalCopyright: commonOpt.legalCopyright || 'Copyright 2017',
             ProductName: options.productName,
         },
-        'file-version': options.version,
-        'product-version': options.version,
+        'file-version': commonOpt.version,
+        'product-version': commonOpt.version,
         icon,
     }
 
@@ -134,11 +134,11 @@ const run = async (optionPath) => {
         verbose: true,
         signtool: 'tripleonesign=$p',
         O: `dist/${options.client}`,
-        F: `safety-browser-${options.client}-setup-${options.version}`,
+        F: `safety-browser-${options.client}-setup-${commonOpt.version}`,
         DProjectHomeBase: commonOpt.projectHomeBase,
         DCLIENT: options.client,
         DCLIENT_GUID: `{${options.clientId}}`,
-        DAPP_VERSION: options.version,
+        DAPP_VERSION: commonOpt.version,
         DAPP_TITLE_EN: options.productNameEn,
         DAPP_TITLE_CH: options.productName,
         DAPP_ICO: icon,
