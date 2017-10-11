@@ -111,9 +111,8 @@ function createWindow() {
 
     win.webContents.on('new-window', (event, url) => {
         if (url && (
-            url.toLowerCase().startsWith('https://www.wb88.net/onlineservice')
-            || url.toLowerCase().startsWith('http://player.yuanbao361.com/iframe_module/autodeposit3rdparty')
-            || url.toLowerCase().startsWith('http://player.ybao361.com/iframe_module/autodeposit3rdparty')
+            url.toLowerCase().includes('onlineservice') ||
+            url.toLowerCase().includes('iframe_module/autodeposit3rdparty')
             )
         ) {
             return
