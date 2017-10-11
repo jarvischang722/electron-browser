@@ -1,0 +1,22 @@
+{
+    "client": "Lebo",
+    "homeUrl": [
+        "http://www.lebo.t1t.games/"
+    ],
+    "companyName": "乐博",
+    "productName": "乐博安全浏览器",
+    "productNameEn": "LEBO Safety Browser",
+    "fileDescription": "乐博安全浏览器",
+    "enabledFlash": true,
+    "enabledProxy": true,
+    "clientId": "6BA53A0A-0AA6-46B1-A8EB-70FAB81F4C84",
+    "proxyOptions": {
+        "localAddr": "127.0.0.1",
+        "localPort": 22868,
+        "serverAddr": "52.198.79.141",
+        "serverPort": 19999,
+        "password": "dBbQMP8Nd9vyjvN",
+        "method": "aes-256-cfb",
+        "timeout": 180
+    }
+}

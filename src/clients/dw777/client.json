@@ -11,8 +11,8 @@
     "proxyOptions": {
         "localAddr": "127.0.0.1",
         "localPort": 21864,
-        "serverAddr": "119.9.106.53",
-        "serverPort": 19999,
+        "serverAddr": "221.229.166.226",
+        "serverPort": 17777,
         "password": "a3D7E21094d36315",
         "method": "aes-256-cfb",
         "timeout": 180

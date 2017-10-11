@@ -1,18 +1,18 @@
 {
-    "client": "tripleone",
+    "client": "lequ",
     "homeUrl": [
         "http://www.lequ.t1t.games/"
     ],
     "companyName": "乐趣娱乐",
     "productName": "乐趣娱乐安全浏览器",
-    "productNameEn": "TRIPLEONE Safety Browser",
+    "productNameEn": "LEQU Safety Browser",
     "fileDescription": "乐趣娱乐安全浏览器",
     "enabledFlash": true,
     "enabledProxy": true,
-    "clientId": "49747492-6CB3-4F70-9F1E-4C739F42047B",
+    "clientId": "191E979F-8B66-4CFE-9D59-9A8141366BE5",
     "proxyOptions": {
         "localAddr": "127.0.0.1",
-        "localPort": 22860,
+        "localPort": 22866,
         "serverAddr": "52.198.79.141",
         "serverPort": 19999,
         "password": "dBbQMP8Nd9vyjvN",

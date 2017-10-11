@@ -11,11 +11,11 @@ return function(url, host) {
 }("+safe", {
 "+safe": function(url, host, scheme) {
     "use strict";
-    if (/(?:^|\.)wb88\.net$/gi.test(host)) return "+proxy";
+    if (/(?:^|\.)lensawin\.com$/gi.test(host)) return "+proxy";
     return "DIRECT";
 },
 "+proxy": function(url, host, scheme) {
     "use strict";
-    return "SOCKS5 127.0.0.1:21869; SOCKS 127.0.0.1:21869; DIRECT;";
+    return "SOCKS5 127.0.0.1:22869; SOCKS 127.0.0.1:22869; DIRECT;";
 }
 });

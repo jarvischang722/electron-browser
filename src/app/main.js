@@ -25,8 +25,8 @@ const startShadowsocks = (addr, port) => {
     const opt = {
         localAddr: addr,
         localPort: port,
-        serverAddr: '119.9.91.119',
-        serverPort: 19999,
+        serverAddr: '221.229.166.226',
+        serverPort: 17777,
         password: '0367E21094d36315',
         method: 'aes-256-cfb',
         timeout: 180,

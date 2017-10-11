@@ -1,0 +1,22 @@
+{
+    "client": "liwei",
+    "homeUrl": [
+        "http://www.liwei.t1t.games/"
+    ],
+    "companyName": "利威娱乐",
+    "productName": "利威娱乐安全浏览器",
+    "productNameEn": "LIWEI Safety Browser",
+    "fileDescription": "利威娱乐安全浏览器",
+    "enabledFlash": true,
+    "enabledProxy": true,
+    "clientId": "45D173A2-3D5D-4D88-9128-6AD256E56B27",
+    "proxyOptions": {
+        "localAddr": "127.0.0.1",
+        "localPort": 22861,
+        "serverAddr": "52.198.79.141",
+        "serverPort": 19999,
+        "password": "dBbQMP8Nd9vyjvN",
+        "method": "aes-256-cfb",
+        "timeout": 180
+    }
+}
