@@ -4,7 +4,9 @@ const { app, BrowserWindow, ipcMain, session } = require('electron')
 const utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
+const launcher = require('browser-launcher2')
 
+const whitelist = require('./config/whitelist.json')
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
@@ -105,10 +107,11 @@ if (fs.existsSync(icon)) {
 function createWindow() {
     utils.autoUpdate(app, platform, clientOpt.client)
     win = new BrowserWindow(winOpt)
+
     win.on('page-title-updated', (event) => {
         event.preventDefault()
     })
-
+    
     win.webContents.on('new-window', (event, url) => {
         if (url && (
             url.toLowerCase().includes('onlineservice') ||
@@ -117,50 +120,84 @@ function createWindow() {
         ) {
             return
         }
-
+        
         event.preventDefault()
-
-        const newWin = new BrowserWindow(winOpt)
-        newWin.once('ready-to-show', () => newWin.show())
-        newWin.loadURL(url)
-
-        newWin.webContents.on('new-window', (newEvent, newUrl) => {
-            if (newUrl && (
-                newUrl.toLowerCase().startsWith('https://cashier.turnkey88.com/gamehistory.php')
-            )) {
-                newEvent.preventDefault()
+        var isWhiteList = false
+        for(var i = 0; i < whitelist.links.length; i++){
+            if(whitelist.links[i] == url){
+                isWhiteList = true
+                break
             }
-        })
+        }
+      
+        if(isWhiteList){
+            launcher( function(err, launch){
+                if ( err ) {
+                    return console.error( err );
+                }
+                launch( url, 'ie', function( err, instance ) {
+                    if ( err ) {
+                        return console.error( err );
+                    }
+             
+                    instance.on( 'stop', function( code ) {
 
-        newWin.webContents.on('-new-window', (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
-            newEvent.preventDefault()
-            const postWin = new BrowserWindow(winOpt)
-            postWin.once('ready-to-show', () => postWin.show())
-            const loadOptions = {}
-            if (postData != null) {
-                loadOptions.postData = postData
-                loadOptions.extraHeaders = 'content-type: application/x-www-form-urlencoded'
-                if (postData.length > 0) {
-                    const postDataFront = postData[0].bytes.toString()
-                    const boundary = /^--.*[^-\r\n]/.exec(postDataFront)
-                    if (boundary != null) {
-                        loadOptions.extraHeaders = `content-type: multipart/form-data; boundary=${boundary[0].substr(2)}`
+                    });
+                });
+            })             
+        }else{
+            newWin = new BrowserWindow(winOpt)
+            newWin.once('ready-to-show', () => newWin.show())
+            newWin.loadURL(url)
+
+            newWin.webContents.on('new-window', (newEvent, newUrl) => {
+                if (newUrl && (
+                    newUrl.toLowerCase().startsWith('https://cashier.turnkey88.com/gamehistory.php')
+                )) {
+                    newEvent.preventDefault()
+                }
+            })
+
+            newWin.webContents.on('-new-window', (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
+                newEvent.preventDefault()
+                postWin = new BrowserWindow(winOpt)
+                postWin.once('ready-to-show', () => postWin.show())
+                const loadOptions = {}
+                if (postData != null) {
+                    loadOptions.postData = postData
+                    loadOptions.extraHeaders = 'content-type: application/x-www-form-urlencoded'
+                    if (postData.length > 0) {
+                        const postDataFront = postData[0].bytes.toString()
+                        const boundary = /^--.*[^-\r\n]/.exec(postDataFront)
+                        if (boundary != null) {
+                            loadOptions.extraHeaders = `content-type: multipart/form-data; boundary=${boundary[0].substr(2)}`
+                        }
                     }
                 }
-            }
-            postWin.loadURL(newUrl, loadOptions)
-            newEvent.newGuest = postWin
-        })
+                postWin.loadURL(newUrl, loadOptions)
+                newEvent.newGuest = postWin
+            })
 
-        event.newGuest = newWin
+            event.newGuest = newWin            
+        }
+        //require('electron').shell.openExternal(url);
+        //if function is whitelist
+
+        //else 
+
     })
+
+    // win.webContents.on('new-window', function(e, url) {
+    //   e.preventDefault();
+    //   require('electron').shell.openExternal(url);
+    // });
 
     win.on('closed', () => {
         win = null
     })
 
     require('./menu')(commonOpt.version)
-
+    console.log("HOME URL:", homeUrl)
     if (clientOpt.enabledProxy) {
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
 
@@ -181,7 +218,7 @@ function createWindow() {
             })
         })
     } else {
-        win.loadURL(homeUrl)
+        win.loadURL(homeUrl)  
     }
 
     win.maximize()
