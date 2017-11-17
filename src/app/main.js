@@ -122,15 +122,18 @@ function createWindow() {
         }
         
         event.preventDefault()
+        var paymentCheck = url.toLowerCase().includes('/player_center/redirect/payment ')
+        var thirdPartyCheck = url.toLowerCase().includes('iframe_module/autodeposit3rdparty')
+
         var isWhiteList = false
         for(var i = 0; i < whitelist.links.length; i++){
-            if(whitelist.links[i] == url){
+            if(whitelist.links[i].match(url)){
                 isWhiteList = true
                 break
             }
         }
-      
-        if(isWhiteList){
+       
+        if(isWhiteList || paymentCheck || thirdPartyCheck){
             launcher( function(err, launch){
                 if ( err ) {
                     return console.error( err );
