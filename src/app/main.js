@@ -5,8 +5,10 @@ const utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
 const launcher = require('browser-launcher2')
+const request = require('request')
 
 const whitelist = require('./config/whitelist.json')
+
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
@@ -34,6 +36,21 @@ const startShadowsocks = (addr, port) => {
         timeout: 180,
     }
     sslocalServer = ssLocal.startServer(opt, true)
+}
+
+function ieLauncher(url) {
+    launcher((err, launch) => {
+        if (err) {
+            return err
+        }
+        launch(url, 'ie', (e, instance) => {
+            if (e) {
+                return e
+            }
+            instance.on('stop', () => {
+            })
+        })
+    })
 }
 
 const cookieName = 'TripleonetechSafetyBrowserCookie'
@@ -111,7 +128,41 @@ function createWindow() {
     win.on('page-title-updated', (event) => {
         event.preventDefault()
     })
+
+    win.webContents.on('will-navigate', (event, url) => {
+        if (url.includes('deposit/auto_payment') || url.includes('player_center/auto_payment')) {
+            event.preventDefault()
+            session.defaultSession.cookies.get({ url }, (error, cookies) => {
+                let validCookie
+                let hasValidCookie = false
+                if (cookies.length > 0) {
+                    for (const i in cookies) {
+                        if (cookies[i].name.includes('sess_og_player')) {
+                            hasValidCookie = true
+                            validCookie = `${cookies[i].name}=${cookies[i].value}`
+                            break
+                        }
+                    }
+                }
+                
+                if (hasValidCookie) {
+                    const cookie = request.cookie(validCookie)
+                    const j = request.jar()
+                    j.setCookie(cookie, `${homeUrl}pub/get_player_token`, (err, val) => { if (err) return err })
     
+                    request({ method: 'GET', url: `${homeUrl}pub/get_player_token`, json: false, jar: j }, (err, res, body) => {
+                        if (err) return err
+    
+                        const authUrl = `${homeUrl}iframe/auth/login_with_token/${body}?next=${url}`
+                        ieLauncher(authUrl)
+                    })
+                } else {
+                    ieLauncher(url)
+                }
+            })
+        }
+    })
+
     win.webContents.on('new-window', (event, url) => {
         if (url && (
             url.toLowerCase().includes('onlineservice') ||
@@ -120,36 +171,23 @@ function createWindow() {
         ) {
             return
         }
-        
-        event.preventDefault()
-        var paymentCheck = url.toLowerCase().includes('/player_center/redirect/payment ')
-        var thirdPartyCheck = url.toLowerCase().includes('iframe_module/autodeposit3rdparty')
 
-        var isWhiteList = false
-        for(var i = 0; i < whitelist.links.length; i++){
-            if(whitelist.links[i].match(url)){
+        event.preventDefault()
+        // const paymentCheck = url.toLowerCase().includes('/player_center/redirect/payment ')
+        // const thirdPartyCheck = url.toLowerCase().includes('iframe_module/autodeposit3rdparty')
+
+        let isWhiteList = false
+        for (let i = 0; i < whitelist.links.length; i++) {
+            if (whitelist.links[i].match(url)) {
                 isWhiteList = true
                 break
             }
         }
-       
-        if(isWhiteList || paymentCheck || thirdPartyCheck){
-            launcher( function(err, launch){
-                if ( err ) {
-                    return console.error( err );
-                }
-                launch( url, 'ie', function( err, instance ) {
-                    if ( err ) {
-                        return console.error( err );
-                    }
-             
-                    instance.on( 'stop', function( code ) {
 
-                    });
-                });
-            })             
-        }else{
-            newWin = new BrowserWindow(winOpt)
+        if (isWhiteList) {
+            ieLauncher(url)
+        } else {
+            const newWin = new BrowserWindow(winOpt)
             newWin.once('ready-to-show', () => newWin.show())
             newWin.loadURL(url)
 
@@ -163,7 +201,7 @@ function createWindow() {
 
             newWin.webContents.on('-new-window', (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
                 newEvent.preventDefault()
-                postWin = new BrowserWindow(winOpt)
+                const postWin = new BrowserWindow(winOpt)
                 postWin.once('ready-to-show', () => postWin.show())
                 const loadOptions = {}
                 if (postData != null) {
@@ -181,26 +219,15 @@ function createWindow() {
                 newEvent.newGuest = postWin
             })
 
-            event.newGuest = newWin            
+            event.newGuest = newWin
         }
-        //require('electron').shell.openExternal(url);
-        //if function is whitelist
-
-        //else 
-
     })
-
-    // win.webContents.on('new-window', function(e, url) {
-    //   e.preventDefault();
-    //   require('electron').shell.openExternal(url);
-    // });
 
     win.on('closed', () => {
         win = null
     })
 
     require('./menu')(commonOpt.version)
-    console.log("HOME URL:", homeUrl)
     if (clientOpt.enabledProxy) {
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
 
