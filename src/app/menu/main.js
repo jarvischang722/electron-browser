@@ -1,5 +1,4 @@
 const i18n = new (require('../lib/i18n'))()
-
 /* eslint-disable no-underscore-dangle */
 const getTemplate = (version) => {
     const menuTemplate = [
@@ -36,20 +35,12 @@ const getTemplate = (version) => {
             submenu: [
                 {
                     label: i18n.__('Go back'),
-                    click: (menuItem, win) => {
-                        win.webContents.goBack()
-                    },
                 }, {
                     label: i18n.__('Forward'),
-                    click: (menuItem, win) => {
-                        win.webContents.goForward()
-                    },
                 }, {
                     label: i18n.__('Reload'),
-                    role: 'reload',
                 }, {
                     label: i18n.__('Clean And Reload'),
-                    role: 'forcereload',
                 }, {
                     type: 'separator',
                 }, {
@@ -66,6 +57,11 @@ const getTemplate = (version) => {
                 }, {
                     label: i18n.__('Toggle fullscreen'),
                     role: 'togglefullscreen',
+                }, {
+                    label: i18n.__('Show URL'),
+                    type: 'checkbox',
+                    checked: false,
+                    enabled: true,
                 },
             ],
         }, {
@@ -90,7 +86,6 @@ const getTemplate = (version) => {
     }
     return menuTemplate
 }
-
 
 module.exports = (version) => {
     const template = getTemplate(version)
