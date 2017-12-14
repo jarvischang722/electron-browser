@@ -12,8 +12,8 @@ const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) 
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
 
-const visibleUrlPath = path.join(__dirname, 'visible-url.html')
-const noUrlPath = path.join(__dirname, 'no-url.html')
+const visibleUrlPath = `file://${__dirname}/visible-url.html`
+const noUrlPath = `file://${__dirname}/no-url.html`
 
 let homeUrl
 if (Array.isArray(clientOpt.homeUrl)) {
@@ -59,21 +59,6 @@ function showAddressBar() {
     }
 }
 
-function ieLauncher(url) {
-    launcher((err, launch) => {
-        if (err) {
-            return err
-        }
-        launch(url, 'ie', (e, instance) => {
-            if (e) {
-                return e
-            }
-            instance.on('stop', () => {
-            })
-        })
-    })
-}
-
 function whitelistChecker(url) {
     let isWhiteList = false
     for (let i = 0; i < whitelist.links.length; i++) {
@@ -85,7 +70,7 @@ function whitelistChecker(url) {
 
     return isWhiteList
 }
-require('./menu')(commonOpt.version)
+
 
 const cookieName = 'TripleonetechSafetyBrowserCookie'
 
@@ -104,10 +89,15 @@ ipcMain.on('ssinfo', (event, data) => {
 let pluginName
 let flashVersion
 let platform
+let browser
+let count
+let idx
 
 switch (process.platform) {
 case 'win32':
     platform = 'windows'
+    browser = 'ie'
+    idx = 1
     switch (process.arch) {
     case 'x64':
         pluginName = 'pepflashplayer64_25_0_0_171.dll'
@@ -123,14 +113,33 @@ case 'win32':
     break
 case 'darwin':
     platform = 'mac'
+    browser = 'safari'
+    idx = 2
     pluginName = 'PepperFlashPlayer.plugin'
     break
 case 'linux':
     pluginName = 'libpepflashplayer.so'
+    idx = 1
     break
 default:
     break
 }
+
+function browserLauncher(url) {
+    launcher((err, launch) => {
+        if (err) {
+            return err
+        }
+        launch(url, browser, (e, instance) => {
+            if (e) {
+                return e
+            }
+            instance.on('stop', () => {
+            })
+        })
+    })
+}
+
 const flashPath = path.join(__dirname, '../plugins', pluginName)
 
 if (clientOpt.enabledFlash) {
@@ -160,32 +169,38 @@ if (fs.existsSync(icon)) {
     winOpt.icon = icon
 }
 
-const menu = Menu.getApplicationMenu()
-const count = menu.items[1].submenu.items.length
-
 function createWindow() {
     utils.autoUpdate(app, platform, clientOpt.client)
     win = new BrowserWindow(winOpt)
 
-    menu.items[1].submenu.items[0].click = () => {
+    require('./menu')(commonOpt.version)
+    const menu = Menu.getApplicationMenu()
+    console.log(process.platform)
+    if (process.platform === 'darwin') {
+        count = menu.items[idx].submenu.items.length
+    } else {
+        count = menu.items[idx].submenu.items.length
+    }
+
+    menu.items[idx].submenu.items[0].click = () => {
         win.webContents.send('go-back-menu')
     }
 
-    menu.items[1].submenu.items[1].click = () => {
+    menu.items[idx].submenu.items[1].click = () => {
         win.webContents.send('go-forward-menu')
     }
 
-    menu.items[1].submenu.items[2].click = () => {
+    menu.items[idx].submenu.items[2].click = () => {
         win.webContents.send('reload-menu')
     }
 
-    menu.items[1].submenu.items[3].click = () => {
+    menu.items[idx].submenu.items[3].click = () => {
         win.webContents.send('force-reload-menu')
     }
 
-    menu.items[1].submenu.items[count - 1].click = () => {
+    menu.items[idx].submenu.items[count - 1].click = () => {
         showAddressBar()
-        menu.items[1].submenu.items[count - 1].checked = showUrl
+        menu.items[idx].submenu.items[count - 1].checked = showUrl
     }
 
     win.on('page-title-updated', (event) => {
@@ -217,10 +232,10 @@ function createWindow() {
                         if (err) return err
 
                         const authUrl = `${clientOpt.homeUrl}iframe/auth/login_with_token/${body}?next=${url}`
-                        ieLauncher(authUrl)
+                        browserLauncher(authUrl)
                     })
                 } else {
-                    ieLauncher(url)
+                    browserLauncher(url)
                 }
             })
         }
@@ -242,7 +257,7 @@ function createWindow() {
         event.preventDefault()
 
         if (whitelistChecker(url)) {
-            ieLauncher(url)
+            browserLauncher(url)
         } else {
             global.newWinUrl = url
             global.isNewWindow = true
@@ -264,7 +279,7 @@ function createWindow() {
                 //     newEvent.preventDefault()
                 // }
                 if (whitelistChecker(newUrl)) {
-                    ieLauncher(newUrl)
+                    browserLauncher(newUrl)
                 } else {
                     if (!showUrl) {
                         newWin.loadURL(noUrlPath)
@@ -313,7 +328,7 @@ function createWindow() {
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
 
         win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, () => {
-            win.loadURL(homeUrl)
+            win.loadURL(noUrlPath)
         })
 
         session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
@@ -399,10 +414,10 @@ app.on('web-contents-created', (event, contents) => {
                             if (err) return err
 
                             const authUrl = `${clientOpt.homeUrl}iframe/auth/login_with_token/${body}?next=${url}`
-                            ieLauncher(authUrl)
+                            browserLauncher(authUrl)
                         })
                     } else {
-                        ieLauncher(url)
+                        browserLauncher(url)
                     }
                 })
             } else {
