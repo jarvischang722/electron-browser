@@ -261,7 +261,7 @@ function createWindow() {
         } else {
             global.newWinUrl = url
             global.isNewWindow = true
-            menu.items[1].submenu.items[count - 1].enabled = false
+            menu.items[idx].submenu.items[count - 1].enabled = false
             const newWin = new BrowserWindow(winOpt)
             newWin.once('ready-to-show', () => newWin.show())
             if (!showUrl) {
@@ -294,7 +294,7 @@ function createWindow() {
                 const allWindows = BrowserWindow.getAllWindows()
                 const n = allWindows.length
                 if (n < 2) {
-                    menu.items[1].submenu.items[count - 1].enabled = true
+                    menu.items[idx].submenu.items[count - 1].enabled = true
                 }
             })
             // newWin.webContents.on('-new-window', (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
