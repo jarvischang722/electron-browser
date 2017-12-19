@@ -175,7 +175,7 @@ function createWindow() {
 
     require('./menu')(commonOpt.version)
     const menu = Menu.getApplicationMenu()
-    console.log(process.platform)
+    
     if (process.platform === 'darwin') {
         count = menu.items[idx].submenu.items.length
     } else {

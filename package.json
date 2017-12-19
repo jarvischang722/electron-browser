@@ -4,13 +4,12 @@
   "version": "2.9.0",
   "description": "Tripleonetech safety browser",
   "main": "main.js",
-  "directories": {
-    "doc": "doc"
-  },
+
   "dependencies": {},
   "devDependencies": {
     "asar": "^0.13.0",
-    "electron": "^1.6.8",
+    "electron": "^1.7.9",
+    "electron-builder": "^19.49.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.3.0",
@@ -25,7 +24,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron ./src/app",
-    "build": "node ./build/install-script/index.js"
+    "build": "node ./build/install-script/builder.js"
   },
   "repository": {
     "type": "git",
