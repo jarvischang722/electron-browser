@@ -20,6 +20,7 @@ builder.build({
             icon: './src/clients/tripleone/icon.ico',
             certificateFile: './build/install-script/smartbrowser.pfx',
             certificatePassword: '12345678',
+            extraResources: './src/plugins/*.dll',
         },
         nsis: {
             oneClick: false,
@@ -28,6 +29,11 @@ builder.build({
             installerHeaderIcon: './src/clients/tripleone/icon.ico',
             uninstallerIcon: './src/clients/tripleone/icon.ico',
         },
+        extraFiles: [{
+            from: 'src/plugins',
+            to: 'plugins',
+            filter: ['**/*'],
+        }],
     },
 })
   .then(() => {

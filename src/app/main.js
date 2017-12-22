@@ -31,6 +31,7 @@ let showUrl = false
 
 global.homeUrl = homeUrl
 global.isNewWindow = false
+global.newWindowOpen = false
 global.whitelist = whitelist
 const startShadowsocks = (addr, port) => {
     const opt = {
@@ -51,12 +52,11 @@ function showAddressBar() {
         global.isNewWindow = false
         win.loadURL(visibleUrlPath)
         return showUrl
-    } else {
-        showUrl = false
-        global.isNewWindow = false
-        win.loadURL(noUrlPath)
-        return showUrl
     }
+    showUrl = false
+    global.isNewWindow = false
+    win.loadURL(noUrlPath)
+    return showUrl
 }
 
 function whitelistChecker(url) {
@@ -140,17 +140,14 @@ function browserLauncher(url) {
     })
 }
 
-const flashPath = path.join(__dirname, '../plugins', pluginName)
+// const flashPath = path.join(__dirname, '../plugins', pluginName)
+const flashPath = path.join(__dirname, '../..')
 
 if (clientOpt.enabledFlash) {
-    app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
+    // app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
+    app.commandLine.appendSwitch('ppapi-flash-path', path.join((__dirname.includes('.asar') ? process.resourcesPath : flashPath) + '/src/plugins/' + pluginName))
     app.commandLine.appendSwitch('ppapi-flash-version', flashVersion)
 }
-
-ipcMain.on('set-current-url', (event, url) => {
-    homeUrl = url
-    global.homeUrl = homeUrl
-})
 
 const winOpt = {
     width: 1024,
@@ -175,7 +172,7 @@ function createWindow() {
 
     require('./menu')(commonOpt.version)
     const menu = Menu.getApplicationMenu()
-    
+
     if (process.platform === 'darwin') {
         count = menu.items[idx].submenu.items.length
     } else {
@@ -246,13 +243,13 @@ function createWindow() {
     })
 
     win.webContents.on('new-window', (event, url) => {
-        if (url && (
-            url.toLowerCase().includes('onlineservice') ||
-            url.toLowerCase().includes('iframe_module/autodeposit3rdparty')
-            )
-        ) {
-            return
-        }
+        // if (url && (
+        //     url.toLowerCase().includes('onlineservice') ||
+        //     url.toLowerCase().includes('iframe_module/autodeposit3rdparty')
+        //     )
+        // ) {
+        //     return
+        // }
 
         event.preventDefault()
 
@@ -261,8 +258,10 @@ function createWindow() {
         } else {
             global.newWinUrl = url
             global.isNewWindow = true
+            global.newWindowOpen = true
             menu.items[idx].submenu.items[count - 1].enabled = false
             const newWin = new BrowserWindow(winOpt)
+            
             newWin.once('ready-to-show', () => newWin.show())
             if (!showUrl) {
                 newWin.loadURL(noUrlPath)
@@ -295,6 +294,7 @@ function createWindow() {
                 const n = allWindows.length
                 if (n < 2) {
                     menu.items[idx].submenu.items[count - 1].enabled = true
+                    global.newWindowOpen = false
                 }
             })
             // newWin.webContents.on('-new-window', (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
@@ -352,6 +352,13 @@ function createWindow() {
     win.maximize()
     // win.openDevTools()
 }
+
+ipcMain.on('set-current-url', (event, url, browserId) => {
+    if (browserId === 1) {
+        homeUrl = url
+        global.homeUrl = homeUrl
+    }
+})
 
 function createWindow2() {
     win = new BrowserWindow(winOpt)
@@ -420,9 +427,6 @@ app.on('web-contents-created', (event, contents) => {
                         browserLauncher(url)
                     }
                 })
-            } else {
-                homeUrl = url
-                global.homeUrl = homeUrl
             }
         })
     }

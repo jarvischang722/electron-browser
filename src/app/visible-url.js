@@ -4,6 +4,7 @@ const { Menu, MenuItem } = remote
 
 onload = () => {
     const webview = document.querySelector('webview')
+    const browserId = remote.getCurrentWindow().id
 
     if (remote.getGlobal('isNewWindow')) {
         document.getElementById('address-bar').value = remote.getGlobal('newWinUrl')
@@ -41,7 +42,7 @@ onload = () => {
 
             document.getElementById('address-bar').value = x[nextIdx]
             webview.goBack()
-            ipcRenderer.send('set-current-url', x[nextIdx])
+            ipcRenderer.send('set-current-url', x[nextIdx], browserId)
         } }))
     menu.append(new MenuItem({ label: 'Forward',
         click: () => {
@@ -55,7 +56,7 @@ onload = () => {
 
             document.getElementById('address-bar').value = x[nextIdx]
             webview.goForward()
-            ipcRenderer.send('set-current-url', x[nextIdx])
+            ipcRenderer.send('set-current-url', x[nextIdx], browserId)
         } }))
     menu.append(new MenuItem({ label: 'Reload',
         click: () => {
@@ -80,6 +81,14 @@ onload = () => {
         window.open(e.url)
     })
 
+    webview.addEventListener('will-navigate', (e) => {
+        if (e.url.includes('deposit/auto_payment') || e.url.includes('player_center/auto_payment')) {
+
+        } else {
+            ipcRenderer.send('set-current-url', e.url, browserId)
+        }
+    })
+
     ipcRenderer.on('go-back-menu', () => {
         const currIdx = webview.getWebContents().getActiveIndex()
 
@@ -91,7 +100,7 @@ onload = () => {
 
         document.getElementById('address-bar').value = x[nextIdx]
         webview.goBack()
-        ipcRenderer.send('set-current-url', x[nextIdx])
+        ipcRenderer.send('set-current-url', x[nextIdx], browserId)
     })
 
     ipcRenderer.on('go-forward-menu', () => {
@@ -105,7 +114,7 @@ onload = () => {
 
         document.getElementById('address-bar').value = x[nextIdx]
         webview.goForward()
-        ipcRenderer.send('set-current-url', x[nextIdx])
+        ipcRenderer.send('set-current-url', x[nextIdx], browserId)
     })
 
     ipcRenderer.on('reload-menu', () => {
