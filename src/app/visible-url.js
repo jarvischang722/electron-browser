@@ -8,10 +8,10 @@ onload = () => {
 
     if (remote.getGlobal('isNewWindow')) {
         document.getElementById('address-bar').value = remote.getGlobal('newWinUrl')
-        document.getElementById('web-view').src = remote.getGlobal('newWinUrl')
+        document.getElementById('web-view-url').src = remote.getGlobal('newWinUrl')
     } else {
         document.getElementById('address-bar').value = remote.getGlobal('homeUrl')
-        document.getElementById('web-view').src = remote.getGlobal('homeUrl')
+        document.getElementById('web-view-url').src = remote.getGlobal('homeUrl')
     }
 
     webview.addEventListener('will-navigate', (e) => {
