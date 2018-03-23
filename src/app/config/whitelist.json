@@ -1,4 +1,14 @@
 {
-	"links": ["http://www.demo.tripleonetech.com/iframe_module/goto_habagame/fun/SGFireRooster"
-			,"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/real/SGFireRooster"	]
+	"links": [
+		"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/real/SGFireRooster",
+		"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/fun/SGFireRooster",
+		"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/real/SGBirdOfThunder",	
+		"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/fun/SGBirdOfThunder",
+		"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/real/SGTheKoiGate",
+		"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/fun/SGTheKoiGate",
+		"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/real/SGFenghuang",
+		"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/fun/SGFenghuang",
+		"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/real/SGJugglenaut",
+		"http://www.demo.tripleonetech.com/iframe_module/goto_habagame/fun/SGJugglenaut"
+	]
 }

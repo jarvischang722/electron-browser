@@ -4,7 +4,6 @@
   "version": "2.9.0",
   "description": "Tripleonetech safety browser",
   "main": "main.js",
-
   "dependencies": {},
   "devDependencies": {
     "asar": "^0.13.0",
