@@ -243,13 +243,13 @@ function createWindow() {
     })
 
     win.webContents.on('new-window', (event, url) => {
-        // if (url && (
-        //     url.toLowerCase().includes('onlineservice') ||
-        //     url.toLowerCase().includes('iframe_module/autodeposit3rdparty')
-        //     )
-        // ) {
-        //     return
-        // }
+        if (url && (
+            url.toLowerCase().includes('onlineservice') ||
+            url.toLowerCase().includes('iframe_module/autodeposit3rdparty')
+            )
+        ) {
+            return
+        }
 
         event.preventDefault()
 
