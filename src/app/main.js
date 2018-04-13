@@ -1,19 +1,13 @@
 const fs = require('fs')
 const path = require('path')
-const { app, BrowserWindow, ipcMain, session, Menu } = require('electron')
+const { app, BrowserWindow, ipcMain, session } = require('electron')
 const utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
-const launcher = require('browser-launcher2')
-const request = require('request')
-const whitelist = require('./config/whitelist.json')
 
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
-
-const visibleUrlPath = `file://${__dirname}/visible-url.html`
-const noUrlPath = `file://${__dirname}/no-url.html`
 
 let homeUrl
 if (Array.isArray(clientOpt.homeUrl)) {
@@ -24,15 +18,9 @@ if (Array.isArray(clientOpt.homeUrl)) {
     homeUrl = clientOpt.homeUrl
 }
 
-
 let win
 let sslocalServer
-let showUrl = false
 
-global.homeUrl = homeUrl
-global.isNewWindow = false
-global.newWindowOpen = false
-global.whitelist = whitelist
 const startShadowsocks = (addr, port) => {
     const opt = {
         localAddr: addr,
@@ -45,32 +33,6 @@ const startShadowsocks = (addr, port) => {
     }
     sslocalServer = ssLocal.startServer(opt, true)
 }
-
-function showAddressBar() {
-    if (showUrl === false) {
-        showUrl = true
-        global.isNewWindow = false
-        win.loadURL(visibleUrlPath)
-        return showUrl
-    }
-    showUrl = false
-    global.isNewWindow = false
-    win.loadURL(noUrlPath)
-    return showUrl
-}
-
-function whitelistChecker(url) {
-    let isWhiteList = false
-    for (let i = 0; i < whitelist.links.length; i++) {
-        if (whitelist.links[i].match(url)) {
-            isWhiteList = true
-            break
-        }
-    }
-
-    return isWhiteList
-}
-
 
 const cookieName = 'TripleonetechSafetyBrowserCookie'
 
@@ -89,15 +51,10 @@ ipcMain.on('ssinfo', (event, data) => {
 let pluginName
 let flashVersion
 let platform
-let browser
-let count
-let idx
 
 switch (process.platform) {
 case 'win32':
     platform = 'windows'
-    browser = 'ie'
-    idx = 1
     switch (process.arch) {
     case 'x64':
         pluginName = 'pepflashplayer64_25_0_0_171.dll'
@@ -113,39 +70,18 @@ case 'win32':
     break
 case 'darwin':
     platform = 'mac'
-    browser = 'safari'
-    idx = 2
     pluginName = 'PepperFlashPlayer.plugin'
     break
 case 'linux':
     pluginName = 'libpepflashplayer.so'
-    idx = 1
     break
 default:
     break
 }
-
-function browserLauncher(url) {
-    launcher((err, launch) => {
-        if (err) {
-            return err
-        }
-        launch(url, browser, (e, instance) => {
-            if (e) {
-                return e
-            }
-            instance.on('stop', () => {
-            })
-        })
-    })
-}
-
-// const flashPath = path.join(__dirname, '../plugins', pluginName)
-const flashPath = path.join(__dirname, '../..')
+const flashPath = path.join(__dirname, '../plugins', pluginName)
 
 if (clientOpt.enabledFlash) {
-    // app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
-    app.commandLine.appendSwitch('ppapi-flash-path', path.join((__dirname.includes('.asar') ? process.resourcesPath : flashPath) + '/src/plugins/' + pluginName))
+    app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
     app.commandLine.appendSwitch('ppapi-flash-version', flashVersion)
 }
 
@@ -154,7 +90,7 @@ const winOpt = {
     height: 768,
     title: clientOpt.productName,
     webPreferences: {
-        nodeIntegration: true,
+        nodeIntegration: false,
         webSecurity: false,
         allowRunningInsecureContent: true,
         plugins: true,
@@ -169,77 +105,8 @@ if (fs.existsSync(icon)) {
 function createWindow() {
     utils.autoUpdate(app, platform, clientOpt.client)
     win = new BrowserWindow(winOpt)
-
-    require('./menu')(commonOpt.version)
-    const menu = Menu.getApplicationMenu()
-
-    if (process.platform === 'darwin') {
-        count = menu.items[idx].submenu.items.length
-    } else {
-        count = menu.items[idx].submenu.items.length
-    }
-
-    menu.items[idx].submenu.items[0].click = () => {
-        win.webContents.send('go-back-menu')
-    }
-
-    menu.items[idx].submenu.items[1].click = () => {
-        win.webContents.send('go-forward-menu')
-    }
-
-    menu.items[idx].submenu.items[2].click = () => {
-        win.webContents.send('reload-menu')
-    }
-
-    menu.items[idx].submenu.items[3].click = () => {
-        win.webContents.send('force-reload-menu')
-    }
-
-    menu.items[idx].submenu.items[count - 1].click = () => {
-        showAddressBar()
-        menu.items[idx].submenu.items[count - 1].checked = showUrl
-    }
-
     win.on('page-title-updated', (event) => {
         event.preventDefault()
-    })
-
-    win.webContents.on('will-navigate', (event, url) => {
-        if (url.includes('deposit/auto_payment') || url.includes('player_center/auto_payment')) {
-            event.preventDefault()
-            session.defaultSession.cookies.get({ url }, (error, cookies) => {
-                let validCookie
-                let hasValidCookie = false
-                if (cookies.length > 0) {
-                    for (const i in cookies) {
-                        if (cookies[i].name.includes('sess_og_player')) {
-                            hasValidCookie = true
-                            validCookie = `${cookies[i].name}=${cookies[i].value}`
-                            break
-                        }
-                    }
-                }
-
-                if (hasValidCookie) {
-                    const cookie = request.cookie(validCookie)
-                    const j = request.jar()
-                    j.setCookie(cookie, `${clientOpt.homeUrl}pub/get_player_token`, (err, val) => { if (err) return err })
-
-                    request({ method: 'GET', url: `${clientOpt.homeUrl}pub/get_player_token`, json: false, jar: j }, (err, res, body) => {
-                        if (err) return err
-
-                        const authUrl = `${clientOpt.homeUrl}iframe/auth/login_with_token/${body}?next=${url}`
-                        browserLauncher(authUrl)
-                    })
-                } else {
-                    browserLauncher(url)
-                }
-            })
-        }
-    })
-
-    win.webContents.on('will-attach-webview', (event, webPreferences, params) => {
-        params.src = homeUrl
     })
 
     win.webContents.on('new-window', (event, url) => {
@@ -253,82 +120,52 @@ function createWindow() {
 
         event.preventDefault()
 
-        if (whitelistChecker(url)) {
-            browserLauncher(url)
-        } else {
-            global.newWinUrl = url
-            global.isNewWindow = true
-            global.newWindowOpen = true
-            menu.items[idx].submenu.items[count - 1].enabled = false
-            const newWin = new BrowserWindow(winOpt)
-            
-            newWin.once('ready-to-show', () => newWin.show())
-            if (!showUrl) {
-                newWin.loadURL(noUrlPath)
-            } else {
-                newWin.loadURL(visibleUrlPath)
-            }
-            // newWin.openDevTools()
+        const newWin = new BrowserWindow(winOpt)
+        newWin.once('ready-to-show', () => newWin.show())
+        newWin.loadURL(url)
 
-            newWin.webContents.on('new-window', (newEvent, newUrl) => {
+        newWin.webContents.on('new-window', (newEvent, newUrl) => {
+            if (newUrl && (
+                newUrl.toLowerCase().startsWith('https://cashier.turnkey88.com/gamehistory.php')
+            )) {
                 newEvent.preventDefault()
-                // if (newUrl && (
-                //     newUrl.toLowerCase().startsWith('https://cashier.turnkey88.com/gamehistory.php')
-                // )) {
-                //     newEvent.preventDefault()
-                // }
-                if (whitelistChecker(newUrl)) {
-                    browserLauncher(newUrl)
-                } else {
-                    if (!showUrl) {
-                        newWin.loadURL(noUrlPath)
-                    } else {
-                        newWin.loadURL(visibleUrlPath)
-                    }
-                    event.newGuest = newWin
-                }
-            })
+            }
+        })
 
-            newWin.on('closed', () => {
-                const allWindows = BrowserWindow.getAllWindows()
-                const n = allWindows.length
-                if (n < 2) {
-                    menu.items[idx].submenu.items[count - 1].enabled = true
-                    global.newWindowOpen = false
+        newWin.webContents.on('-new-window', (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
+            newEvent.preventDefault()
+            const postWin = new BrowserWindow(winOpt)
+            postWin.once('ready-to-show', () => postWin.show())
+            const loadOptions = {}
+            if (postData != null) {
+                loadOptions.postData = postData
+                loadOptions.extraHeaders = 'content-type: application/x-www-form-urlencoded'
+                if (postData.length > 0) {
+                    const postDataFront = postData[0].bytes.toString()
+                    const boundary = /^--.*[^-\r\n]/.exec(postDataFront)
+                    if (boundary != null) {
+                        loadOptions.extraHeaders = `content-type: multipart/form-data; boundary=${boundary[0].substr(2)}`
+                    }
                 }
-            })
-            // newWin.webContents.on('-new-window', (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
-            //     newEvent.preventDefault()
-            //     const postWin = new BrowserWindow(winOpt)
-            //     postWin.once('ready-to-show', () => postWin.show())
-            //     const loadOptions = {}
-            //     if (postData != null) {
-            //         loadOptions.postData = postData
-            //         loadOptions.extraHeaders = 'content-type: application/x-www-form-urlencoded'
-            //         if (postData.length > 0) {
-            //             const postDataFront = postData[0].bytes.toString()
-            //             const boundary = /^--.*[^-\r\n]/.exec(postDataFront)
-            //             if (boundary != null) {
-            //                 loadOptions.extraHeaders = `content-type: multipart/form-data; boundary=${boundary[0].substr(2)}`
-            //             }
-            //         }
-            //     }
-            //     postWin.loadURL(newUrl, loadOptions)
-            //     newEvent.newGuest = postWin
-            // })
-            event.newGuest = newWin
-        }
+            }
+            postWin.loadURL(newUrl, loadOptions)
+            newEvent.newGuest = postWin
+        })
+
+        event.newGuest = newWin
     })
 
     win.on('closed', () => {
         win = null
     })
 
+    require('./menu')(commonOpt.version)
+
     if (clientOpt.enabledProxy) {
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
 
         win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, () => {
-            win.loadURL(noUrlPath)
+            win.loadURL(homeUrl)
         })
 
         session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
@@ -344,21 +181,12 @@ function createWindow() {
             })
         })
     } else {
-        // win.loadURL(homeUrl)
-        win.loadURL(noUrlPath)
-        // win.loadURL(indexPath)
+        win.loadURL(homeUrl)
     }
 
     win.maximize()
     // win.openDevTools()
 }
-
-ipcMain.on('set-current-url', (event, url, browserId) => {
-    if (browserId === 1) {
-        homeUrl = url
-        global.homeUrl = homeUrl
-    }
-})
 
 function createWindow2() {
     win = new BrowserWindow(winOpt)
@@ -393,44 +221,6 @@ function createWindow2() {
 }
 
 app.on('ready', createWindow)
-
-app.on('web-contents-created', (event, contents) => {
-    if (contents.getType() === 'webview') {
-        contents.on('will-navigate', (e, url) => {
-            if (url.includes('deposit/auto_payment') || url.includes('player_center/auto_payment')) {
-                e.preventDefault()
-                session.defaultSession.cookies.get({ url }, (error, cookies) => {
-                    let validCookie
-                    let hasValidCookie = false
-                    if (cookies.length > 0) {
-                        for (const i in cookies) {
-                            if (cookies[i].name.includes('sess_og_player')) {
-                                hasValidCookie = true
-                                validCookie = `${cookies[i].name}=${cookies[i].value}`
-                                break
-                            }
-                        }
-                    }
-
-                    if (hasValidCookie) {
-                        const cookie = request.cookie(validCookie)
-                        const j = request.jar()
-                        j.setCookie(cookie, `${clientOpt.homeUrl}pub/get_player_token`, (err, val) => { if (err) return err })
-
-                        request({ method: 'GET', url: `${clientOpt.homeUrl}pub/get_player_token`, json: false, jar: j }, (err, res, body) => {
-                            if (err) return err
-
-                            const authUrl = `${clientOpt.homeUrl}iframe/auth/login_with_token/${body}?next=${url}`
-                            browserLauncher(authUrl)
-                        })
-                    } else {
-                        browserLauncher(url)
-                    }
-                })
-            }
-        })
-    }
-})
 
 app.on('window-all-closed', () => {
     app.quit()
