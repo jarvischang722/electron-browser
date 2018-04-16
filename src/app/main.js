@@ -112,7 +112,8 @@ function createWindow() {
     win.webContents.on('new-window', (event, url) => {
         if (url && (
             url.toLowerCase().includes('onlineservice') ||
-            url.toLowerCase().includes('iframe_module/autodeposit3rdparty')
+            url.toLowerCase().includes('iframe_module/autodeposit3rdparty') ||
+            url.toLowerCase().includes('player_center/autodeposit3rdparty')
             )
         ) {
             return
