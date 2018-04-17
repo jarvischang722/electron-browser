@@ -71,6 +71,7 @@ case 'win32':
 case 'darwin':
     platform = 'mac'
     pluginName = 'PepperFlashPlayer.plugin'
+    flashVersion = '29.0.0.140'
     break
 case 'linux':
     pluginName = 'libpepflashplayer.so'
@@ -120,7 +121,6 @@ function createWindow() {
         }
 
         event.preventDefault()
-
         const newWin = new BrowserWindow(winOpt)
         newWin.once('ready-to-show', () => newWin.show())
         newWin.loadURL(url)
