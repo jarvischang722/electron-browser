@@ -35,12 +35,20 @@ const getTemplate = (version) => {
             submenu: [
                 {
                     label: i18n.__('Go back'),
+                    click: (menuItem, win) => {
+                        win.webContents.goBack()
+                    },
                 }, {
                     label: i18n.__('Forward'),
+                    click: (menuItem, win) => {
+                        win.webContents.goForward()
+                    },
                 }, {
                     label: i18n.__('Reload'),
+                    role: 'reload',
                 }, {
                     label: i18n.__('Clean And Reload'),
+                    role: 'forcereload',
                 }, {
                     type: 'separator',
                 }, {
@@ -57,11 +65,6 @@ const getTemplate = (version) => {
                 }, {
                     label: i18n.__('Toggle fullscreen'),
                     role: 'togglefullscreen',
-                }, {
-                    label: i18n.__('Show URL'),
-                    type: 'checkbox',
-                    checked: false,
-                    enabled: true,
                 },
             ],
         }, {
