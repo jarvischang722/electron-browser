@@ -7,4 +7,4 @@ node_modules
 /src/app/config/default.pac
 /dist/
 package-lock.json
-/src/clients/
+/src/clients/*
