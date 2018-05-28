@@ -1,7 +1,7 @@
 {
   "name": "safetybrowser",
   "author": "Tripleonetech",
-  "version": "2.9.0",
+  "version": "2.9.9",
   "description": "Tripleonetech safety browser",
   "main": "main.js",
   "dependencies": {},

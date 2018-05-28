@@ -31,7 +31,7 @@ builder.build({
         },
         extraFiles: [{
             from: 'src/plugins',
-            to: 'plugins',
+            to: '../plugins',
             filter: ['**/*'],
         }],
     },
