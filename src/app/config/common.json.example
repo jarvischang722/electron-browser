@@ -1,6 +1,6 @@
 {
-    "serviceAddr": "http://52.198.79.141",
-    "version": "2.9.2",
+    "serviceAddr": "http://35.194.151.151:7801/",
+    "version": "2.9.9",
     "legalCopyright": "Copyright 2017",
     "projectHomeBase": "C:\\projects\\safetybrowser"
 }
