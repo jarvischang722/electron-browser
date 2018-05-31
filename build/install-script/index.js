@@ -101,50 +101,54 @@ const writePacFile = async (optionPath, options) => {
 }
 
 const run = async (optionPath) => {
-    const commonOpt = require('../../src/app/config/common.json')
-    const optionFile = path.join(optionPath, 'client.json')
-    const icon = path.join(optionPath, 'icon.ico')
-    const options = require(optionFile)
-    const rceditOptions = {
-        'version-string': {
-            CompanyName: options.companyName,
-            FileDescription: options.fileDescription,
-            LegalCopyright: commonOpt.legalCopyright || 'Copyright 2017',
-            ProductName: options.productName,
-        },
-        'file-version': commonOpt.version,
-        'product-version': commonOpt.version,
-        icon,
+    try {
+        const commonOpt = require('../../src/app/config/common.json')
+        const optionFile = path.join(optionPath, 'client.json')
+        const icon = path.join(optionPath, 'icon.ico')
+        const options = require(optionFile)
+        const rceditOptions = {
+            'version-string': {
+                CompanyName: options.companyName,
+                FileDescription: options.fileDescription,
+                LegalCopyright: commonOpt.legalCopyright || 'Copyright 2017',
+                ProductName: options.productName,
+            },
+            'file-version': commonOpt.version,
+            'product-version': commonOpt.version,
+            icon,
+        }
+    
+        await copy('dist/unpacked/electron.exe', 'dist/unpacked/safety-browser.exe', { clobber: false })
+        await rceditSync('dist/unpacked/safety-browser.exe', rceditOptions)
+        console.log(2222)
+        if (options.enabledProxy && options.proxyOptions) {
+            await writePacFile(optionPath, options)
+        }
+    
+        await copy(optionFile, 'src/app/config/client.json')
+        await copy(icon, 'src/app/config/icon.ico')
+        await copy('src/plugins', 'dist/unpacked/plugins')
+    
+        await asarSync('src/app', 'dist/unpacked/resources/app.asar')
+        await compiler('build/install-script/smartbrowser.iss', {
+            gui: false,
+            verbose: true,
+            signtool: 'tripleonesign=$p',
+            O: `dist/${options.client}`,
+            F: `safety-browser-${options.client}-setup-${commonOpt.version}`,
+            DProjectHomeBase: commonOpt.projectHomeBase,
+            DCLIENT: options.client,
+            DCLIENT_GUID: `{${options.clientId}}`,
+            DAPP_VERSION: commonOpt.version,
+            DAPP_TITLE_EN: options.productNameEn,
+            DAPP_TITLE_CH: options.productName,
+            DAPP_ICO: icon,
+        })
+        console.log(44)
+        logger.info('Build finished successfully.')
+    } catch (err) {
+        console.log(err)
     }
-
-    await copy('dist/unpacked/electron.exe', 'dist/unpacked/safety-browser.exe', { clobber: false })
-    await rceditSync('dist/unpacked/safety-browser.exe' , rceditOptions)
-
-    if (options.enabledProxy && options.proxyOptions) {
-        await writePacFile(optionPath, options)
-    }
-
-    await copy(optionFile, 'src/app/config/client.json')
-    await copy(icon, 'src/app/config/icon.ico')
-    await copy('src/plugins', 'dist/unpacked/plugins')
-
-    await asarSync('src/app', 'dist/unpacked/resources/app.asar')
-    await compiler('build/install-script/smartbrowser.iss', {
-        gui: false,
-        verbose: true,
-        signtool: 'tripleonesign=$p',
-        O: `dist/${options.client}`,
-        F: `safety-browser-${options.client}-setup-${commonOpt.version}`,
-        DProjectHomeBase: commonOpt.projectHomeBase,
-        DCLIENT: options.client,
-        DCLIENT_GUID: `{${options.clientId}}`,
-        DAPP_VERSION: commonOpt.version,
-        DAPP_TITLE_EN: options.productNameEn,
-        DAPP_TITLE_CH: options.productName,
-        DAPP_ICO: icon,
-    })
-
-    logger.info('Build finished successfully.')
 }
 
 const client = process.env.npm_config_client || 'tripleone'

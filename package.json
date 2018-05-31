@@ -23,7 +23,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron ./src/app",
-    "build": "node ./build/install-script/builder.js"
+    "build": "node ./build/install-script/index.js"
   },
   "repository": {
     "type": "git",

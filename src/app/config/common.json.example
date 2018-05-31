@@ -2,5 +2,5 @@
     "serviceAddr": "http://35.194.151.151:7801/",
     "version": "2.9.9",
     "legalCopyright": "Copyright 2017",
-    "projectHomeBase": "C:\\projects\\safetybrowser"
+    "projectHomeBase": "/Users/john/Projects/browser/safetybrowser"
 }
