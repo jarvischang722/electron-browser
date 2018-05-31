@@ -28,7 +28,7 @@ DisableProgramGroupPage=yes
 DisableWelcomePage=True
 VersionInfoDescription={#APP_TITLE_CH}
 VersionInfoProductName={#APP_TITLE_CH}
-SignTool=tripleonesign "{#ProjectHomeBase}\build\install-script\signtool.exe" sign /f "{#ProjectHomeBase}\build\install-script\smartbrowser.pfx" /t http://timestamp.verisign.com/scripts/timstamp.dll /p 12345678 $f
+; SignTool=tripleonesign "{#ProjectHomeBase}\build\install-script\signtool.exe" sign /f "{#ProjectHomeBase}\build\install-script\smartbrowser.pfx" /t http://timestamp.verisign.com/scripts/timstamp.dll /p 12345678 $f
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
