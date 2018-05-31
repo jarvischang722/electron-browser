@@ -120,7 +120,6 @@ const run = async (optionPath) => {
     
         await copy('dist/unpacked/electron.exe', 'dist/unpacked/safety-browser.exe', { clobber: false })
         await rceditSync('dist/unpacked/safety-browser.exe', rceditOptions)
-        console.log(2222)
         if (options.enabledProxy && options.proxyOptions) {
             await writePacFile(optionPath, options)
         }
