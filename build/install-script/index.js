@@ -143,7 +143,6 @@ const run = async (optionPath) => {
             DAPP_TITLE_CH: options.productName,
             DAPP_ICO: icon,
         })
-        console.log(44)
         logger.info('Build finished successfully.')
     } catch (err) {
         console.log(err)
