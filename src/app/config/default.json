@@ -3,6 +3,7 @@
     "homeUrl": "http://www.demo.tripleonetech.com/",
     "companyName": "Tripleonetech",
     "productName": "合众安全浏览器",
+    "productNameEn": "Tripleone satefy browser",
     "fileDescription": "Safety Browser",
     "enabledFlash": true,
     "enabledProxy": false,
@@ -10,11 +11,11 @@
     "proxyOptions": {
         "localAddr": "127.0.0.1",
         "localPort": 22861,
-        "serverAddr": "221.229.166.226",
-        "serverPort": 17777,
-        "password": "0367E21094d36315",
+        "server":"35.201.204.2",
+        "server_port":19999,
+        "password":"dBbQMP8Nd9vyjvN",
         "method": "aes-256-cfb",
-        "timeout": 180
+        "timeout": 60
     }, 
     "proxyUrls": [
         "https://www.tripleonetech.com/",

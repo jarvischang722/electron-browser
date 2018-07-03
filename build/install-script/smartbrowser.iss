@@ -7,6 +7,8 @@
 #define MyAppExeName "safety-browser.exe"
 #define CertInstall "install_root_cert.bat"
 
+#include ".\plugins\ISTool\isxdl.iss"
+
 [Setup]
 AppId={{#CLIENT_GUID}
 AppVersion={#APP_VERSION}
@@ -38,10 +40,27 @@ Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.i
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "{#ProjectHomeBase}\dist\unpacked\*"; Excludes: "electron.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\dist\unpacked\*"; Excludes: "electron.exe";  DestDir: "{app}"; Flags: ignoreversion
 Source: "{#ProjectHomeBase}\dist\unpacked\locales\*"; DestDir: "{app}\locales"; Flags: ignoreversion
-Source: "{#ProjectHomeBase}\dist\unpacked\resources\*"; DestDir: "{app}\resources"; Flags: ignoreversion
-Source: "{#ProjectHomeBase}\dist\unpacked\plugins\*"; DestDir: "{app}\resources\plugins"; Flags: ignoreversion
+Source: "{#ProjectHomeBase}\dist\unpacked\resources\*";  DestDir: "{app}\resources"; AfterInstall: DownloadFlashPlayerDll ; Flags: ignoreversion
+
+[Dirs]
+Name: "{app}\resources\plugins"
+
+[Code]
+const
+  flashPlayer32Url = '{#PluginsDownloadUrl}/pepflashplayer32_25_0_0_171.dll';
+  flashPlayer64Url = '{#PluginsDownloadUrl}/pepflashplayer64_25_0_0_171.dll';
+
+procedure DownloadFlashPlayerDll();
+begin 
+    isxdl_AddFile(flashPlayer32Url, ExpandConstant('{app}\resources\plugins\pepflashplayer32_25_0_0_171.dll'));
+    isxdl_AddFile(flashPlayer64Url, ExpandConstant('{app}\resources\plugins\pepflashplayer64_25_0_0_171.dll'));
+    isxdl_SetOption('title', 'Download  flashplayer');
+    isxdl_SetOption('label', 'Downloading  flashplayer.dll ...');
+    isxdl_DownloadFiles(WizardForm.Handle);
+end;  
+
 
 [Icons]
 Name: "{group}\{#APP_TITLE_CH}"; Filename: "{app}\{#MyAppExeName}"; Parameters: """{app}\app""";

@@ -9,48 +9,40 @@ const log4js = require('log4js')
 
 const logger = log4js.getLogger()
 
-const copy = (src, dest, options) => {
-    return new Promise((resolve, reject) => {
-        if (options) {
-            ncp(src, dest, options, (err) => {
-                if (err) return reject(err)
-                return resolve()
-            })
-        } else {
-            ncp(src, dest, (err) => {
-                if (err) return reject(err)
-                return resolve()
-            })
-        }
-    })
-}
-
-const rceditSync = (exePath, options) => {
-    return new Promise((resolve, reject) => {
-        rcedit(exePath, options, (err) => {
+const copy = (src, dest, options) => new Promise((resolve, reject) => {
+    if (options) {
+        ncp(src, dest, options, (err) => {
             if (err) return reject(err)
             return resolve()
         })
-    })
-}
-
-const asarSync = (src, dest) => {
-    return new Promise((resolve, reject) => {
-        asar.createPackage(src, dest, (err) => {
+    } else {
+        ncp(src, dest, (err) => {
             if (err) return reject(err)
             return resolve()
         })
-    })
-}
+    }
+})
 
-const compiler = (iss, options) => {
-    return new Promise((resolve, reject) => {
-        innoSetup(iss, options, (err) => {
-            if (err) return reject(err)
-            return resolve()
-        })
+const rceditSync = (exePath, options) => new Promise((resolve, reject) => {
+    rcedit(exePath, options, (err) => {
+        if (err) return reject(err)
+        return resolve()
     })
-}
+})
+
+const asarSync = (src, dest) => new Promise((resolve, reject) => {
+    asar.createPackage(src, dest, (err) => {
+        if (err) return reject(err)
+        return resolve()
+    })
+})
+
+const compiler = (iss, options) => new Promise((resolve, reject) => {
+    innoSetup(iss, options, (err) => {
+        if (err) return reject(err)
+        return resolve()
+    })
+})
 
 const writePacFile = async (optionPath, options) => {
     const { localPort } = options.proxyOptions
@@ -117,17 +109,17 @@ const run = async (optionPath) => {
             'product-version': commonOpt.version,
             icon,
         }
-    
+
         await copy('dist/unpacked/electron.exe', 'dist/unpacked/safety-browser.exe', { clobber: false })
         await rceditSync('dist/unpacked/safety-browser.exe', rceditOptions)
         if (options.enabledProxy && options.proxyOptions) {
             await writePacFile(optionPath, options)
         }
-    
+
         await copy(optionFile, 'src/app/config/client.json')
         await copy(icon, 'src/app/config/icon.ico')
         await copy('src/plugins', 'dist/unpacked/plugins')
-    
+
         await asarSync('src/app', 'dist/unpacked/resources/app.asar')
         await compiler('build/install-script/smartbrowser.iss', {
             gui: false,
@@ -136,6 +128,7 @@ const run = async (optionPath) => {
             O: `dist/${options.client}`,
             F: `safety-browser-${options.client}-setup-${commonOpt.version}`,
             DProjectHomeBase: commonOpt.projectHomeBase,
+            DPluginsDownloadUrl: commonOpt.pluginsDownloadUrl,
             DCLIENT: options.client,
             DCLIENT_GUID: `{${options.clientId}}`,
             DAPP_VERSION: commonOpt.version,
