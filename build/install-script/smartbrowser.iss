@@ -49,8 +49,8 @@ Name: "{app}\resources\plugins"
 
 [Code]
 const
-  flashPlayer32Url = '{#PluginsDownloadUrl}/pepflashplayer32_25_0_0_171.dll';
-  flashPlayer64Url = '{#PluginsDownloadUrl}/pepflashplayer64_25_0_0_171.dll';
+  flashPlayer32Url = '{#PluginsDownloadUrl}/flashplayer/pepflashplayer32_25_0_0_171.dll';
+  flashPlayer64Url = '{#PluginsDownloadUrl}/flashplayer/pepflashplayer64_25_0_0_171.dll';
 
 procedure DownloadFlashPlayerDll();
 begin 
