@@ -54,8 +54,14 @@ const
 
 procedure DownloadFlashPlayerDll();
 begin 
-    isxdl_AddFile(flashPlayer32Url, ExpandConstant('{app}\resources\plugins\pepflashplayer32_25_0_0_171.dll'));
-    isxdl_AddFile(flashPlayer64Url, ExpandConstant('{app}\resources\plugins\pepflashplayer64_25_0_0_171.dll'));
+    if ISWin64 then
+    begin
+      isxdl_AddFile(flashPlayer64Url, ExpandConstant('{app}\resources\plugins\pepflashplayer64_25_0_0_171.dll'));
+    end
+    else
+    begin
+      isxdl_AddFile(flashPlayer32Url, ExpandConstant('{app}\resources\plugins\pepflashplayer32_25_0_0_171.dll'));
+    end;
     isxdl_SetOption('title', 'Download  flashplayer');
     isxdl_SetOption('label', 'Downloading  flashplayer.dll ...');
     isxdl_DownloadFiles(WizardForm.Handle);
