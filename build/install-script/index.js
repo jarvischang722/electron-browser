@@ -118,7 +118,6 @@ const run = async (optionPath) => {
 
         await copy(optionFile, 'src/app/config/client.json')
         await copy(icon, 'src/app/config/icon.ico')
-        await copy('src/plugins', 'dist/unpacked/plugins')
 
         await asarSync('src/app', 'dist/unpacked/resources/app.asar')
         await compiler('build/install-script/smartbrowser.iss', {
