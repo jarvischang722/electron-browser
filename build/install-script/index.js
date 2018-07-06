@@ -6,6 +6,7 @@ const rcedit = require('rcedit')
 const asar = require('asar')
 const innoSetup = require('innosetup-compiler')
 const log4js = require('log4js')
+const builder = require('../install-script/builder')
 
 const logger = log4js.getLogger()
 
@@ -36,8 +37,14 @@ const asarSync = (src, dest) => new Promise((resolve, reject) => {
         return resolve()
     })
 })
+const compiler = options => new Promise((resolve, reject) => {
+    builder(options, (err) => {
+        if (err) return reject(err)
+        return resolve()
+    })
+})
 
-const compiler = (iss, options) => new Promise((resolve, reject) => {
+const compilerWithInnoSetup = (iss, options) => new Promise((resolve, reject) => {
     innoSetup(iss, options, (err) => {
         if (err) return reject(err)
         return resolve()
@@ -120,21 +127,22 @@ const run = async (optionPath) => {
         await copy(icon, 'src/app/config/icon.ico')
 
         await asarSync('src/app', 'dist/unpacked/resources/app.asar')
-        await compiler('build/install-script/smartbrowser.iss', {
-            gui: false,
-            verbose: true,
-            signtool: 'tripleonesign=$p',
-            O: `dist/${options.client}`,
-            F: `safety-browser-${options.client}-setup-${commonOpt.version}`,
-            DProjectHomeBase: commonOpt.projectHomeBase,
-            DPluginsDownloadUrl: commonOpt.pluginsDownloadUrl,
-            DCLIENT: options.client,
-            DCLIENT_GUID: `{${options.clientId}}`,
-            DAPP_VERSION: commonOpt.version,
-            DAPP_TITLE_EN: options.productNameEn,
-            DAPP_TITLE_CH: options.productName,
-            DAPP_ICO: icon,
-        })
+        await compiler(options)
+        // await compiler('build/install-script/smartbrowser.iss', {
+        //     gui: false,
+        //     verbose: true,
+        //     signtool: 'tripleonesign=$p',
+        //     O: `dist/${options.client}`,
+        //     F: `safety-browser-${options.client}-setup-${commonOpt.version}`,
+        //     DProjectHomeBase: commonOpt.projectHomeBase,
+        //     DPluginsDownloadUrl: commonOpt.pluginsDownloadUrl,
+        //     DCLIENT: options.client,
+        //     DCLIENT_GUID: `{${options.clientId}}`,
+        //     DAPP_VERSION: commonOpt.version,
+        //     DAPP_TITLE_EN: options.productNameEn,
+        //     DAPP_TITLE_CH: options.productName,
+        //     DAPP_ICO: icon,
+        // })
         logger.info('Build finished successfully.')
     } catch (err) {
         console.log(err)

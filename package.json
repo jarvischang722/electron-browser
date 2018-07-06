@@ -4,11 +4,10 @@
   "version": "2.9.9",
   "description": "Tripleonetech safety browser",
   "main": "main.js",
-  "dependencies": {},
   "devDependencies": {
     "asar": "^0.13.0",
     "electron": "^1.7.9",
-    "electron-builder": "^19.49.0",
+    "electron-builder": "^19.5.1",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.3.0",

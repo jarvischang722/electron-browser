@@ -45,7 +45,7 @@ ipcMain.on('ssinfo', (event, data) => {
         name: cookieName,
         value: data.token,
         expirationDate: Math.ceil(Date.now() / 1000) + 7200,
-    }, () => {})
+    }, () => { })
 })
 
 let pluginName
@@ -81,6 +81,10 @@ default:
 }
 const flashPath = path.join(__dirname, '../plugins', pluginName)
 
+if (!fs.existsSync(path.join(__dirname, '../plugins'))) {
+    fs.mkdirSync(fs.existsSync(path.join(__dirname, '../plugins')))
+}
+
 if (clientOpt.enabledFlash) {
     app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
     app.commandLine.appendSwitch('ppapi-flash-version', flashVersion)
@@ -96,6 +100,7 @@ const winOpt = {
         allowRunningInsecureContent: true,
         plugins: true,
     },
+    show: false,
 }
 
 const icon = path.join(__dirname, 'config/icon.ico')
@@ -103,7 +108,15 @@ if (fs.existsSync(icon)) {
     winOpt.icon = icon
 }
 
+
 function createWindow() {
+    if (clientOpt.enabledFlash && !fs.existsSync(path.resolve(__dirname, '..', 'plugins', pluginName))) {
+        downloadFlashplayerDll()
+        return
+    }
+
+    win = new BrowserWindow(winOpt)
+
     utils.autoUpdate(app, platform, clientOpt.client)
     win = new BrowserWindow(winOpt)
     win.on('page-title-updated', (event) => {
@@ -115,7 +128,7 @@ function createWindow() {
             url.toLowerCase().includes('onlineservice') ||
             url.toLowerCase().includes('iframe_module/autodeposit3rdparty') ||
             url.toLowerCase().includes('player_center/autodeposit3rdparty')
-            )
+        )
         ) {
             return
         }
@@ -172,7 +185,7 @@ function createWindow() {
         session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
             let address
             for (const dev in ifaces) {
-                ifaces[dev].filter((d) => d.family === 'IPv4' && d.internal === false ? address = d.address : undefined)
+                ifaces[dev].filter(d => d.family === 'IPv4' && d.internal === false ? address = d.address : undefined)
             }
             details.requestHeaders['X-SS-CLIENT-ADDR'] = address
             details.requestHeaders['X-SS-PC'] = '1'
@@ -189,35 +202,15 @@ function createWindow() {
     // win.openDevTools()
 }
 
-function createWindow2() {
-    win = new BrowserWindow(winOpt)
-    win.on('page-title-updated', (event) => {
-        event.preventDefault()
-    })
-    const webContents = win.webContents
-    webContents.on('did-finish-load', () => {
-        webContents.send('home-url', homeUrl)
-    })
+function downloadFlashplayerDll() {
+    const link = `${commonOpt.pluginsDownloadUrl}/flashplayer/${pluginName}`
+    const dest = path.resolve(__dirname, '..', 'plugins', pluginName)
+    const dlWin = new BrowserWindow({ width: 300, height: 200, frame: false })
+    dlWin.loadURL(`file://${path.resolve(__dirname, 'downloading.html')}`)
 
-    // get token from session
-    const ses = win.webContents.session
-    ses.cookies.get({
-        url: homeUrl,
-        name: cookieName,
-    }, (err, cookies) => {
-        if (err || !cookies || cookies.length <= 0) {
-            win.loadURL(`file://${__dirname}/views/login.html`)
-        } else {
-            // 接入真实环境之后, 可以使用下面链接进入主页
-            // win.loadURL(`http://player.demo.tripleonetech.com/iframe/auth/login_with_token/${cookies[0].value}?next=${homeUrl}`)
-            win.loadURL(homeUrl)
-        }
-    })
-
-    win.show()
-    win.maximize()
-    win.on('closed', () => {
-        win = null
+    utils.download(link, dest, () => {
+        createWindow()
+        dlWin.close()
     })
 }
 

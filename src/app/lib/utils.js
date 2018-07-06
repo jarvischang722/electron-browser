@@ -11,9 +11,7 @@ const uuidV4 = require('uuid/v4')
 const download = (link, dest, callback) => {
     const file = fs.createWriteStream(dest)
     request.get(link)
-    .on('error', (err) => {
-        return callback(err)
-    })
+    .on('error', err => callback(err))
     .pipe(file)
     file.on('finish', () => {
         file.close(callback)
@@ -31,9 +29,7 @@ const runFirstTimeToday = (client, callback) => {
     storage.get(key, (err, data) => {
         if (err) return callback(null, true)
         if (data === '1') return callback(null, false)
-        storage.set(key, '1', () => {
-            return callback(null, true)
-        })
+        storage.set(key, '1', () => callback(null, true))
     })
 }
 
@@ -83,10 +79,11 @@ const autoUpdate = (app, platform, client) => {
             })
         })
     } catch (err) {
-        return
+
     }
 }
 
 module.exports = {
     autoUpdate,
+    download,
 }
