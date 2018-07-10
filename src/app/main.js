@@ -81,10 +81,6 @@ default:
 }
 const flashPath = path.join(__dirname, '../plugins', pluginName)
 
-if (!fs.existsSync(path.join(__dirname, '../plugins'))) {
-    fs.mkdirSync(fs.existsSync(path.join(__dirname, '../plugins')))
-}
-
 if (clientOpt.enabledFlash) {
     app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
     app.commandLine.appendSwitch('ppapi-flash-version', flashVersion)
@@ -110,11 +106,6 @@ if (fs.existsSync(icon)) {
 
 
 function createWindow() {
-    if (clientOpt.enabledFlash && !fs.existsSync(path.resolve(__dirname, '..', 'plugins', pluginName))) {
-        downloadFlashplayerDll()
-        return
-    }
-
     win = new BrowserWindow(winOpt)
 
     utils.autoUpdate(app, platform, clientOpt.client)
