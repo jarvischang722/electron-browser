@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
-const { app, BrowserWindow, ipcMain, session } = require('electron')
+const net = require('net')
+const { app, BrowserWindow, ipcMain, session, dialog } = require('electron')
 const utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
@@ -45,7 +46,7 @@ ipcMain.on('ssinfo', (event, data) => {
         name: cookieName,
         value: data.token,
         expirationDate: Math.ceil(Date.now() / 1000) + 7200,
-    }, () => {})
+    }, () => { })
 })
 
 let pluginName
@@ -103,7 +104,7 @@ if (fs.existsSync(icon)) {
     winOpt.icon = icon
 }
 
-function createWindow() {
+async function createWindow() {
     utils.autoUpdate(app, platform, clientOpt.client)
     win = new BrowserWindow(winOpt)
     win.on('page-title-updated', (event) => {
@@ -115,7 +116,7 @@ function createWindow() {
             url.toLowerCase().includes('onlineservice') ||
             url.toLowerCase().includes('iframe_module/autodeposit3rdparty') ||
             url.toLowerCase().includes('player_center/autodeposit3rdparty')
-            )
+        )
         ) {
             return
         }
@@ -163,6 +164,12 @@ function createWindow() {
     require('./menu')(commonOpt.version)
 
     if (clientOpt.enabledProxy) {
+        const ssProxy = await checkAvailableSS(clientOpt).catch((error) => {
+            dialog.showMessageBox(win, { type: 'warning', title: 'Security warning', message: error.message })
+        })
+
+        if (ssProxy) clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
+
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
 
         win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, () => {
@@ -172,7 +179,7 @@ function createWindow() {
         session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
             let address
             for (const dev in ifaces) {
-                ifaces[dev].filter((d) => d.family === 'IPv4' && d.internal === false ? address = d.address : undefined)
+                ifaces[dev].filter(d => d.family === 'IPv4' && d.internal === false ? address = d.address : undefined)
             }
             details.requestHeaders['X-SS-CLIENT-ADDR'] = address
             details.requestHeaders['X-SS-PC'] = '1'
@@ -189,35 +196,55 @@ function createWindow() {
     // win.openDevTools()
 }
 
-function createWindow2() {
-    win = new BrowserWindow(winOpt)
-    win.on('page-title-updated', (event) => {
-        event.preventDefault()
-    })
-    const webContents = win.webContents
-    webContents.on('did-finish-load', () => {
-        webContents.send('home-url', homeUrl)
-    })
-
-    // get token from session
-    const ses = win.webContents.session
-    ses.cookies.get({
-        url: homeUrl,
-        name: cookieName,
-    }, (err, cookies) => {
-        if (err || !cookies || cookies.length <= 0) {
-            win.loadURL(`file://${__dirname}/views/login.html`)
-        } else {
-            // 接入真实环境之后, 可以使用下面链接进入主页
-            // win.loadURL(`http://player.demo.tripleonetech.com/iframe/auth/login_with_token/${cookies[0].value}?next=${homeUrl}`)
-            win.loadURL(homeUrl)
+/**
+ * Check the shadowsocks server is available.
+ * @param {Object} clientConf
+ */
+async function checkAvailableSS(clientConf) {
+    const ssList = clientConf.ssServerList || []
+    if (clientConf.proxyOptions) {
+        ssList.unshift(clientConf.proxyOptions)
+    }
+    let ssProxy
+    for (const ssConf of ssList) {
+        try {
+            ssProxy = await checkSSIsAvailWithSocket(ssConf)
+            if (ssProxy) {
+                break
+            }
+        } catch (ex) {
+            continue
         }
-    })
+    }
+    if (!ssProxy) throw new Error('Shadowsocks server is not working.')
+    else {
+        return ssProxy
+    }
+}
 
-    win.show()
-    win.maximize()
-    win.on('closed', () => {
-        win = null
+/**
+ * Use net's socket module to check if ss server is working.
+ * @param {Object} ssConf : shadowsocks's configuration
+ */
+async function checkSSIsAvailWithSocket(ssConf) {
+    return new Promise((resolve, reject) => {
+        try {
+            const socket = new net.Socket()
+            socket.setTimeout(3000)
+            socket.connect(ssConf.serverPort, ssConf.serverAddr, () => {
+                socket.destroy()
+                resolve(ssConf)
+            })
+            socket.on('timeout', () => {
+                socket.destroy()
+                reject()
+            })
+            socket.on('error', (err) => {
+                reject()
+            })
+        } catch (ex) {
+            throw ex
+        }
     })
 }
 

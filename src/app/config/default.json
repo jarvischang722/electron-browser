@@ -17,6 +17,19 @@
         "method": "aes-256-cfb",
         "timeout": 60
     }, 
+    "ssServerList" : [
+        {
+            "serverAddr": "35.201.204.2",
+            "serverPort": 19999,
+            "password": "dBbQMP8Nd9vyjvN"
+        },
+        {
+            "serverAddr": "52.198.79.141",
+            "serverPort": 19999,
+            "password": "dBbQMP8Nd9vyjvN"
+        }
+       
+    ],
     "proxyUrls": [
         "https://www.tripleonetech.com/",
         "https://www.tripleonetech.net/"
