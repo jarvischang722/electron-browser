@@ -1,10 +1,10 @@
 const fs = require('fs')
 const path = require('path')
-const net = require('net')
 const { app, BrowserWindow, ipcMain, session, dialog } = require('electron')
 const utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
+const util = require('./util/index')
 
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
@@ -164,13 +164,24 @@ async function createWindow() {
     require('./menu')(commonOpt.version)
 
     if (clientOpt.enabledProxy) {
-        const ssProxy = await checkAvailableSS(clientOpt).catch((error) => {
+        // Before start SS Server, verify that the shadowsocks server is available
+        let isSSOk = false
+        await util.checkAvailableSS(clientOpt).then((ssProxy) => {
+            isSSOk = true
+            clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
+        }).catch((error) => {
             dialog.showMessageBox(win, { type: 'warning', title: 'Security warning', message: error.message })
         })
 
-        if (ssProxy) clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
-
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
+
+        // After start SS Server, verify public ip and client configuration serrverAddr is the same.
+        if (isSSOk) {
+            const pubIP = await util.getPubIPEnableSS()
+            if (pubIP !== clientOpt.proxyOptions.serverAddr) {
+                dialog.showMessageBox(win, { type: 'warning', title: 'Security warning', message: 'Shadowsocks server is not working. ' })
+            }
+        }
 
         win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, () => {
             win.loadURL(homeUrl)
@@ -194,58 +205,6 @@ async function createWindow() {
 
     win.maximize()
     // win.openDevTools()
-}
-
-/**
- * Check the shadowsocks server is available.
- * @param {Object} clientConf
- */
-async function checkAvailableSS(clientConf) {
-    const ssList = clientConf.ssServerList || []
-    if (clientConf.proxyOptions) {
-        ssList.unshift(clientConf.proxyOptions)
-    }
-    let ssProxy
-    for (const ssConf of ssList) {
-        try {
-            ssProxy = await checkSSIsAvailWithSocket(ssConf)
-            if (ssProxy) {
-                break
-            }
-        } catch (ex) {
-            continue
-        }
-    }
-    if (!ssProxy) throw new Error('Shadowsocks server is not working.')
-    else {
-        return ssProxy
-    }
-}
-
-/**
- * Use net's socket module to check if ss server is working.
- * @param {Object} ssConf : shadowsocks's configuration
- */
-async function checkSSIsAvailWithSocket(ssConf) {
-    return new Promise((resolve, reject) => {
-        try {
-            const socket = new net.Socket()
-            socket.setTimeout(3000)
-            socket.connect(ssConf.serverPort, ssConf.serverAddr, () => {
-                socket.destroy()
-                resolve(ssConf)
-            })
-            socket.on('timeout', () => {
-                socket.destroy()
-                reject()
-            })
-            socket.on('error', (err) => {
-                reject()
-            })
-        } catch (ex) {
-            throw ex
-        }
-    })
 }
 
 app.on('ready', createWindow)

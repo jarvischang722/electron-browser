@@ -10,25 +10,24 @@
     "clientId": "E3C4E066-950D-47CB-946B-A202FB613878",
     "proxyOptions": {
         "localAddr": "127.0.0.1",
-        "localPort": 22861,
-        "server":"35.201.204.2",
-        "server_port":19999,
-        "password":"dBbQMP8Nd9vyjvN",
+        "localPort": 1080,
+        "serverAddr": "35.201.204.2",
+        "serverPort": 19999,
+        "password": "dBbQMP8Nd9vyjvN",
         "method": "aes-256-cfb",
-        "timeout": 60
-    }, 
-    "ssServerList" : [
+        "timeout": 180
+    },
+    "ssServerList": [
         {
             "serverAddr": "35.201.204.2",
             "serverPort": 19999,
             "password": "dBbQMP8Nd9vyjvN"
         },
         {
-            "serverAddr": "52.198.79.141",
+            "serverAddr": "106.75.166.72",
             "serverPort": 19999,
-            "password": "dBbQMP8Nd9vyjvN"
+            "password": "nMvTdb7VXMPudFWH"
         }
-       
     ],
     "proxyUrls": [
         "https://www.tripleonetech.com/",
