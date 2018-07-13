@@ -177,7 +177,7 @@ async function createWindow() {
 
         // After start SS Server, verify public ip and client configuration serrverAddr is the same.
         if (isSSOk) {
-            const pubIP = await util.getPubIPEnableSS()
+            const pubIP = await util.getPubIPEnableSS(clientOpt)
             if (pubIP !== clientOpt.proxyOptions.serverAddr) {
                 dialog.showMessageBox(win, { type: 'warning', title: 'Security warning', message: 'Shadowsocks server is not working. ' })
             }

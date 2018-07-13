@@ -59,8 +59,8 @@ const getPubIPEnableSS = (clientOpt = {}) => new Promise((resolve, reject) => {
         timeout: 3000,
         agentClass: agent,
         agentOptions: {
-            socksHost: clientOpt.localAddr || '127.0.0.1',
-            socksPort: clientOpt.localPort || '1080',
+            socksHost: clientOpt.proxyOptions.localAddr || '127.0.0.1',
+            socksPort: clientOpt.proxyOptions.localPort || '1080',
         },
         json: true,
     }, (error, response, body) => {
