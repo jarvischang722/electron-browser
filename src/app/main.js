@@ -1,13 +1,16 @@
 const fs = require('fs')
 const path = require('path')
-const { app, BrowserWindow, ipcMain, session } = require('electron')
+const { app, BrowserWindow, ipcMain, session, dialog } = require('electron')
 const utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
+const util = require('./util/index')
 
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
+const DownloadManager = require('electron-download-manager')
+
 
 let homeUrl
 if (Array.isArray(clientOpt.homeUrl)) {
@@ -104,12 +107,14 @@ if (fs.existsSync(icon)) {
     winOpt.icon = icon
 }
 
-
-function createWindow() {
-    win = new BrowserWindow(winOpt)
-
+async function createWindow() {
+    if (!fs.existsSync(flashPath)) {
+        downloadFlashplayerDll(pluginName)
+        return
+    }
     utils.autoUpdate(app, platform, clientOpt.client)
     win = new BrowserWindow(winOpt)
+
     win.on('page-title-updated', (event) => {
         event.preventDefault()
     })
@@ -167,7 +172,24 @@ function createWindow() {
     require('./menu')(commonOpt.version)
 
     if (clientOpt.enabledProxy) {
+        // Before start SS Server, verify that the shadowsocks server is available
+        let isSSOk = false
+        await util.checkAvailableSS(clientOpt).then((ssProxy) => {
+            isSSOk = true
+            clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
+        }).catch((error) => {
+            dialog.showMessageBox(win, { type: 'warning', title: 'Security warning', message: error.message })
+        })
+
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
+
+        // After start SS Server, verify public ip and client configuration serrverAddr is the same.
+        if (isSSOk) {
+            const pubIP = await util.getPubIPEnableSS(clientOpt)
+            if (pubIP !== clientOpt.proxyOptions.serverAddr) {
+                dialog.showMessageBox(win, { type: 'warning', title: 'Security warning', message: 'Shadowsocks server is not working. ' })
+            }
+        }
 
         win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, () => {
             win.loadURL(homeUrl)
@@ -189,20 +211,9 @@ function createWindow() {
         win.loadURL(homeUrl)
     }
 
+
     win.maximize()
     // win.openDevTools()
-}
-
-function downloadFlashplayerDll() {
-    const link = `${commonOpt.pluginsDownloadUrl}/flashplayer/${pluginName}`
-    const dest = path.resolve(__dirname, '..', 'plugins', pluginName)
-    const dlWin = new BrowserWindow({ width: 300, height: 200, frame: false })
-    dlWin.loadURL(`file://${path.resolve(__dirname, 'downloading.html')}`)
-
-    utils.download(link, dest, () => {
-        createWindow()
-        dlWin.close()
-    })
 }
 
 app.on('ready', createWindow)
@@ -217,3 +228,15 @@ app.on('quit', () => {
         sslocalServer.closeAll()
     }
 })
+
+function downloadFlashplayerDll(pluginName) {
+    const link = `${commonOpt.pluginsDownloadUrl}/flashplayer/${pluginName}`
+    const dest = path.resolve(__dirname, '..', 'plugins', pluginName)
+    const dlWin = new BrowserWindow({ width: 300, height: 200, frame: false })
+    dlWin.loadURL(`file://${path.resolve(__dirname, 'downloading.html')}`)
+
+    utils.download(link, dest, () => {
+        createWindow()
+        dlWin.close()
+    })
+}
