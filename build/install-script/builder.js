@@ -6,13 +6,12 @@ module.exports = function (options, commonOpt, callback) {
         extraMetadata: {
             name: `safety-browser-${options.client}-setup-${commonOpt.version}`,
             description: options.fileDescription,
-            license: '',
             author: 'Tripleone',
         },
         config: {
             appId: options.clientId,
             buildVersion: options.version,
-            copyright: commonOpt.legalCopyright,
+            copyright: `Copyright © ${new Date().getFullYear()} Tripleone`,
             directories: {
                 app: path.join(__dirname, '..', '..', 'src', 'app'),
                 output: path.join(__dirname, '..', '..', 'dist', options.client),
@@ -20,15 +19,12 @@ module.exports = function (options, commonOpt, callback) {
         },
     }
 
-    if (!process.env.npm_config_platform) {
-        process.env.npm_config_platform = 'win'
-    }
-    if (!process.env.npm_config_arch || process.env.npm_config_arch === 'x64') {
-        builderConf.x64 = true
-    } else {
-        builderConf.ia32 = true
-    }
-    // Windows
+    if (!process.env.npm_config_platform) process.env.npm_config_platform = 'win'
+
+    if (!process.env.npm_config_arch || process.env.npm_config_arch === 'x64') builderConf.x64 = true
+    else builderConf.ia32 = true
+
+    // Windows conguration
     if (process.env.npm_config_platform === 'win') {
         builderConf.config.win = {
             target: ['nsis'],
@@ -53,7 +49,7 @@ module.exports = function (options, commonOpt, callback) {
         }
     }
 
-    // Mac OS
+    // Mac OS conguration
     if (process.env.npm_config_platform === 'mac') {
         builderConf.config.mac = {
             icon: `./src/clients/${options.client}/icon.ico`,
@@ -75,7 +71,7 @@ module.exports = function (options, commonOpt, callback) {
         }
     }
 
-    // Linux
+    // Linux conguration
     if (process.env.npm_config_platform === 'linux') {
         builderConf.config.linux = true
         builderConf.linux = {
