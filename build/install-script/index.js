@@ -97,20 +97,7 @@ const run = async (optionPath) => {
         const optionFile = path.join(optionPath, 'client.json')
         const icon = path.join(optionPath, 'icon.ico')
         const options = require(optionFile)
-        const rceditOptions = {
-            'version-string': {
-                CompanyName: options.companyName,
-                FileDescription: options.fileDescription,
-                LegalCopyright: commonOpt.legalCopyright || 'Copyright 2017',
-                ProductName: options.productName,
-            },
-            'file-version': commonOpt.version,
-            'product-version': commonOpt.version,
-            icon,
-        }
 
-        await copy('dist/unpacked/electron.exe', 'dist/unpacked/safety-browser.exe', { clobber: false })
-        await rceditSync('dist/unpacked/safety-browser.exe', rceditOptions)
         if (options.enabledProxy && options.proxyOptions) {
             await writePacFile(optionPath, options)
         }
