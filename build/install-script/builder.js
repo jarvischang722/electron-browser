@@ -1,7 +1,5 @@
 const builder = require('electron-builder')
 const path = require('path')
-// const clientInfo = require('../../src/app/config/client.json')
-// const commontOpt = require('../../src/app/config/common.json')
 
 module.exports = function (options, commonOpt, callback) {
     const builderConf = {
@@ -15,7 +13,6 @@ module.exports = function (options, commonOpt, callback) {
             appId: options.clientId,
             buildVersion: options.version,
             copyright: commonOpt.legalCopyright,
-            // files: ['!plugins/*'],
             directories: {
                 app: path.join(__dirname, '..', '..', 'src', 'app'),
                 output: path.join(__dirname, '..', '..', 'dist', options.client),

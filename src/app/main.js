@@ -5,11 +5,13 @@ const utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
 const util = require('./util/index')
+const request = require('request')
+const progress = require('request-progress')
+const ProgressBar = require('electron-progressbar')
 
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
-const DownloadManager = require('electron-download-manager')
 
 
 let homeUrl
@@ -109,9 +111,10 @@ if (fs.existsSync(icon)) {
 
 async function createWindow() {
     if (!fs.existsSync(flashPath)) {
-        downloadFlashplayerDll(pluginName)
+        downloadFP(pluginName)
         return
     }
+
     utils.autoUpdate(app, platform, clientOpt.client)
     win = new BrowserWindow(winOpt)
 
@@ -229,14 +232,39 @@ app.on('quit', () => {
     }
 })
 
-function downloadFlashplayerDll(pluginName) {
-    const link = `${commonOpt.pluginsDownloadUrl}/flashplayer/${pluginName}`
-    const dest = path.resolve(__dirname, '..', 'plugins', pluginName)
-    const dlWin = new BrowserWindow({ width: 300, height: 200, frame: false })
-    dlWin.loadURL(`file://${path.resolve(__dirname, 'downloading.html')}`)
-
-    utils.download(link, dest, () => {
-        createWindow()
-        dlWin.close()
+/**
+ * download flashplayer from service.
+ */
+function downloadFP(fileName) {
+    if (!fs.existsSync(path.resolve(__dirname, '..', 'plugins'))) {
+        fs.mkdirSync(path.resolve(__dirname, '..', 'plugins'))
+    }
+    const link = `${commonOpt.pluginsDownloadUrl}/flashplayer/${fileName}`
+    const dest = path.resolve(__dirname, '..', 'plugins', fileName)
+    const progressBar = new ProgressBar({
+        indeterminate: false,
+        title: `safety-browser-${clientOpt.client}-setup-${commonOpt.version}`,
+        text: `Downloading ${fileName}...`,
     })
+    progress(request(link))
+        .on('progress', (state) => {
+            let speedUnit = 'KB'
+            let speed = Math.round(state.speed / 1024)
+            if (speed > 1024) {
+                speedUnit = 'MB'
+                speed = Math.round(speed / 1024)
+            }
+            const percent = Math.round(state.percent * 100)
+            const totalSize = Math.round(state.size.total / 1024)
+            const transferredSize = Math.round(state.size.transferred / 1024)
+            const remainingTime = Math.round(state.time.remaining)
+            progressBar.detail = `Speed:  ${speed} ${speedUnit}/s , Remaining time: ${remainingTime} sec <br> 
+            ${transferredSize} KB of ${totalSize} KB (${percent} %)`
+            progressBar.value = percent
+        })
+        .on('end', () => {
+            createWindow()
+            progressBar.close()
+        })
+        .pipe(fs.createWriteStream(dest))
 }
