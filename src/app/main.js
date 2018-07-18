@@ -57,31 +57,31 @@ let flashVersion
 let platform
 
 switch (process.platform) {
-    case 'win32':
-        platform = 'windows'
-        switch (process.arch) {
-            case 'x64':
-                pluginName = 'pepflashplayer64_25_0_0_171.dll'
-                flashVersion = '25.0.0.171'
-                break
-            case 'ia32':
-                pluginName = 'pepflashplayer32_25_0_0_171.dll'
-                flashVersion = '25.0.0.171'
-                break
-            default:
-                break
-        }
+case 'win32':
+    platform = 'windows'
+    switch (process.arch) {
+    case 'x64':
+        pluginName = 'pepflashplayer64_25_0_0_171.dll'
+        flashVersion = '25.0.0.171'
         break
-    case 'darwin':
-        platform = 'mac'
-        pluginName = 'PepperFlashPlayer.plugin'
-        flashVersion = '29.0.0.140'
-        break
-    case 'linux':
-        pluginName = 'libpepflashplayer.so'
+    case 'ia32':
+        pluginName = 'pepflashplayer32_25_0_0_171.dll'
+        flashVersion = '25.0.0.171'
         break
     default:
         break
+    }
+    break
+case 'darwin':
+    platform = 'mac'
+    pluginName = 'PepperFlashPlayer.plugin'
+    flashVersion = '29.0.0.140'
+    break
+case 'linux':
+    pluginName = 'libpepflashplayer.so'
+    break
+default:
+    break
 }
 
 const flashPath = path.join(__dirname, '../plugins', pluginName)
@@ -100,7 +100,7 @@ const winOpt = {
         webSecurity: false,
         allowRunningInsecureContent: true,
         plugins: true,
-    }
+    },
 }
 
 const icon = path.join(__dirname, 'config/icon.ico')
@@ -233,11 +233,12 @@ app.on('quit', () => {
 })
 
 /**
- * download flashplayer from service.
+ * Download flashplayer from service.
  */
 function downloadFP(fileName) {
-    if (!fs.existsSync(path.resolve(__dirname, '..', 'plugins'))) {
-        fs.mkdirSync(path.resolve(__dirname, '..', 'plugins'))
+    const pluginPath = path.resolve(__dirname, '..', 'plugins')
+    if (!fs.existsSync(pluginPath)) {
+        fs.mkdirSync(pluginPath)
     }
     const link = `${commonOpt.pluginsDownloadUrl}/flashplayer/${fileName}`
     const dest = path.resolve(__dirname, '..', 'plugins', fileName)
@@ -245,6 +246,18 @@ function downloadFP(fileName) {
         indeterminate: false,
         title: `safety-browser-${clientOpt.client}-setup-${commonOpt.version}`,
         text: `Downloading ${fileName}...`,
+        browserWindow: {
+            height: 250,
+        },
+        style: {
+            detail: {
+                'line-height': '20px',
+            },
+            bar: {
+                position: 'relative',
+                top: '60px',
+            },
+        },
     })
     progress(request(link))
         .on('progress', (state) => {
@@ -258,7 +271,10 @@ function downloadFP(fileName) {
             const totalSize = Math.round(state.size.total / 1024)
             const transferredSize = Math.round(state.size.transferred / 1024)
             const remainingTime = Math.round(state.time.remaining)
-            progressBar.detail = `Speed:  ${speed} ${speedUnit}/s , Remaining time: ${remainingTime} sec <br> 
+            const elapsedTime = Math.round(state.time.elapsed)
+            progressBar.detail = `Speed:  ${speed} ${speedUnit}/s <br>  
+                                  Rlapsed time: ${elapsedTime} sec <br> 
+                                  Remaining time: ${remainingTime} sec <br> <br>
                                 ${transferredSize} KB of ${totalSize} KB (${percent} %)`
             progressBar.value = percent
         })

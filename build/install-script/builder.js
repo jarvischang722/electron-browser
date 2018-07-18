@@ -16,6 +16,11 @@ module.exports = function (options, commonOpt, callback) {
                 app: path.join(__dirname, '..', '..', 'src', 'app'),
                 output: path.join(__dirname, '..', '..', 'dist', options.client),
             },
+            extraResources: [{
+                from: path.join(__dirname, '..', '..', 'src', 'plugins'),
+                to: './plugins',
+                filter: ['!*.dll'],
+            }],
         },
     }
 
@@ -51,10 +56,10 @@ module.exports = function (options, commonOpt, callback) {
 
     // Mac OS conguration
     if (process.env.npm_config_platform === 'mac') {
-        //builderConf.config.mac = {
+        // builderConf.config.mac = {
         //    icon: `./src/clients/${options.client}/icon.ico`,
         //    artifactName: `safety-browser-${options.client}-setup-${commonOpt.version}.dmg`,
-        //}
+        // }
         builderConf.config.dmg = {
             contents: [
                 {
