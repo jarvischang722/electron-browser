@@ -2,7 +2,6 @@ const fs = require('fs')
 const path = require('path')
 const url = require('url')
 const ncp = require('ncp').ncp
-const rcedit = require('rcedit')
 const asar = require('asar')
 const log4js = require('log4js')
 const builder = require('../install-script/builder')
@@ -21,13 +20,6 @@ const copy = (src, dest, options) => new Promise((resolve, reject) => {
             return resolve()
         })
     }
-})
-
-const rceditSync = (exePath, options) => new Promise((resolve, reject) => {
-    rcedit(exePath, options, (err) => {
-        if (err) return reject(err)
-        return resolve()
-    })
 })
 
 const asarSync = (src, dest) => new Promise((resolve, reject) => {

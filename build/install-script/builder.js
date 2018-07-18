@@ -51,10 +51,10 @@ module.exports = function (options, commonOpt, callback) {
 
     // Mac OS conguration
     if (process.env.npm_config_platform === 'mac') {
-        builderConf.config.mac = {
-            icon: `./src/clients/${options.client}/icon.ico`,
-            artifactName: `safety-browser-${options.client}-setup-${commonOpt.version}.${process.env.ext}`,
-        }
+        //builderConf.config.mac = {
+        //    icon: `./src/clients/${options.client}/icon.ico`,
+        //    artifactName: `safety-browser-${options.client}-setup-${commonOpt.version}.dmg`,
+        //}
         builderConf.config.dmg = {
             contents: [
                 {

@@ -13,7 +13,6 @@ const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) 
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
 
-
 let homeUrl
 if (Array.isArray(clientOpt.homeUrl)) {
     const arrLen = clientOpt.homeUrl.length
@@ -30,9 +29,9 @@ const startShadowsocks = (addr, port) => {
     const opt = {
         localAddr: addr,
         localPort: port,
-        serverAddr: '221.229.166.226',
-        serverPort: 17777,
-        password: '0367E21094d36315',
+        serverAddr: '106.75.166.72',
+        serverPort: 19999,
+        password: 'nMvTdb7VXMPudFWH',
         method: 'aes-256-cfb',
         timeout: 180,
     }
@@ -58,32 +57,33 @@ let flashVersion
 let platform
 
 switch (process.platform) {
-case 'win32':
-    platform = 'windows'
-    switch (process.arch) {
-    case 'x64':
-        pluginName = 'pepflashplayer64_25_0_0_171.dll'
-        flashVersion = '25.0.0.171'
+    case 'win32':
+        platform = 'windows'
+        switch (process.arch) {
+            case 'x64':
+                pluginName = 'pepflashplayer64_25_0_0_171.dll'
+                flashVersion = '25.0.0.171'
+                break
+            case 'ia32':
+                pluginName = 'pepflashplayer32_25_0_0_171.dll'
+                flashVersion = '25.0.0.171'
+                break
+            default:
+                break
+        }
         break
-    case 'ia32':
-        pluginName = 'pepflashplayer32_25_0_0_171.dll'
-        flashVersion = '25.0.0.171'
+    case 'darwin':
+        platform = 'mac'
+        pluginName = 'PepperFlashPlayer.plugin'
+        flashVersion = '29.0.0.140'
+        break
+    case 'linux':
+        pluginName = 'libpepflashplayer.so'
         break
     default:
         break
-    }
-    break
-case 'darwin':
-    platform = 'mac'
-    pluginName = 'PepperFlashPlayer.plugin'
-    flashVersion = '29.0.0.140'
-    break
-case 'linux':
-    pluginName = 'libpepflashplayer.so'
-    break
-default:
-    break
 }
+
 const flashPath = path.join(__dirname, '../plugins', pluginName)
 
 if (clientOpt.enabledFlash) {
@@ -100,8 +100,7 @@ const winOpt = {
         webSecurity: false,
         allowRunningInsecureContent: true,
         plugins: true,
-    },
-    show: false,
+    }
 }
 
 const icon = path.join(__dirname, 'config/icon.ico')
@@ -175,7 +174,8 @@ async function createWindow() {
     require('./menu')(commonOpt.version)
 
     if (clientOpt.enabledProxy) {
-        // Before start SS Server, verify that the shadowsocks server is available
+        // Before start SS server,
+        // verify that at least one of these shadowsocks server is available.
         let isSSOk = false
         await util.checkAvailableSS(clientOpt).then((ssProxy) => {
             isSSOk = true
@@ -186,7 +186,8 @@ async function createWindow() {
 
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
 
-        // After start SS Server, verify public ip and client configuration serrverAddr is the same.
+        // After start SS Server,
+        // verify public ip and client configuration serverAddr is the same.
         if (isSSOk) {
             const pubIP = await util.getPubIPEnableSS(clientOpt)
             if (pubIP !== clientOpt.proxyOptions.serverAddr) {
@@ -213,7 +214,6 @@ async function createWindow() {
     } else {
         win.loadURL(homeUrl)
     }
-
 
     win.maximize()
     // win.openDevTools()
@@ -259,7 +259,7 @@ function downloadFP(fileName) {
             const transferredSize = Math.round(state.size.transferred / 1024)
             const remainingTime = Math.round(state.time.remaining)
             progressBar.detail = `Speed:  ${speed} ${speedUnit}/s , Remaining time: ${remainingTime} sec <br> 
-            ${transferredSize} KB of ${totalSize} KB (${percent} %)`
+                                ${transferredSize} KB of ${totalSize} KB (${percent} %)`
             progressBar.value = percent
         })
         .on('end', () => {

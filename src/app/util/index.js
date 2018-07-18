@@ -41,10 +41,10 @@ const checkSSIsAvailWithSocket = async ssConf => new Promise((resolve, reject) =
         })
         socket.on('timeout', () => {
             socket.destroy()
-            reject()
+            reject(new Error('timeout'))
         })
         socket.on('error', (err) => {
-            reject()
+            reject(err)
         })
     } catch (ex) {
         throw ex
