@@ -16,11 +16,6 @@ module.exports = function (options, commonOpt, callback) {
                 app: path.join(__dirname, '..', '..', 'src', 'app'),
                 output: path.join(__dirname, '..', '..', 'dist', options.client),
             },
-            extraResources: [{
-                from: path.join(__dirname, '..', '..', 'src', 'plugins'),
-                to: './plugins',
-                filter: ['!*.dll'],
-            }],
         },
     }
 

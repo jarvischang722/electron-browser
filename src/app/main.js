@@ -57,31 +57,31 @@ let flashVersion
 let platform
 
 switch (process.platform) {
-case 'win32':
-    platform = 'windows'
-    switch (process.arch) {
-    case 'x64':
-        pluginName = 'pepflashplayer64_25_0_0_171.dll'
-        flashVersion = '25.0.0.171'
+    case 'win32':
+        platform = 'windows'
+        switch (process.arch) {
+            case 'x64':
+                pluginName = 'pepflashplayer64_25_0_0_171.dll'
+                flashVersion = '25.0.0.171'
+                break
+            case 'ia32':
+                pluginName = 'pepflashplayer32_25_0_0_171.dll'
+                flashVersion = '25.0.0.171'
+                break
+            default:
+                break
+        }
         break
-    case 'ia32':
-        pluginName = 'pepflashplayer32_25_0_0_171.dll'
-        flashVersion = '25.0.0.171'
+    case 'darwin':
+        platform = 'mac'
+        pluginName = 'PepperFlashPlayer.plugin'
+        flashVersion = '29.0.0.140'
+        break
+    case 'linux':
+        pluginName = 'libpepflashplayer.so'
         break
     default:
         break
-    }
-    break
-case 'darwin':
-    platform = 'mac'
-    pluginName = 'PepperFlashPlayer.plugin'
-    flashVersion = '29.0.0.140'
-    break
-case 'linux':
-    pluginName = 'libpepflashplayer.so'
-    break
-default:
-    break
 }
 
 const flashPath = path.join(__dirname, '../plugins', pluginName)
@@ -110,6 +110,7 @@ if (fs.existsSync(icon)) {
 
 async function createWindow() {
     if (!fs.existsSync(flashPath)) {
+        if (platform === 'mac') pluginName = `${pluginName}.zip`
         downloadFP(pluginName)
         return
     }
@@ -237,9 +238,11 @@ app.on('quit', () => {
  */
 function downloadFP(fileName) {
     const pluginPath = path.resolve(__dirname, '..', 'plugins')
+
     if (!fs.existsSync(pluginPath)) {
         fs.mkdirSync(pluginPath)
     }
+
     const link = `${commonOpt.pluginsDownloadUrl}/flashplayer/${fileName}`
     const dest = path.resolve(__dirname, '..', 'plugins', fileName)
     const progressBar = new ProgressBar({
@@ -278,7 +281,12 @@ function downloadFP(fileName) {
                                 ${transferredSize} KB of ${totalSize} KB (${percent} %)`
             progressBar.value = percent
         })
-        .on('end', () => {
+        .on('end', async () => {
+            if (platform === 'mac') {
+                const unzipPath = path.resolve(__dirname, '..', 'plugins')
+                await util.upzip(dest, unzipPath)
+                fs.unlink(dest)
+            }
             createWindow()
             progressBar.close()
         })

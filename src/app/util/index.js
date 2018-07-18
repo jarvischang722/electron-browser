@@ -1,5 +1,6 @@
 const net = require('net')
 const request = require('request')
+const extract = require('extract-zip')
 
 /**
  * Check the shadowsocks server is available.
@@ -72,5 +73,23 @@ const getPubIPEnableSS = (clientOpt = {}) => new Promise((resolve, reject) => {
     })
 })
 
+/**
+ * Uncompress file
+ * @param {String} source : The path to be uncompressed
+ * @param {String} dest ：Uncompress the target path
+ */
+const upzip = (source, dest) => new Promise((resolve, reject) => {
+    try {
+        extract(source, { dir: dest }, (err) => {
+            if (err) {
+                return reject(err)
+            }
+            resolve()
+        })
+    } catch (err) {
+        reject(err)
+    }
+})
 
-module.exports = { checkAvailableSS, getPubIPEnableSS }
+
+module.exports = { checkAvailableSS, getPubIPEnableSS, upzip }
