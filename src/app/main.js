@@ -74,11 +74,11 @@ switch (process.platform) {
         break
     case 'linux':
         platform = 'linux'
-        flashVersion = '29.0.0.140'
+        flashVersion = '25_0_0_171'
         if (process.arch === 'x64') {
-            pluginName = 'libpepflashplayer64_29.0.0.140.so'
+            pluginName = 'libpepflashplayer64_25_0_0_171.so'
         } else {
-            pluginName = 'libpepflashplayer32_29.0.0.140.so'
+            pluginName = 'libpepflashplayer32_25_0_0_171.so'
         }
         break
     default:
