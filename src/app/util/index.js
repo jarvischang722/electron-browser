@@ -35,7 +35,7 @@ const checkAvailableSS = async (clientConf) => {
 const checkSSIsAvailWithSocket = async ssConf => new Promise((resolve, reject) => {
     try {
         const socket = new net.Socket()
-        socket.setTimeout(3000)
+        socket.setTimeout(5000)
         socket.connect(ssConf.serverPort, ssConf.serverAddr, () => {
             socket.destroy()
             resolve(ssConf)
