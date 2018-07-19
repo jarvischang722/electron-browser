@@ -59,17 +59,12 @@ let platform
 switch (process.platform) {
     case 'win32':
         platform = 'windows'
-        switch (process.arch) {
-            case 'x64':
-                pluginName = 'pepflashplayer64_25_0_0_171.dll'
-                flashVersion = '25.0.0.171'
-                break
-            case 'ia32':
-                pluginName = 'pepflashplayer32_25_0_0_171.dll'
-                flashVersion = '25.0.0.171'
-                break
-            default:
-                break
+        if (process.arch === 'x64') {
+            pluginName = 'pepflashplayer64_25_0_0_171.dll'
+            flashVersion = '25.0.0.171'
+        } else {
+            pluginName = 'pepflashplayer32_25_0_0_171.dll'
+            flashVersion = '25.0.0.171'
         }
         break
     case 'darwin':
@@ -78,7 +73,13 @@ switch (process.platform) {
         flashVersion = '29.0.0.140'
         break
     case 'linux':
-        pluginName = 'libpepflashplayer.so'
+        platform = 'linux'
+        flashVersion = '29.0.0.140'
+        if (process.arch === 'x64') {
+            pluginName = 'libpepflashplayer64.so'
+        } else {
+            pluginName = 'libpepflashplayer32.so'
+        }
         break
     default:
         break
