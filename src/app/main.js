@@ -5,6 +5,7 @@ const utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
 const util = require('./util/index')
+const schema = require('./schema/index')
 
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
 const clientOpt = require(clientOptFile)
@@ -54,31 +55,31 @@ let flashVersion
 let platform
 
 switch (process.platform) {
-case 'win32':
-    platform = 'windows'
-    switch (process.arch) {
-    case 'x64':
-        pluginName = 'pepflashplayer64_25_0_0_171.dll'
-        flashVersion = '25.0.0.171'
+    case 'win32':
+        platform = 'windows'
+        switch (process.arch) {
+            case 'x64':
+                pluginName = 'pepflashplayer64_25_0_0_171.dll'
+                flashVersion = '25.0.0.171'
+                break
+            case 'ia32':
+                pluginName = 'pepflashplayer32_25_0_0_171.dll'
+                flashVersion = '25.0.0.171'
+                break
+            default:
+                break
+        }
         break
-    case 'ia32':
-        pluginName = 'pepflashplayer32_25_0_0_171.dll'
-        flashVersion = '25.0.0.171'
+    case 'darwin':
+        platform = 'mac'
+        pluginName = 'PepperFlashPlayer.plugin'
+        flashVersion = '29.0.0.140'
+        break
+    case 'linux':
+        pluginName = 'libpepflashplayer.so'
         break
     default:
         break
-    }
-    break
-case 'darwin':
-    platform = 'mac'
-    pluginName = 'PepperFlashPlayer.plugin'
-    flashVersion = '29.0.0.140'
-    break
-case 'linux':
-    pluginName = 'libpepflashplayer.so'
-    break
-default:
-    break
 }
 const flashPath = path.join(__dirname, '../plugins', pluginName)
 
@@ -163,10 +164,11 @@ async function createWindow() {
 
     require('./menu')(commonOpt.version)
 
-    if (clientOpt.enabledProxy) {
+    const enabledSSProxy = schema.checkEnabledSSProxy(homeUrl, clientOpt)
+    if (enabledSSProxy) {
         // Before start SS Server, verify that the shadowsocks server is available
         let isSSOk = false
-        await util.checkAvailableSS(clientOpt).then((ssProxy) => {
+        await schema.checkAvailableSS(clientOpt).then((ssProxy) => {
             isSSOk = true
             clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
         }).catch((error) => {
@@ -219,3 +221,4 @@ app.on('quit', () => {
         sslocalServer.closeAll()
     }
 })
+
