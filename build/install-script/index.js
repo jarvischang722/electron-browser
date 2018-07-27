@@ -28,8 +28,8 @@ const asarSync = (src, dest) => new Promise((resolve, reject) => {
         return resolve()
     })
 })
-const compiler = (options, commonOpt) => new Promise((resolve, reject) => {
-    builder(options, commonOpt, (err) => {
+const compiler = options => new Promise((resolve, reject) => {
+    builder(options, (err) => {
         if (err) return reject(err)
         return resolve()
     })
@@ -85,7 +85,6 @@ const writePacFile = async (optionPath, options) => {
 
 const run = async (optionPath) => {
     try {
-        const commonOpt = require('../../src/app/config/common.json')
         const optionFile = path.join(optionPath, 'client.json')
         const icon = path.join(optionPath, 'icon.ico')
         const options = require(optionFile)
@@ -98,11 +97,11 @@ const run = async (optionPath) => {
         await copy(icon, 'src/app/config/icon.ico')
 
         await asarSync('src/app', 'dist/unpacked/resources/app.asar')
-        await compiler(options, commonOpt)
+        await compiler(options)
 
         logger.info('Build finished successfully.')
     } catch (err) {
-        console.log(err)
+        throw err
     }
 }
 

@@ -57,32 +57,32 @@ let flashVersion
 let platform
 
 switch (process.platform) {
-    case 'win32':
-        platform = 'windows'
-        if (process.arch === 'x64') {
+case 'win32':
+    platform = 'windows'
+    if (process.arch === 'x64') {
             pluginName = 'pepflashplayer64_25_0_0_171.dll'
             flashVersion = '25.0.0.171'
         } else {
             pluginName = 'pepflashplayer32_25_0_0_171.dll'
             flashVersion = '25.0.0.171'
         }
-        break
-    case 'darwin':
-        platform = 'mac'
-        pluginName = 'PepperFlashPlayer.plugin'
-        flashVersion = '29.0.0.140'
-        break
-    case 'linux':
-        platform = 'linux'
-        flashVersion = '25.0.0.171'
-        if (process.arch === 'x64') {
+    break
+case 'darwin':
+    platform = 'mac'
+    pluginName = 'PepperFlashPlayer.plugin'
+    flashVersion = '29.0.0.140'
+    break
+case 'linux':
+    platform = 'linux'
+    flashVersion = '25.0.0.171'
+    if (process.arch === 'x64') {
             pluginName = 'libpepflashplayer64_25_0_0_171.so'
         } else {
             pluginName = 'libpepflashplayer32_25_0_0_171.so'
         }
-        break
-    default:
-        break
+    break
+default:
+    break
 }
 
 const flashPath = path.join(__dirname, '../plugins', pluginName)
@@ -244,7 +244,7 @@ function downloadFP(fileName) {
         fs.mkdirSync(pluginPath)
     }
 
-    const link = `${commonOpt.pluginsDownloadUrl}/flashplayer/${fileName}`
+    const link = `${commonOpt.serviceAddr}/pub_plugins/flashplayer/${fileName}`
     const dest = path.resolve(__dirname, '..', 'plugins', fileName)
     const progressBar = new ProgressBar({
         indeterminate: false,

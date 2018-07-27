@@ -1,10 +1,14 @@
 const builder = require('electron-builder')
 const path = require('path')
+const commonOpt = require('../../src/app/config/common.json')
+const request = require('request')
+const fs = require('fs')
 
-module.exports = function (options, commonOpt, callback) {
+module.exports = (options, callback) => {
+    const setupFileName = `safety-browser-${options.client}-setup-${commonOpt.version}`
     const builderConf = {
         extraMetadata: {
-            name: `safety-browser-${options.client}-setup-${commonOpt.version}`,
+            name: setupFileName,
             description: options.fileDescription,
             author: 'Tripleone',
         },
@@ -12,6 +16,7 @@ module.exports = function (options, commonOpt, callback) {
             appId: options.clientId,
             buildVersion: options.version,
             copyright: `Copyright © ${new Date().getFullYear()} Tripleone`,
+            artifactName: '${productName}.${ext}',
             directories: {
                 app: path.join(__dirname, '..', '..', 'src', 'app'),
                 output: path.join(__dirname, '..', '..', 'dist', options.client),
@@ -28,16 +33,16 @@ module.exports = function (options, commonOpt, callback) {
     if (process.env.npm_config_platform === 'win') {
         builderConf.config.win = {
             target: ['nsis'],
-            icon: `./src/clients/${options.client}/icon.ico`,
-            certificateFile: './build/install-script/smartbrowser.pfx',
+            icon: path.join(__dirname, '..', '..', 'src', 'clients', options.client, 'icon.ico'),
+            certificateFile: path.join(__dirname, 'smartbrowser.pfx'),
             certificatePassword: '12345678',
         }
         builderConf.config.nsis = {
             oneClick: false,
             perMachine: true,
-            installerIcon: `./src/clients/${options.client}/icon.ico`,
-            installerHeaderIcon: `./src/clients/${options.client}/icon.ico`,
-            uninstallerIcon: `./src/clients/${options.client}/icon.ico`,
+            installerIcon: path.join(__dirname, '..', '..', 'src', 'clients', options.client, 'icon.ico'),
+            installerHeaderIcon: path.join(__dirname, '..', '..', 'src', 'clients', options.client, 'icon.ico'),
+            uninstallerIcon: path.join(__dirname, '..', '..', 'src', 'clients', options.client, 'icon.ico'),
             allowToChangeInstallationDirectory: true,
             displayLanguageSelector: true,
             installerLanguages: [
@@ -51,10 +56,6 @@ module.exports = function (options, commonOpt, callback) {
 
     // Mac OS conguration
     if (process.env.npm_config_platform === 'mac') {
-        // builderConf.config.mac = {
-        //    icon: `./src/clients/${options.client}/icon.ico`,
-        //    artifactName: `safety-browser-${options.client}-setup-${commonOpt.version}.dmg`,
-        // }
         builderConf.config.dmg = {
             contents: [
                 {
@@ -84,11 +85,19 @@ module.exports = function (options, commonOpt, callback) {
 
     builder.build(builderConf)
         .then(() => {
-            console.log('Build successful.')
-            callback()
+            const ext = process.env.npm_config_platform === 'mac' ? 'dmg' : 'exe'
+            const filename = `${setupFileName}.${ext}`
+            const formData = {
+                filename: fs.createReadStream(`${__dirname}/../../dist/${options.client}/${filename}`),
+            }
+            request.post({ url: `${commonOpt.serviceAddr}/browser/uploadSetup`, formData }, (err, httpResponse, body) => {
+                if (err) {
+                    return callback(err)
+                }
+                callback(null, filename)
+            })
         })
         .catch((error) => {
-            console.log(error)
             callback(error)
         })
 }
