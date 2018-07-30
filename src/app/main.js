@@ -4,7 +4,6 @@ const { app, BrowserWindow, ipcMain, session, dialog } = require('electron')
 const utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
-const util = require('./util/index')
 const request = require('request')
 const progress = require('request-progress')
 const ProgressBar = require('electron-progressbar')
@@ -60,12 +59,12 @@ switch (process.platform) {
 case 'win32':
     platform = 'windows'
     if (process.arch === 'x64') {
-            pluginName = 'pepflashplayer64_25_0_0_171.dll'
-            flashVersion = '25.0.0.171'
-        } else {
-            pluginName = 'pepflashplayer32_25_0_0_171.dll'
-            flashVersion = '25.0.0.171'
-        }
+        pluginName = 'pepflashplayer64_25_0_0_171.dll'
+        flashVersion = '25.0.0.171'
+    } else {
+        pluginName = 'pepflashplayer32_25_0_0_171.dll'
+        flashVersion = '25.0.0.171'
+    }
     break
 case 'darwin':
     platform = 'mac'
@@ -76,10 +75,10 @@ case 'linux':
     platform = 'linux'
     flashVersion = '25.0.0.171'
     if (process.arch === 'x64') {
-            pluginName = 'libpepflashplayer64_25_0_0_171.so'
-        } else {
-            pluginName = 'libpepflashplayer32_25_0_0_171.so'
-        }
+        pluginName = 'libpepflashplayer64_25_0_0_171.so'
+    } else {
+        pluginName = 'libpepflashplayer32_25_0_0_171.so'
+    }
     break
 default:
     break
@@ -179,7 +178,7 @@ async function createWindow() {
         // Before start SS server,
         // verify that at least one of these shadowsocks server is available.
         let isSSOk = false
-        await util.checkAvailableSS(clientOpt).then((ssProxy) => {
+        await utils.checkAvailableSS(clientOpt).then((ssProxy) => {
             isSSOk = true
             clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
         }).catch((error) => {
@@ -191,7 +190,7 @@ async function createWindow() {
         // After start SS Server,
         // verify public ip and client configuration serverAddr is the same.
         if (isSSOk) {
-            const pubIP = await util.getPubIPEnableSS(clientOpt)
+            const pubIP = await utils.getPubIPEnableSS(clientOpt)
             if (pubIP !== clientOpt.proxyOptions.serverAddr) {
                 dialog.showMessageBox(win, { type: 'warning', title: 'Security warning', message: 'Shadowsocks server is not working. ' })
             }
@@ -285,7 +284,7 @@ function downloadFP(fileName) {
         .on('end', async () => {
             if (platform === 'mac') {
                 const unzipPath = path.resolve(__dirname, '..', 'plugins')
-                await util.upzip(dest, unzipPath)
+                await utils.upzip(dest, unzipPath)
                 // Delete this file after one second of decompression
                 // and avoid not yet unzipping complete
                 setTimeout(() => { fs.unlink(dest) }, 1000)
