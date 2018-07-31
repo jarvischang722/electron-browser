@@ -16,8 +16,7 @@
             ],
             "port": 9229,
             "args": [
-                "--client=tripleone",
-                "--platform=mac"
+                "--client=tripleone"
             ],
             "console": "integratedTerminal"
         },

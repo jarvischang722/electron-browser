@@ -32,5 +32,10 @@
     "proxyUrls": [
         "https://www.tripleonetech.com/",
         "https://www.tripleonetech.net/"
+    ],
+    "platform" : "win32",
+    "supportArch": [
+        "x64",
+        "ia32"
     ]
 }
