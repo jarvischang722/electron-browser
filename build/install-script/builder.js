@@ -15,7 +15,7 @@ module.exports = (options, callback) => {
             },
             config: {
                 appId: options.clientId,
-                buildVersion: options.version,
+                buildVersion: commonOpt.version,
                 copyright: `Copyright © ${new Date().getFullYear()} Tripleone`,
                 artifactName: '${productName}.${ext}',
                 directories: {
@@ -100,9 +100,6 @@ module.exports = (options, callback) => {
                     callback(null, filename)
                 })
             })
-        // .catch((error) => {
-        //     callback(error)
-        // })
     } catch (error) {
         callback(error)
     }
