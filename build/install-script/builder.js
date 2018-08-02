@@ -93,7 +93,7 @@ module.exports = (options, callback) => {
                 const formData = {
                     filename: fs.createReadStream(`${__dirname}/../../dist/${options.client}/${filename}`),
                 }
-                request.post({ url: `${commonOpt.serviceAddr}/browser/uploadSetup`, formData }, (err, httpResponse, body) => {
+                request.post({ url: `${commonOpt.serviceAddr}/browser/uploadBrowserSetup`, formData }, (err, httpResponse, body) => {
                     if (err) {
                         return callback(err)
                     }
