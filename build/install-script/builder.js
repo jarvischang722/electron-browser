@@ -26,8 +26,7 @@ module.exports = (options, callback) => {
         }
 
         const buildOfPlatform = options.platform || process.platform
-        let supportArch = options.supportArch ? options.supportArch : [process.arch]
-        supportArch = Array.isArray(options.supportArch) ? options.supportArch : [options.supportArch]
+        const supportArch = options.supportArch ? options.supportArch : [process.arch]
 
         builderConf.x64 = supportArch.includes('x64')
         builderConf.ia32 = supportArch.includes('ia32')
