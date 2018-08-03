@@ -7,6 +7,7 @@ const fs = require('fs')
 module.exports = (options, callback) => {
     try {
         const setupFileName = `safety-browser-${options.client}-setup-${commonOpt.version}`
+        const iconPath = path.join(__dirname, '..', '..', 'src', 'clients', options.client, 'icon.ico')
         const builderConf = {
             extraMetadata: {
                 name: setupFileName,
@@ -35,16 +36,16 @@ module.exports = (options, callback) => {
         if (buildOfPlatform === 'win32') {
             builderConf.config.win = {
                 target: ['nsis'],
-                icon: path.join(__dirname, '..', '..', 'src', 'clients', options.client, 'icon.ico'),
+                icon: iconPath,
                 certificateFile: path.join(__dirname, 'smartbrowser.pfx'),
                 certificatePassword: '12345678',
             }
             builderConf.config.nsis = {
                 oneClick: false,
                 perMachine: true,
-                installerIcon: path.join(__dirname, '..', '..', 'src', 'clients', options.client, 'icon.ico'),
-                installerHeaderIcon: path.join(__dirname, '..', '..', 'src', 'clients', options.client, 'icon.ico'),
-                uninstallerIcon: path.join(__dirname, '..', '..', 'src', 'clients', options.client, 'icon.ico'),
+                installerIcon: iconPath,
+                installerHeaderIcon: iconPath,
+                uninstallerIcon: iconPath,
                 allowToChangeInstallationDirectory: true,
                 displayLanguageSelector: true,
                 installerLanguages: [
