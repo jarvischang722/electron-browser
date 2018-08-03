@@ -58,7 +58,7 @@ module.exports = (options, callback) => {
         }
 
         // Mac OS conguration
-        if (buildOfPlatform === 'mac') {
+        if (buildOfPlatform === 'macOS' || buildOfPlatform === 'darwin') {
             builderConf.config.dmg = {
                 contents: [
                     {
@@ -88,10 +88,10 @@ module.exports = (options, callback) => {
 
         builder.build(builderConf)
             .then(() => {
-                const ext = process.env.npm_config_platform === 'mac' ? 'dmg' : 'exe'
+                const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
                 const filename = `${setupFileName}.${ext}`
                 const formData = {
-                    filename: fs.createReadStream(`${__dirname}/../../dist/${options.client}/${filename}`),
+                    browserSetup: fs.createReadStream(`${__dirname}/../../dist/${options.client}/${filename}`),
                 }
                 request.post({ url: `${commonOpt.serviceAddr}/browser/uploadBrowserSetup`, formData }, (err, httpResponse, body) => {
                     if (err) {
