@@ -3,6 +3,9 @@ const path = require('path')
 const commonOpt = require('../../src/app/config/common.json')
 const request = require('request')
 const fs = require('fs')
+const log4js = require('log4js')
+
+const logger = log4js.getLogger()
 
 module.exports = (options, callback) => {
     try {
@@ -87,20 +90,37 @@ module.exports = (options, callback) => {
         }
 
         builder.build(builderConf)
-            .then(() => {
+            .then(async () => {
                 const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
                 const filename = `${setupFileName}.${ext}`
                 const formData = {
                     browserSetup: fs.createReadStream(`${__dirname}/../../dist/${options.client}/${filename}`),
                 }
-                request.post({ url: `${commonOpt.serviceAddr}/browser/uploadBrowserSetup`, formData }, (err, httpResponse, body) => {
-                    if (err) {
-                        return callback(err)
-                    }
-                    callback(null, filename)
-                })
+                if (options.uploadToSrv) {
+                    logger.info(`Upload '${filename}' to server. (${commonOpt.serviceAddr})`)
+                    await uploadSetup(`${commonOpt.serviceAddr}/browser/uploadBrowserSetup`, formData)
+                }
+                callback(null, filename)
             })
     } catch (error) {
+        logger.error('Build failur.')
+        logger.error(error)
         callback(error)
     }
+}
+
+/**
+ * Upload file to server
+ * @param {String} url
+ * @param {Object} formData
+ */
+async function uploadSetup(url, formData) {
+    return new Promise((resolve, reject) => {
+        request.post({ url, formData }, (err, httpResponse, body) => {
+            if (err) {
+                return reject(err)
+            }
+            resolve()
+        })
+    })
 }
