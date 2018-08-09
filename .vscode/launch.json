@@ -7,8 +7,24 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Npm client",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "debug"
+            ],
+            "port": 9229,
+            "args": [
+                "--client=tripleone"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Electron Main",
-            "console":"integratedTerminal",
+            "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
             "program": "${workspaceFolder}/src/app/main.js"
@@ -17,10 +33,9 @@
             "type": "node",
             "request": "launch",
             "name": "Build client",
-            "console":"integratedTerminal",
+            "console": "integratedTerminal",
             "program": "${workspaceFolder}/build/install-script/index.js",
             "args": "--client=tripleone"
-         
         }
     ]
 }
