@@ -10,7 +10,9 @@ const logger = log4js.getLogger()
 module.exports = (options, callback) => {
     try {
         const setupFileName = `safety-browser-${options.client}-setup-${commonOpt.version}`
-        const iconPath = path.join(__dirname, '..', '..', 'src', 'clients', options.client, 'icon.ico')
+        const clientPath = path.join(__dirname, '..', '..', 'src', 'clients', options.client)
+        const winIconPath = path.join(clientPath, 'icon.ico')
+        let macIconPath = path.join(clientPath, 'icon.icns')
         const builderConf = {
             extraMetadata: {
                 name: setupFileName,
@@ -39,16 +41,16 @@ module.exports = (options, callback) => {
         if (buildOfPlatform === 'win32') {
             builderConf.config.win = {
                 target: ['nsis'],
-                icon: iconPath,
+                icon: winIconPath,
                 certificateFile: path.join(__dirname, 'smartbrowser.pfx'),
                 certificatePassword: '12345678',
             }
             builderConf.config.nsis = {
                 oneClick: false,
                 perMachine: true,
-                installerIcon: iconPath,
-                installerHeaderIcon: iconPath,
-                uninstallerIcon: iconPath,
+                installerIcon: winIconPath,
+                installerHeaderIcon: winIconPath,
+                uninstallerIcon: winIconPath,
                 allowToChangeInstallationDirectory: true,
                 displayLanguageSelector: true,
                 installerLanguages: [
@@ -62,6 +64,13 @@ module.exports = (options, callback) => {
 
         // Mac OS conguration
         if (buildOfPlatform === 'macOS' || buildOfPlatform === 'darwin') {
+            if (!fs.existsSync(macIconPath)) {
+                macIconPath = path.join(clientPath, 'icon.png')
+            }
+            builderConf.config.mac = {
+                icon: macIconPath,
+                identity: path.join(__dirname, 'smartbrowser.pfx'),
+            }
             builderConf.config.dmg = {
                 contents: [
                     {
