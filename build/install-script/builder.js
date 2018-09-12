@@ -95,14 +95,11 @@ module.exports = (options, callback) => {
         builder.build(builderConf).then(async () => {
             const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
             const filename = `${setupFileName}.${ext}`
-            const formData = {
-                browserSetup: fs.createReadStream(
-                    `${__dirname}/../../dist/${options.client}/${filename}`,
-                ),
-            }
             if (options.uploadToSrv) {
-                logger.info(`Upload '${filename}' to server. (${commonOpt.serviceAddr})`)
-                await uploadSetup(`${commonOpt.serviceAddr}/browser/uploadBrowserSetup`, formData)
+                logger.info(`Start Upload '${filename}' to server. (${commonOpt.serviceAddr})`)
+                const filePath = `${__dirname}/../../dist/${options.client}/${filename}`
+                await uploadSetup(filePath)
+                logger.info('File Uploaded.')
             }
             callback(null, filename)
         })
@@ -114,12 +111,14 @@ module.exports = (options, callback) => {
 
 /**
  * Upload file to server
- * @param {String} url
- * @param {Object} formData
  */
-async function uploadSetup(url, formData) {
+async function uploadSetup(filePath) {
+    const url = `${commonOpt.serviceAddr}/browser/uploadBrowserSetup`
+    const formData = {
+        browserSetup: fs.createReadStream(filePath),
+    }
     return new Promise((resolve, reject) => {
-        request.post({ url, formData, json: true }, (err, httpResponse, body) => {
+        request.post({ url, formData, json: true }, (err, res, body) => {
             if (!err && body && body.success) {
                 resolve()
             } else {
