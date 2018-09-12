@@ -95,12 +95,7 @@ module.exports = (options, callback) => {
         builder.build(builderConf).then(async () => {
             const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
             const filename = `${setupFileName}.${ext}`
-            if (options.uploadToSrv) {
-                logger.info(`Start Upload '${filename}' to server. (${commonOpt.serviceAddr})`)
-                const filePath = `${__dirname}/../../dist/${options.client}/${filename}`
-                await uploadSetup(filePath)
-                logger.info('File Uploaded.')
-            }
+            moveSetupFileToServer(options.client, filename)
             callback(null, filename)
         })
     } catch (error) {
@@ -110,22 +105,10 @@ module.exports = (options, callback) => {
 }
 
 /**
- * Upload file to server
+ * Upload file to server download folder
  */
-async function uploadSetup(filePath) {
-    const url = `${commonOpt.serviceAddr}/browser/uploadBrowserSetup`
-    const formData = {
-        browserSetup: fs.createReadStream(filePath),
-    }
-    return new Promise((resolve, reject) => {
-        request.post({ url, formData, json: true }, (err, res, body) => {
-            if (!err && body && body.success) {
-                resolve()
-            } else {
-                logger.error('Upload setup file failed.')
-                logger.error(err)
-                reject(err)
-            }
-        })
-    })
+async function moveSetupFileToServer(client, filename) {
+    const filePath = `${__dirname}/../../dist/${client}/${filename}`
+    const destPath = `${commonOpt.serviceHomeBase}/deploy/${filename}`
+    fs.copyFileSync(filePath, destPath)
 }
