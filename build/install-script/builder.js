@@ -53,10 +53,7 @@ module.exports = (options, callback) => {
                 uninstallerIcon: winIconPath,
                 allowToChangeInstallationDirectory: true,
                 displayLanguageSelector: true,
-                installerLanguages: [
-                    'en_US',
-                    'zh_CN',
-                ],
+                installerLanguages: ['en_US', 'zh_CN'],
                 multiLanguageInstaller: true,
                 createDesktopShortcut: true,
             }
@@ -91,28 +88,25 @@ module.exports = (options, callback) => {
         if (buildOfPlatform === 'linux') {
             builderConf.config.linux = true
             builderConf.linux = {
-                target: [
-                    'AppImage',
-                    'deb',
-                ],
+                target: ['AppImage', 'deb'],
             }
         }
 
-        builder.build(builderConf)
-            .then(async () => {
-                const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
-                const filename = `${setupFileName}.${ext}`
-                const formData = {
-                    browserSetup: fs.createReadStream(`${__dirname}/../../dist/${options.client}/${filename}`),
-                }
-                if (options.uploadToSrv) {
-                    logger.info(`Upload '${filename}' to server. (${commonOpt.serviceAddr})`)
-                    await uploadSetup(`${commonOpt.serviceAddr}/browser/uploadBrowserSetup`, formData)
-                }
-                callback(null, filename)
-            })
+        builder.build(builderConf).then(async () => {
+            const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
+            const filename = `${setupFileName}.${ext}`
+            const formData = {
+                browserSetup: fs.createReadStream(
+                    `${__dirname}/../../dist/${options.client}/${filename}`,
+                ),
+            }
+            if (options.uploadToSrv) {
+                logger.info(`Upload '${filename}' to server. (${commonOpt.serviceAddr})`)
+                await uploadSetup(`${commonOpt.serviceAddr}/browser/uploadBrowserSetup`, formData)
+            }
+            callback(null, filename)
+        })
     } catch (error) {
-        logger.error('Build failur.')
         logger.error(error)
         callback(error)
     }
@@ -125,11 +119,14 @@ module.exports = (options, callback) => {
  */
 async function uploadSetup(url, formData) {
     return new Promise((resolve, reject) => {
-        request.post({ url, formData }, (err, httpResponse, body) => {
-            if (err) {
-                return reject(err)
+        request.post({ url, formData, json: true }, (err, httpResponse, body) => {
+            if (!err && body && body.success) {
+                resolve()
+            } else {
+                logger.error('Upload setup file failed.')
+                logger.error(err)
+                reject(err)
             }
-            resolve()
         })
     })
 }
