@@ -101,7 +101,10 @@ module.exports = (options, callback) => {
                 callback(null, filename)
             })
             .catch((err) => {
-                callback(err)
+                logger.error(err)
+                const errorIdx = err.message.indexOf('error:')
+                const errorMsg = err.message.substring(errorIdx)
+                callback(new Error(errorMsg))
             })
     } catch (error) {
         logger.error(error)
