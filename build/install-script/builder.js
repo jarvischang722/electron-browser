@@ -92,12 +92,17 @@ module.exports = (options, callback) => {
             }
         }
 
-        builder.build(builderConf).then(async () => {
-            const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
-            const filename = `${setupFileName}.${ext}`
-            moveSetupFileToServer(options.client, filename)
-            callback(null, filename)
-        })
+        builder
+            .build(builderConf)
+            .then(async () => {
+                const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
+                const filename = `${setupFileName}.${ext}`
+                moveSetupFileToServer(options.client, filename)
+                callback(null, filename)
+            })
+            .catch((err) => {
+                callback(err)
+            })
     } catch (error) {
         logger.error(error)
         callback(error)
