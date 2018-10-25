@@ -47,7 +47,7 @@ module.exports = (options, callback) => {
             }
             builderConf.config.nsis = {
                 oneClick: false,
-                perMachine: true,
+                perMachine: false,
                 installerIcon: winIconPath,
                 installerHeaderIcon: winIconPath,
                 uninstallerIcon: winIconPath,
