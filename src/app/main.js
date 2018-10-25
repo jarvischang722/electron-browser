@@ -8,7 +8,9 @@ const request = require('request')
 const progress = require('request-progress')
 const ProgressBar = require('electron-progressbar')
 
-const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json')) ? './config/client.json' : './config/default.json'
+const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json'))
+    ? './config/client.json'
+    : './config/default.json'
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
 
@@ -43,12 +45,15 @@ ipcMain.on('ssinfo', (event, data) => {
     if (data) startShadowsocks(data.localServer, data.port)
     // save token to session
     const ses = win.webContents.session
-    ses.cookies.set({
-        url: homeUrl,
-        name: cookieName,
-        value: data.token,
-        expirationDate: Math.ceil(Date.now() / 1000) + 7200,
-    }, () => { })
+    ses.cookies.set(
+        {
+            url: homeUrl,
+            name: cookieName,
+            value: data.token,
+            expirationDate: Math.ceil(Date.now() / 1000) + 7200,
+        },
+        () => {},
+    )
 })
 
 let pluginName
@@ -123,11 +128,11 @@ async function createWindow() {
     })
 
     win.webContents.on('new-window', (event, url) => {
-        if (url && (
-            url.toLowerCase().includes('onlineservice') ||
-            url.toLowerCase().includes('iframe_module/autodeposit3rdparty') ||
-            url.toLowerCase().includes('player_center/autodeposit3rdparty')
-        )
+        if (
+            url &&
+            (url.toLowerCase().includes('onlineservice') ||
+                url.toLowerCase().includes('iframe_module/autodeposit3rdparty') ||
+                url.toLowerCase().includes('player_center/autodeposit3rdparty'))
         ) {
             return
         }
@@ -138,32 +143,38 @@ async function createWindow() {
         newWin.loadURL(url)
 
         newWin.webContents.on('new-window', (newEvent, newUrl) => {
-            if (newUrl && (
+            if (
+                newUrl &&
                 newUrl.toLowerCase().startsWith('https://cashier.turnkey88.com/gamehistory.php')
-            )) {
+            ) {
                 newEvent.preventDefault()
             }
         })
 
-        newWin.webContents.on('-new-window', (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
-            newEvent.preventDefault()
-            const postWin = new BrowserWindow(winOpt)
-            postWin.once('ready-to-show', () => postWin.show())
-            const loadOptions = {}
-            if (postData != null) {
-                loadOptions.postData = postData
-                loadOptions.extraHeaders = 'content-type: application/x-www-form-urlencoded'
-                if (postData.length > 0) {
-                    const postDataFront = postData[0].bytes.toString()
-                    const boundary = /^--.*[^-\r\n]/.exec(postDataFront)
-                    if (boundary != null) {
-                        loadOptions.extraHeaders = `content-type: multipart/form-data; boundary=${boundary[0].substr(2)}`
+        newWin.webContents.on(
+            '-new-window',
+            (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
+                newEvent.preventDefault()
+                const postWin = new BrowserWindow(winOpt)
+                postWin.once('ready-to-show', () => postWin.show())
+                const loadOptions = {}
+                if (postData != null) {
+                    loadOptions.postData = postData
+                    loadOptions.extraHeaders = 'content-type: application/x-www-form-urlencoded'
+                    if (postData.length > 0) {
+                        const postDataFront = postData[0].bytes.toString()
+                        const boundary = /^--.*[^-\r\n]/.exec(postDataFront)
+                        if (boundary != null) {
+                            loadOptions.extraHeaders = `content-type: multipart/form-data; boundary=${boundary[0].substr(
+                                2,
+                            )}`
+                        }
                     }
                 }
-            }
-            postWin.loadURL(newUrl, loadOptions)
-            newEvent.newGuest = postWin
-        })
+                postWin.loadURL(newUrl, loadOptions)
+                newEvent.newGuest = postWin
+            },
+        )
 
         event.newGuest = newWin
     })
@@ -178,12 +189,19 @@ async function createWindow() {
         // Before start SS server,
         // verify that at least one of these shadowsocks server is available.
         let isSSOk = false
-        await utils.checkAvailableSS(clientOpt).then((ssProxy) => {
-            isSSOk = true
-            clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
-        }).catch((error) => {
-            dialog.showMessageBox(win, { type: 'warning', title: 'Security warning', message: error.message })
-        })
+        await utils
+            .checkAvailableSS(clientOpt)
+            .then((ssProxy) => {
+                isSSOk = true
+                clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
+            })
+            .catch((error) => {
+                dialog.showMessageBox(win, {
+                    type: 'warning',
+                    title: 'Security warning',
+                    message: error.message,
+                })
+            })
 
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
 
@@ -192,18 +210,30 @@ async function createWindow() {
         if (isSSOk) {
             const pubIP = await utils.getPubIPEnableSS(clientOpt)
             if (pubIP !== clientOpt.proxyOptions.serverAddr) {
-                dialog.showMessageBox(win, { type: 'warning', title: 'Security warning', message: 'Shadowsocks server is not working. ' })
+                dialog.showMessageBox(win, {
+                    type: 'warning',
+                    title: 'Security warning',
+                    message: 'Shadowsocks server is not working. ',
+                })
             }
         }
 
-        win.webContents.session.setProxy({ pacScript: `file://${__dirname}/config/default.pac` }, () => {
-            win.loadURL(homeUrl)
-        })
+        win.webContents.session.setProxy(
+            { pacScript: `file://${__dirname}/config/default.pac` },
+            () => {
+                win.loadURL(homeUrl)
+            },
+        )
 
         session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
             let address
             for (const dev in ifaces) {
-                ifaces[dev].filter(d => d.family === 'IPv4' && d.internal === false ? address = d.address : undefined)
+                ifaces[dev].filter(
+                    d =>
+                        d.family === 'IPv4' && d.internal === false
+                            ? (address = d.address)
+                            : undefined,
+                )
             }
             details.requestHeaders['X-SS-CLIENT-ADDR'] = address
             details.requestHeaders['X-SS-PC'] = '1'
@@ -287,7 +317,9 @@ function downloadFP(fileName) {
                 await utils.upzip(dest, unzipPath)
                 // Delete this file after one second of decompression
                 // and avoid not yet unzipping complete
-                setTimeout(() => { fs.unlink(dest) }, 1000)
+                setTimeout(() => {
+                    fs.unlinkSync(dest)
+                }, 1000)
             }
             createWindow()
             progressBar.close()
