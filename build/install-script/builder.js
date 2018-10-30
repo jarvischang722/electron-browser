@@ -1,7 +1,6 @@
 const builder = require('electron-builder')
 const path = require('path')
 const commonOpt = require('../../src/app/config/common.json')
-const request = require('request')
 const fs = require('fs')
 const log4js = require('log4js')
 
@@ -56,6 +55,7 @@ module.exports = (options, callback) => {
                 installerLanguages: ['en_US', 'zh_CN'],
                 multiLanguageInstaller: true,
                 createDesktopShortcut: true,
+                shortcutName: options.productName,
             }
         }
 
