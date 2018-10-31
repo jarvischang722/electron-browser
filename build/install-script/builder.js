@@ -8,13 +8,13 @@ const logger = log4js.getLogger()
 
 module.exports = (options, callback) => {
     try {
-        const { client: clientNam, productName } = options
+        const { client: clientNam } = options
         const clientPath = path.join(__dirname, '..', '..', 'src', 'clients', clientNam)
         const winIconPath = path.join(clientPath, 'icon.ico')
         let macIconPath = path.join(clientPath, 'icon.icns')
         const builderConf = {
             extraMetadata: {
-                name: productName,
+                name: clientNam,
                 description: options.fileDescription,
                 author: 'Tripleone',
             },
