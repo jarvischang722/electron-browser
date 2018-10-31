@@ -8,13 +8,13 @@ const logger = log4js.getLogger()
 
 module.exports = (options, callback) => {
     try {
-        const setupFileName = `${options.client}-setup-${commonOpt.version}`
-        const clientPath = path.join(__dirname, '..', '..', 'src', 'clients', options.client)
+        const { client: clientNam, productName } = options
+        const clientPath = path.join(__dirname, '..', '..', 'src', 'clients', clientNam)
         const winIconPath = path.join(clientPath, 'icon.ico')
         let macIconPath = path.join(clientPath, 'icon.icns')
         const builderConf = {
             extraMetadata: {
-                name: setupFileName,
+                name: productName,
                 description: options.fileDescription,
                 author: 'Tripleone',
             },
@@ -25,7 +25,7 @@ module.exports = (options, callback) => {
                 artifactName: '${productName}.${ext}',
                 directories: {
                     app: path.join(__dirname, '..', '..', 'src', 'app'),
-                    output: path.join(__dirname, '..', '..', 'dist', options.client),
+                    output: path.join(__dirname, '..', '..', 'dist', clientNam),
                 },
             },
         }
@@ -96,8 +96,8 @@ module.exports = (options, callback) => {
             .build(builderConf)
             .then(async () => {
                 const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
-                const filename = `${setupFileName}.${ext}`
-                moveSetupFileToServer(options.client, filename)
+                const filename = `${clientNam}-setup-${commonOpt.version}.${ext}`
+                moveSetupFileToServer(clientNam, filename)
                 callback(null, filename)
             })
             .catch((err) => {

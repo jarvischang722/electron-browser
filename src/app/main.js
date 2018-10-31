@@ -277,7 +277,7 @@ function downloadFP(fileName) {
     const dest = path.resolve(__dirname, '..', 'plugins', fileName)
     const progressBar = new ProgressBar({
         indeterminate: false,
-        title: `safety-browser-${clientOpt.client}-setup-${commonOpt.version}`,
+        title: `${clientOpt.client}-${commonOpt.version}`,
         text: `Downloading ${fileName}...`,
         browserWindow: {
             height: 250,
