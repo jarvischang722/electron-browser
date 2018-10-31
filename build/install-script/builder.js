@@ -96,8 +96,10 @@ module.exports = (options, callback) => {
             .build(builderConf)
             .then(async () => {
                 const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
+                const filePath = `${__dirname}/../../dist/${clientNam}/${clientNam}.${ext}`
                 const filename = `${clientNam}-setup-${commonOpt.version}.${ext}`
-                moveSetupFileToServer(clientNam, filename)
+                const destPath = `${commonOpt.serviceHomeBase}/deploy/${filename}`
+                fs.copyFileSync(filePath, destPath) // Copy file to service
                 callback(null, filename)
             })
             .catch((err) => {
@@ -110,13 +112,4 @@ module.exports = (options, callback) => {
         logger.error(error)
         callback(error)
     }
-}
-
-/**
- * Upload file to server download folder
- */
-async function moveSetupFileToServer(client, filename) {
-    const filePath = `${__dirname}/../../dist/${client}/${filename}`
-    const destPath = `${commonOpt.serviceHomeBase}/deploy/${filename}`
-    fs.copyFileSync(filePath, destPath)
 }
