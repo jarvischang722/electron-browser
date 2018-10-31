@@ -8,7 +8,7 @@ const logger = log4js.getLogger()
 
 module.exports = (options, callback) => {
     try {
-        const setupFileName = `safety-browser-${options.client}-setup-${commonOpt.version}`
+        const setupFileName = `${options.client}-setup-${commonOpt.version}`
         const clientPath = path.join(__dirname, '..', '..', 'src', 'clients', options.client)
         const winIconPath = path.join(clientPath, 'icon.ico')
         let macIconPath = path.join(clientPath, 'icon.icns')
