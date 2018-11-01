@@ -185,7 +185,8 @@ async function createWindow() {
 
     require('./menu')(commonOpt.version)
 
-    if (clientOpt.enabledProxy) {
+    const enabledProxy = utils.checkEnabledSSProxy(homeUrl)
+    if (enabledProxy) {
         // Before start SS server,
         // verify that at least one of these shadowsocks server is available.
         let isSSOk = false
@@ -203,11 +204,11 @@ async function createWindow() {
                 })
             })
 
-        sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
 
         // After start SS Server,
         // verify public ip and client configuration serverAddr is the same.
         if (isSSOk) {
+            sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
             const pubIP = await utils.getPubIPEnableSS(clientOpt)
             if (pubIP !== clientOpt.proxyOptions.serverAddr) {
                 dialog.showMessageBox(win, {
