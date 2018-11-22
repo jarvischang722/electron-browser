@@ -7,7 +7,7 @@ const url = require('url')
  * Use net's socket module to check if ss server is working.
  * @param {Object} ssConf : shadowsocks's configuration
  */
-const checkSSIsAvail = async ssConf =>
+const checkSSIsAvail = ssConf =>
     new Promise((resolve, reject) => {
         try {
             const socket = new net.Socket()
@@ -36,28 +36,31 @@ const checkSSIsAvail = async ssConf =>
  * Check the shadowsocks server is available.
  * @param {Object} clientConf
  */
-const checkAvailableSS = async (clientConf) => {
-    const ssList = clientConf.ssServerList || []
-    if (clientConf.proxyOptions) {
-        ssList.unshift(clientConf.proxyOptions)
-    }
-    const promiseArr = []
-    ssList.forEach((ssConf) => {
-        promiseArr.push(checkSSIsAvail(ssConf).catch(err => ({ error: err })))
+const checkAvailableSS = clientConf =>
+    new Promise(async (resolve) => {
+        try {
+            const ssList = clientConf.ssServerList || []
+            if (clientConf.proxyOptions) {
+                ssList.unshift(clientConf.proxyOptions)
+            }
+            const promiseArr = ssList.map(ssConf =>
+                checkSSIsAvail(ssConf).catch(err => ({ error: err })),
+            )
+
+            const results = await Promise.all(promiseArr)
+            const validSS = results.filter(s => s.error === undefined)
+
+            if (validSS.length === 0) {
+                throw new Error('Shadowsocks server is not working.')
+            }
+            resolve(validSS[0])
+        } catch (error) {
+            resolve({ error })
+        }
     })
 
-    const results = await Promise.all(promiseArr)
-    const validSS = results.filter(s => s.error === undefined)
-
-    if (validSS.length === 0) {
-        throw new Error('Shadowsocks server is not working.')
-    }
-
-    return validSS[0]
-}
-
 const getPubIPEnableSS = (clientOpt = {}) =>
-    new Promise((resolve, reject) => {
+    new Promise((resolve) => {
         const agent = require('socks5-http-client/lib/Agent')
         request(
             {

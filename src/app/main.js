@@ -6,16 +6,12 @@ const SsUtils = require('./schema/ss')
 const Browser = require('./schema/browser')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
-const request = require('request')
-const progress = require('request-progress')
-const ProgressBar = require('electron-progressbar')
 
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json'))
     ? './config/client.json'
     : './config/default.json'
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
-
 
 let homeUrl = []
 let win
@@ -112,8 +108,7 @@ async function createWindow() {
 
     if (!fs.existsSync(flashPath)) {
         if (platform === 'mac') pluginName = `${pluginName}.zip`
-        downloadFP(pluginName)
-        return
+        await Browser.downloadFP(pluginName, clientOpt, platform)
     }
 
     utils.autoUpdate(app, platform, clientOpt.client)
@@ -186,20 +181,17 @@ async function createWindow() {
         // Before start SS server,
         // verify that at least one of these shadowsocks server is available.
         let isSSOk = false
-        await SsUtils
-            .checkAvailableSS(clientOpt)
-            .then((ssProxy) => {
-                isSSOk = true
-                clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
+        const ssProxy = await SsUtils.checkAvailableSS(clientOpt)
+        if (ssProxy.error) {
+            dialog.showMessageBox(win, {
+                type: 'warning',
+                title: 'Security warning',
+                message: ssProxy.error.message,
             })
-            .catch((error) => {
-                dialog.showMessageBox(win, {
-                    type: 'warning',
-                    title: 'Security warning',
-                    message: error.message,
-                })
-            })
-
+        } else {
+            isSSOk = true
+            clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
+        }
 
         // After start SS Server,
         // verify public ip and client configuration serverAddr is the same.
@@ -225,11 +217,8 @@ async function createWindow() {
         session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
             let address
             for (const dev in ifaces) {
-                ifaces[dev].filter(
-                    d =>
-                        d.family === 'IPv4' && d.internal === false
-                            ? (address = d.address)
-                            : undefined,
+                ifaces[dev].filter(d =>
+                    d.family === 'IPv4' && d.internal === false ? (address = d.address) : undefined,
                 )
             }
             details.requestHeaders['X-SS-CLIENT-ADDR'] = address
@@ -244,7 +233,7 @@ async function createWindow() {
     }
 
     win.maximize()
-    win.openDevTools()
+    // win.openDevTools()
 }
 
 app.on('ready', createWindow)
@@ -259,67 +248,3 @@ app.on('quit', () => {
         sslocalServer.closeAll()
     }
 })
-
-/**
- * Download flashplayer from service.
- */
-function downloadFP(fileName) {
-    const pluginPath = path.resolve(__dirname, '..', 'plugins')
-
-    if (!fs.existsSync(pluginPath)) {
-        fs.mkdirSync(pluginPath)
-    }
-
-    const link = `${commonOpt.serviceAddr}/pub_plugins/flashplayer/${fileName}`
-    const dest = path.resolve(__dirname, '..', 'plugins', fileName)
-    const progressBar = new ProgressBar({
-        indeterminate: false,
-        title: `${clientOpt.client}-${commonOpt.version}`,
-        text: `Downloading ${fileName}...`,
-        browserWindow: {
-            height: 250,
-        },
-        style: {
-            detail: {
-                'line-height': '20px',
-            },
-            bar: {
-                position: 'relative',
-                top: '60px',
-            },
-        },
-    })
-    progress(request(link))
-        .on('progress', (state) => {
-            let speedUnit = 'KB'
-            let speed = Math.round(state.speed / 1024)
-            if (speed > 1024) {
-                speedUnit = 'MB'
-                speed = Math.round(speed / 1024)
-            }
-            const percent = Math.round(state.percent * 100)
-            const totalSize = Math.round(state.size.total / 1024)
-            const transferredSize = Math.round(state.size.transferred / 1024)
-            const remainingTime = Math.round(state.time.remaining)
-            const elapsedTime = Math.round(state.time.elapsed)
-            progressBar.detail = `Speed:  ${speed} ${speedUnit}/s <br>  
-                                  Elapsed time: ${elapsedTime} sec <br> 
-                                  Remaining time: ${remainingTime} sec <br> <br>
-                                ${transferredSize} KB of ${totalSize} KB (${percent} %)`
-            progressBar.value = percent
-        })
-        .on('end', async () => {
-            if (platform === 'mac') {
-                const unzipPath = path.resolve(__dirname, '..', 'plugins')
-                await utils.upzip(dest, unzipPath)
-                // Delete this file after one second of decompression
-                // and avoid not yet unzipping complete
-                setTimeout(() => {
-                    fs.unlinkSync(dest)
-                }, 1000)
-            }
-            createWindow()
-            progressBar.close()
-        })
-        .pipe(fs.createWriteStream(dest))
-}
