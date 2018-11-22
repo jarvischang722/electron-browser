@@ -2,6 +2,8 @@ const fs = require('fs')
 const path = require('path')
 const { app, BrowserWindow, ipcMain, session, dialog } = require('electron')
 const utils = require('./lib/utils')
+const SsUtils = require('./schema/ss')
+const Browser = require('./schema/browser')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 const ifaces = require('os').networkInterfaces()
 const request = require('request')
@@ -14,17 +16,14 @@ const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json'))
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
 
-let homeUrl
-if (Array.isArray(clientOpt.homeUrl)) {
-    const arrLen = clientOpt.homeUrl.length
-    const rdmIdx = Math.floor(Math.random() * arrLen)
-    homeUrl = clientOpt.homeUrl[rdmIdx]
-} else {
-    homeUrl = clientOpt.homeUrl
-}
 
+let homeUrl = []
 let win
 let sslocalServer
+let pluginName
+let flashVersion
+let platform
+const cookieName = 'TripleonetechSafetyBrowserCookie'
 
 const startShadowsocks = (addr, port) => {
     const opt = {
@@ -38,8 +37,6 @@ const startShadowsocks = (addr, port) => {
     }
     sslocalServer = ssLocal.startServer(opt, true)
 }
-
-const cookieName = 'TripleonetechSafetyBrowserCookie'
 
 ipcMain.on('ssinfo', (event, data) => {
     if (data) startShadowsocks(data.localServer, data.port)
@@ -55,10 +52,6 @@ ipcMain.on('ssinfo', (event, data) => {
         () => {},
     )
 })
-
-let pluginName
-let flashVersion
-let platform
 
 switch (process.platform) {
 case 'win32':
@@ -114,6 +107,9 @@ if (fs.existsSync(icon)) {
 }
 
 async function createWindow() {
+    homeUrl = await Browser.getHomeurl(clientOpt)
+    Browser.writePacFile(clientOpt, homeUrl)
+
     if (!fs.existsSync(flashPath)) {
         if (platform === 'mac') pluginName = `${pluginName}.zip`
         downloadFP(pluginName)
@@ -185,12 +181,12 @@ async function createWindow() {
 
     require('./menu')(commonOpt.version)
 
-    const enabledProxy = utils.checkEnabledSSProxy(homeUrl)
+    const enabledProxy = SsUtils.checkEnabledSSProxy(homeUrl)
     if (enabledProxy) {
         // Before start SS server,
         // verify that at least one of these shadowsocks server is available.
         let isSSOk = false
-        await utils
+        await SsUtils
             .checkAvailableSS(clientOpt)
             .then((ssProxy) => {
                 isSSOk = true
@@ -209,7 +205,7 @@ async function createWindow() {
         // verify public ip and client configuration serverAddr is the same.
         if (isSSOk) {
             sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
-            const pubIP = await utils.getPubIPEnableSS(clientOpt)
+            const pubIP = await SsUtils.getPubIPEnableSS(clientOpt)
             if (pubIP !== clientOpt.proxyOptions.serverAddr) {
                 dialog.showMessageBox(win, {
                     type: 'warning',
@@ -248,7 +244,7 @@ async function createWindow() {
     }
 
     win.maximize()
-    // win.openDevTools()
+    win.openDevTools()
 }
 
 app.on('ready', createWindow)

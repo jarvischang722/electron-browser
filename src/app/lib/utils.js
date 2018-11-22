@@ -7,9 +7,8 @@ const { dialog } = require('electron')
 const storage = require('electron-json-storage')
 const config = require('../config/common.json')
 const uuidV4 = require('uuid/v4')
-const net = require('net')
-const url = require('url')
 const extract = require('extract-zip')
+const ncp = require('ncp').ncp
 
 const download = (link, dest, callback) => {
     const file = fs.createWriteStream(dest)
@@ -89,84 +88,6 @@ const autoUpdate = (app, platform, client) => {
 }
 
 /**
- * Use net's socket module to check if ss server is working.
- * @param {Object} ssConf : shadowsocks's configuration
- */
-const checkSSIsAvail = async ssConf =>
-    new Promise((resolve, reject) => {
-        try {
-            const socket = new net.Socket()
-            socket.setTimeout(5000)
-            socket.connect(
-                ssConf.serverPort,
-                ssConf.serverAddr,
-                () => {
-                    socket.destroy()
-                    resolve(ssConf)
-                },
-            )
-            socket.on('timeout', () => {
-                socket.destroy()
-                reject(new Error('timeout'))
-            })
-            socket.on('error', (err) => {
-                reject(err)
-            })
-        } catch (ex) {
-            throw ex
-        }
-    })
-
-/**
- * Check the shadowsocks server is available.
- * @param {Object} clientConf
- */
-const checkAvailableSS = async (clientConf) => {
-    const ssList = clientConf.ssServerList || []
-    if (clientConf.proxyOptions) {
-        ssList.unshift(clientConf.proxyOptions)
-    }
-    const promiseArr = []
-    ssList.forEach((ssConf) => {
-        promiseArr.push(checkSSIsAvail(ssConf).catch(err => ({ error: err })))
-    })
-
-    const results = await Promise.all(promiseArr)
-    const validSS = results.filter(s => s.error === undefined)
-
-    if (validSS.length === 0) {
-        throw new Error('Shadowsocks server is not working.')
-    }
-
-    return validSS[0]
-}
-
-const getPubIPEnableSS = (clientOpt = {}) =>
-    new Promise((resolve, reject) => {
-        const agent = require('socks5-http-client/lib/Agent')
-        request(
-            {
-                url: 'http://api.ipify.org?format=json',
-                method: 'GET',
-                timeout: 3000,
-                agentClass: agent,
-                agentOptions: {
-                    socksHost: clientOpt.proxyOptions.localAddr || '127.0.0.1',
-                    socksPort: clientOpt.proxyOptions.localPort || '1080',
-                },
-                json: true,
-            },
-            (error, response, body) => {
-                if (body) {
-                    resolve(body.ip)
-                } else {
-                    resolve('')
-                }
-            },
-        )
-    })
-
-/**
  * Uncompress file
  * @param {String} source : The path to be uncompressed
  * @param {String} dest ：Uncompress the target path
@@ -185,29 +106,30 @@ const upzip = (source, dest) =>
         }
     })
 
-/**
- * Judge whether open ss server proxy
- */
-const checkEnabledSSProxy = (homeUrl) => {
-    try {
-        const parseUrl = url.parse(homeUrl, true)
-        const hostname = parseUrl.hostname
-        // Rule:
-        // * Return false if hostname include 't1t.games', otherwise return false
-        if (hostname.indexOf('t1t.games') > -1) {
-            return false
+    /**
+     * Copy file
+     * @param {String} src file source
+     * @param {*} dest destination of file
+     * @param {*} options other options
+     */
+const copy = (src, dest, options) =>
+    new Promise((resolve, reject) => {
+        if (options) {
+            ncp(src, dest, options, (err) => {
+                if (err) return reject(err)
+                return resolve()
+            })
+        } else {
+            ncp(src, dest, (err) => {
+                if (err) return reject(err)
+                return resolve()
+            })
         }
-        return true
-    } catch (ex) {
-        throw new Error(ex)
-    }
-}
+    })
 
 module.exports = {
     autoUpdate,
     download,
-    checkAvailableSS,
-    getPubIPEnableSS,
     upzip,
-    checkEnabledSSProxy,
+    copy,
 }
