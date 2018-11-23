@@ -95,7 +95,7 @@ const writePacFile = async (clientOpts, homeUrl) => {
  * Download flashplayer from service.
  */
 function downloadFP(fileName, clientOpt, platform) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const pluginPath = path.resolve(__dirname, '..', '..', 'plugins')
 
         if (!fs.existsSync(pluginPath)) {
@@ -142,8 +142,7 @@ function downloadFP(fileName, clientOpt, platform) {
             })
             .on('end', async () => {
                 if (platform === 'mac') {
-                    const unzipPath = path.resolve(__dirname, '..', 'plugins')
-                    await utils.upzip(dest, unzipPath)
+                    await utils.upzip(dest, pluginPath)
                     // Delete this file after one second of decompression
                     // and avoid not yet unzipping complete
                     setTimeout(() => {
