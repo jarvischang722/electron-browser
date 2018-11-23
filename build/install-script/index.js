@@ -8,32 +8,35 @@ const builder = require('../install-script/builder')
 
 const logger = log4js.getLogger()
 
-const copy = (src, dest, options) => new Promise((resolve, reject) => {
-    if (options) {
-        ncp(src, dest, options, (err) => {
-            if (err) return reject(err)
-            return resolve()
-        })
-    } else {
-        ncp(src, dest, (err) => {
-            if (err) return reject(err)
-            return resolve()
-        })
-    }
-})
+const copy = (src, dest, options) =>
+    new Promise((resolve, reject) => {
+        if (options) {
+            ncp(src, dest, options, (err) => {
+                if (err) return reject(err)
+                return resolve()
+            })
+        } else {
+            ncp(src, dest, (err) => {
+                if (err) return reject(err)
+                return resolve()
+            })
+        }
+    })
 
-const asarSync = (src, dest) => new Promise((resolve, reject) => {
-    asar.createPackage(src, dest, (err) => {
-        if (err) return reject(err)
-        return resolve()
+const asarSync = (src, dest) =>
+    new Promise((resolve, reject) => {
+        asar.createPackage(src, dest, (err) => {
+            if (err) return reject(err)
+            return resolve()
+        })
     })
-})
-const compiler = options => new Promise((resolve, reject) => {
-    builder(options, (err) => {
-        if (err) return reject(err)
-        return resolve()
+const compiler = options =>
+    new Promise((resolve, reject) => {
+        builder(options, (err) => {
+            if (err) return reject(err)
+            return resolve()
+        })
     })
-})
 
 const writePacFile = async (optionPath, options) => {
     const { localPort } = options.proxyOptions
@@ -86,7 +89,9 @@ const writePacFile = async (optionPath, options) => {
 const run = async (optionPath) => {
     try {
         const optionFile = path.join(optionPath, 'client.json')
-        const icon = path.join(optionPath, 'icon.ico')
+        const iconType = process.platform === 'darwin' ? 'png' : 'ico'  // platform 'darwin'= macOS ; 'win32'=Windows
+        const icon = path.join(optionPath, `icon.${iconType}`)
+
         const options = require(optionFile)
 
         if (options.enabledProxy && options.proxyOptions) {
@@ -94,7 +99,7 @@ const run = async (optionPath) => {
         }
 
         await copy(optionFile, 'src/app/config/client.json')
-        await copy(icon, 'src/app/config/icon.ico')
+        await copy(icon, `src/app/config/icon.${iconType}`)
 
         await asarSync('src/app', 'dist/unpacked/resources/app.asar')
         await compiler(options)
