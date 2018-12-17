@@ -106,12 +106,12 @@ const upzip = (source, dest) =>
         }
     })
 
-    /**
-     * Copy file
-     * @param {String} src file source
-     * @param {*} dest destination of file
-     * @param {*} options other options
-     */
+/**
+ * Copy file
+ * @param {String} src file source
+ * @param {*} dest destination of file
+ * @param {*} options other options
+ */
 const copy = (src, dest, options) =>
     new Promise((resolve, reject) => {
         if (options) {
@@ -127,9 +127,40 @@ const copy = (src, dest, options) =>
         }
     })
 
+/**
+ * Get client's public IP.
+ * @param {Object} clientOpt: Agent configuration
+ * @param {Boolean} enableSS : Whether to open shadowsocks server
+ */
+const getPubIP = (clientOpt = {}, enableSS) =>
+    new Promise((resolve) => {
+        const agent = require('socks5-http-client/lib/Agent')
+        const options = {
+            url: 'http://api.ipify.org?format=json',
+            method: 'GET',
+            timeout: 3000,
+            json: true,
+        }
+        if (enableSS) {
+            options.agentClass = agent
+            options.agentOptions = {
+                socksHost: clientOpt.proxyOptions.localAddr || '127.0.0.1',
+                socksPort: clientOpt.proxyOptions.localPort || '1080',
+            }
+        }
+        request(options, (error, response, body) => {
+            if (body) {
+                resolve(body.ip)
+            } else {
+                resolve('')
+            }
+        })
+    })
+
 module.exports = {
     autoUpdate,
     download,
     upzip,
     copy,
+    getPubIP,
 }

@@ -1,11 +1,10 @@
 const fs = require('fs')
 const path = require('path')
 const { app, BrowserWindow, ipcMain, session, dialog } = require('electron')
-const utils = require('./lib/utils')
+const Utils = require('./lib/utils')
 const SsUtils = require('./schema/ss')
 const Browser = require('./schema/browser')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
-const ifaces = require('os').networkInterfaces()
 
 const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json'))
     ? './config/client.json'
@@ -111,7 +110,7 @@ async function createWindow() {
         await Browser.downloadFP(pluginName, clientOpt, platform)
     }
 
-    utils.autoUpdate(app, platform, clientOpt.client)
+    Utils.autoUpdate(app, platform, clientOpt.client)
     win = new BrowserWindow(winOpt)
 
     win.on('page-title-updated', (event) => {
@@ -195,9 +194,10 @@ async function createWindow() {
 
         // After start SS Server,
         // verify public ip and client configuration serverAddr is the same.
+        let pubIP = ''
         if (isSSOk) {
             sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
-            const pubIP = await SsUtils.getPubIPEnableSS(clientOpt)
+            pubIP = await Utils.getPubIP(clientOpt, true) // The line must be placed after server started.
             if (pubIP !== clientOpt.proxyOptions.serverAddr) {
                 dialog.showMessageBox(win, {
                     type: 'warning',
@@ -214,14 +214,9 @@ async function createWindow() {
             },
         )
 
-        session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-            let address
-            for (const dev in ifaces) {
-                ifaces[dev].filter(d =>
-                    d.family === 'IPv4' && d.internal === false ? (address = d.address) : undefined,
-                )
-            }
-            details.requestHeaders['X-SS-CLIENT-ADDR'] = address
+        session.defaultSession.webRequest.onBeforeSendHeaders(async (details, callback) => {
+            pubIP = await Utils.getPubIP(clientOpt, isSSOk)
+            details.requestHeaders['X-SS-CLIENT-ADDR'] = pubIP
             details.requestHeaders['X-SS-PC'] = '1'
             callback({
                 cancel: false,
