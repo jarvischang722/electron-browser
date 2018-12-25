@@ -3,6 +3,7 @@ const path = require('path')
 const commonOpt = require('../../src/app/config/common.json')
 const fs = require('fs')
 const log4js = require('log4js')
+const pjson = require('../../package.json')
 
 const logger = log4js.getLogger()
 
@@ -21,6 +22,7 @@ module.exports = (options, callback) => {
             config: {
                 appId: options.clientId,
                 buildVersion: commonOpt.version,
+                electronVersion: pjson.devDependencies.electron.replace('\^', ''),
                 copyright: `Copyright © ${new Date().getFullYear()} Tripleone`,
                 artifactName: '${productName}.${ext}',
                 directories: {
@@ -29,7 +31,6 @@ module.exports = (options, callback) => {
                 },
             },
         }
-
         const buildOfPlatform = options.platform || process.platform
         const supportArch = options.supportArch ? options.supportArch : [process.arch]
 

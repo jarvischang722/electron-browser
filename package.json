@@ -1,12 +1,12 @@
 {
   "name": "safetybrowser",
   "author": "Tripleonetech",
-  "version": "2.9.9",
+  "version": "2.9.10",
   "description": "Tripleonetech safety browser",
   "main": "main.js",
   "devDependencies": {
     "asar": "^0.13.0",
-    "electron": "^2.0.12",
+    "electron": "^2.0.14",
     "electron-builder": "^19.5.1",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
