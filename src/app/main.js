@@ -216,6 +216,7 @@ async function createWindow() {
 
         session.defaultSession.webRequest.onBeforeSendHeaders(async (details, callback) => {
             pubIP = await Utils.getPubIP(clientOpt, isSSOk)
+            details.requestHeaders['User-Agent'] = `${details.headers['User-Agent']} t1t_safetybrowser/${commonOpt.version}`
             details.requestHeaders['X-SS-CLIENT-ADDR'] = pubIP
             details.requestHeaders['X-SS-PC'] = '1'
             callback({
