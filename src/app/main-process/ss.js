@@ -1,5 +1,4 @@
 require('date-utils')
-const request = require('request')
 const net = require('net')
 const url = require('url')
 

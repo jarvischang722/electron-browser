@@ -1,14 +1,11 @@
 const fs = require('fs')
 const path = require('path')
-const { app, BrowserWindow, ipcMain, session, dialog } = require('electron')
+const { app, BrowserWindow, session, dialog } = require('electron')
+const { Ss: SsUtils, Browser, AutoUpdate } = require('./main-process/')
 const Utils = require('./lib/utils')
-const SsUtils = require('./schema/ss')
-const Browser = require('./schema/browser')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 
-const clientOptFile = fs.existsSync(path.join(__dirname, 'config/client.json'))
-    ? './config/client.json'
-    : './config/default.json'
+const clientOptFile = path.join(__dirname, 'config', 'client.json')
 const clientOpt = require(clientOptFile)
 const commonOpt = require('./config/common.json')
 
@@ -18,35 +15,11 @@ let sslocalServer
 let pluginName
 let flashVersion
 let platform
-const cookieName = 'TripleonetechSafetyBrowserCookie'
+const debug = process.argv.indexOf('--debug') > -1
 
-const startShadowsocks = (addr, port) => {
-    const opt = {
-        localAddr: addr,
-        localPort: port,
-        serverAddr: '106.75.166.72',
-        serverPort: 19999,
-        password: 'nMvTdb7VXMPudFWH',
-        method: 'aes-256-cfb',
-        timeout: 180,
-    }
-    sslocalServer = ssLocal.startServer(opt, true)
-}
 
-ipcMain.on('ssinfo', (event, data) => {
-    if (data) startShadowsocks(data.localServer, data.port)
-    // save token to session
-    const ses = win.webContents.session
-    ses.cookies.set(
-        {
-            url: homeUrl,
-            name: cookieName,
-            value: data.token,
-            expirationDate: Math.ceil(Date.now() / 1000) + 7200,
-        },
-        () => {},
-    )
-})
+require('./logger').initLogger(app)
+
 
 switch (process.platform) {
 case 'win32':
@@ -77,7 +50,7 @@ default:
     break
 }
 
-const flashPath = path.join(__dirname, '../plugins', pluginName)
+const flashPath = path.join(__dirname, '..', 'plugins', pluginName)
 
 if (clientOpt.enabledFlash) {
     app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
@@ -89,16 +62,11 @@ const winOpt = {
     height: 768,
     title: clientOpt.productName,
     webPreferences: {
-        nodeIntegration: false,
         webSecurity: false,
         allowRunningInsecureContent: true,
         plugins: true,
     },
-}
-
-const icon = path.join(__dirname, 'config/icon.ico')
-if (fs.existsSync(icon)) {
-    winOpt.icon = icon
+    icon: fs.existsSync(path.join(__dirname, 'config', 'icon.ico')) ? path.join(__dirname, 'config', 'icon.ico') : null,
 }
 
 async function createWindow() {
@@ -110,7 +78,7 @@ async function createWindow() {
         await Browser.downloadFP(pluginName, clientOpt, platform)
     }
 
-    Utils.autoUpdate(app, platform, clientOpt.client)
+    AutoUpdate(app, platform, clientOpt.client)
     win = new BrowserWindow(winOpt)
 
     win.on('page-title-updated', (event) => {
@@ -140,32 +108,6 @@ async function createWindow() {
                 newEvent.preventDefault()
             }
         })
-
-        newWin.webContents.on(
-            '-new-window',
-            (newEvent, newUrl, frameName, disposition, additionalFeatures, postData) => {
-                newEvent.preventDefault()
-                const postWin = new BrowserWindow(winOpt)
-                postWin.once('ready-to-show', () => postWin.show())
-                const loadOptions = {}
-                if (postData != null) {
-                    loadOptions.postData = postData
-                    loadOptions.extraHeaders = 'content-type: application/x-www-form-urlencoded'
-                    if (postData.length > 0) {
-                        const postDataFront = postData[0].bytes.toString()
-                        const boundary = /^--.*[^-\r\n]/.exec(postDataFront)
-                        if (boundary != null) {
-                            loadOptions.extraHeaders = `content-type: multipart/form-data; boundary=${boundary[0].substr(
-                                2,
-                            )}`
-                        }
-                    }
-                }
-                postWin.loadURL(newUrl, loadOptions)
-                newEvent.newGuest = postWin
-            },
-        )
-
         event.newGuest = newWin
     })
 
@@ -228,8 +170,11 @@ async function createWindow() {
         win.loadURL(homeUrl)
     }
 
+    if (debug) {
+        win.openDevTools()
+        require('devtron').install()  // inspect, monitor, and debug our Electron app
+    }
     win.maximize()
-    // win.openDevTools()
 }
 
 app.on('ready', createWindow)

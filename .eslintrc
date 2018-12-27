@@ -1,6 +1,7 @@
 {
     "extends": "airbnb",
     "globals": {
+        "log" : true
     },
     "env": {
         "es6": true,

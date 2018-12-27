@@ -6,8 +6,11 @@
   "main": "main.js",
   "devDependencies": {
     "asar": "^0.13.0",
+    "devtron": "^1.4.0",
     "electron": "^2.0.14",
     "electron-builder": "^19.5.1",
+    "electron-log": "^2.2.17",
+    "electron-settings": "^3.2.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
     "eslint-plugin-import": "^2.3.0",
@@ -23,6 +26,7 @@
     "debug": "node --nolazy --inspect-brk=9229 ./build/install-script/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron ./src/app",
+    "dev": "electron ./src/app --debug",
     "build": "node ./build/install-script/index.js"
   },
   "repository": {
@@ -32,6 +36,5 @@
   "keywords": [
     "safety",
     "browser"
-  ],
-  "dependencies": {}
+  ]
 }
