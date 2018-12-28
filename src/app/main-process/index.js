@@ -1,9 +1,9 @@
 const Browser = require('./browser')
 const Ss = require('./ss')
-const AutoUpdate = require('./autoUpdate')
+const AutoUpdater = require('./autoUpdater')
 
 module.exports = {
     Browser,
     Ss,
-    AutoUpdate,
+    AutoUpdater,
 }

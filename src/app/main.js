@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const { app, BrowserWindow, session, dialog } = require('electron')
-const { Ss: SsUtils, Browser, AutoUpdate } = require('./main-process/')
+const { Ss: SsUtils, Browser, AutoUpdater } = require('./main-process/')
 const Utils = require('./lib/utils')
 const ssLocal = require('./lib/shadowsocks/ssLocal')
 
@@ -78,7 +78,8 @@ async function createWindow() {
         await Browser.downloadFP(pluginName, clientOpt, platform)
     }
 
-    AutoUpdate(app, platform, clientOpt.client)
+    AutoUpdater.checkUpdatesAndNotify(app, platform, clientOpt.client)
+
     win = new BrowserWindow(winOpt)
 
     win.on('page-title-updated', (event) => {
@@ -155,7 +156,6 @@ async function createWindow() {
                 win.loadURL(homeUrl)
             },
         )
-
         session.defaultSession.webRequest.onBeforeSendHeaders(async (details, callback) => {
             pubIP = await Utils.getPubIP(clientOpt, isSSOk)
             details.requestHeaders['User-Agent'] = `${details.headers['User-Agent']} t1t_safetybrowser/${commonOpt.version}`
