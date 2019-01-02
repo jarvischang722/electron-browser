@@ -1,6 +1,9 @@
 const i18n = new (require('../lib/i18n'))()
+const AutoUpdater = require('../main-process/autoUpdater')
+const commonOpt = require('../config/common.json')
+
 /* eslint-disable no-underscore-dangle */
-const getTemplate = (version) => {
+const getTemplate = () => {
     const menuTemplate = [
         {
             label: i18n.__('Edit'),
@@ -68,10 +71,16 @@ const getTemplate = (version) => {
                 },
             ],
         }, {
-            label: i18n.__('Version'),
+            role: 'help',
             submenu: [
                 {
-                    label: i18n.__(`${version}`),
+                    label: 'Check for updates',
+                    click: () => {
+                        AutoUpdater.checkUpdatesAndNotify(true)
+                    },
+                },
+                {
+                    label: `${i18n.__('Version')} ${commonOpt.version}`,
                     enabled: false,
                 },
             ],

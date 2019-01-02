@@ -85,7 +85,7 @@ const startShadowSocksServer = async (clientOpt) => {
     let sslocalServer
     const ssProxy = await checkAvailableSS(clientOpt)
     if (ssProxy.error) {
-        dialog.showErrorBox('Security warning', ssProxy.error.message)
+        dialog.showMessageBox({ type: 'warning', title: 'Security warning', message: ssProxy.error.message })
     } else {
         isSSOk = true
         clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
@@ -98,7 +98,7 @@ const startShadowSocksServer = async (clientOpt) => {
         // The line must be placed after server started.
         const pubIP = await Utils.getPubIP(clientOpt, true)
         if (pubIP !== clientOpt.proxyOptions.serverAddr) {
-            dialog.showErrorBox('Security warning', 'Shadowsocks server is not working.')
+            dialog.showMessageBox({ type: 'warning', title: 'Security warning', message: 'Shadowsocks server is not working.' })
         }
     }
     return sslocalServer

@@ -1,5 +1,7 @@
 const path = require('path')
 const request = require('request')
+const { app } = require('electron')
+const settings = require('electron-settings')
 const childProcess = require('child_process')
 const { dialog } = require('electron')
 const storage = require('electron-json-storage')
@@ -53,18 +55,16 @@ const popupHint = (link, filePath) => {
 
 /**
  * 取得Client最新版本的資訊
- * @param {String} client
- * @param {String} platform
  */
-const getClientLatestVer = (client, platform) =>
+const getClientLatestVer = () =>
     new Promise((resolve, reject) => {
         try {
+            const platform = settings.get('app.platform')
+            const client = settings.get('app.clientOpt').client
             const apiMain = config.serviceAddr
             const reqUrl = `${apiMain}/browser/version?platform=${platform}&client=${client}`
             request.get({ url: reqUrl, json: true }, (requestErr, res, body) => {
-                if (requestErr) {
-                    reject(requestErr)
-                }
+                if (requestErr) return reject(requestErr)
                 const returnData = {
                     link: body.link,
                     latestVer: body.version,
@@ -76,34 +76,41 @@ const getClientLatestVer = (client, platform) =>
         }
     })
 
+
 /**
  * 檢查本機的版本是否為最新版
- * @param {Object} app
- * @param {String} platform
- * @param {String} client
+ * @param {String} currentVer 目前的版本
+ * @param {String} latestVer  此Client最新版本
  */
-const checkUpdatesAndNotify = async (app, platform, client) => {
+const checkLatestVersion = (currentVer, latestVer) => {
+    let isLatestVer = true
+    const [a, b, c] = currentVer.split('.')
+    const [x, y, z] = latestVer.split('.')
+    if (+x > +a) isLatestVer = false
+    if (+x === +a && +y > +b) isLatestVer = false
+    if (+x === +a && +y === +b && +z > +c) isLatestVer = false
+    return isLatestVer
+}
+
+/**
+ * 檢查本機的版本是否需要更新
+ */
+const checkUpdatesAndNotify = async (enableNotify) => {
     try {
-        if (!platform || platform !== 'windows' || !client) return
+        const client = settings.get('app.clientOpt').client
         const isRunFirstTimeToday = true || (await runFirstTimeToday(client))
         if (!isRunFirstTimeToday) return
         let needUpdate = false
         const currentVer = config.version
-        const clientVerInfo = await getClientLatestVer(client, platform)
+        const clientVerInfo = await getClientLatestVer()
         const { latestVer, link } = clientVerInfo
-        if (latestVer && currentVer) {
-            const [a, b, c] = currentVer.split('.')
-            const [x, y, z] = latestVer.split('.')
-            if (+x > +a) needUpdate = true
-            if (+x === +a && +y > +b) needUpdate = true
-            if (+x === +a && +y === +b && +z > +c) needUpdate = true
-        } else {
-            needUpdate = true
-        }
-
+        const isLatestVer = checkLatestVersion(currentVer, latestVer)
+        if (!isLatestVer) needUpdate = true
         if (needUpdate && link) {
             const filePath = path.join(app.getPath('userData'), `${uuidV4()}.exe`)
             popupHint(link, filePath)
+        } else if (needUpdate === false && enableNotify === true) {
+            dialog.showMessageBox({ type: 'info', title: `${client} safety browser`, message: `您已安装最新版本  ${latestVer}` })
         }
     } catch (err) {
         log.error(err)
@@ -112,4 +119,5 @@ const checkUpdatesAndNotify = async (app, platform, client) => {
 
 module.exports = {
     checkUpdatesAndNotify,
+    checkLatestVersion,
 }

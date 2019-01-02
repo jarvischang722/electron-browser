@@ -89,7 +89,7 @@ const writePacFile = async (clientOpts, homeUrl) => {
     fs.writeFileSync(pacFile, pac)
 }
 
-const getUsePlatform = () => {
+const getUserPlatform = () => {
     let platform
     switch (process.platform) {
     case 'win32':
@@ -105,9 +105,6 @@ const getUsePlatform = () => {
         break
     }
 
-    settings.set('app', {
-        platform,
-    })
     return platform
 }
 
@@ -115,5 +112,5 @@ const getUsePlatform = () => {
 module.exports = {
     getHomeurl,
     writePacFile,
-    getUsePlatform,
+    getUserPlatform,
 }
