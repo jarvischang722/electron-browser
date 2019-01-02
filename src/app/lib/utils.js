@@ -67,26 +67,26 @@ const copy = (src, dest, options) =>
  */
 const getPubIP = (clientOpt = {}, enableSS) =>
     new Promise((resolve) => {
-        const agent = require('socks5-http-client/lib/Agent')
+        const Agent = require('socks5-http-client/lib/Agent')
         const options = {
             url: 'http://api.ipify.org?format=json',
             method: 'GET',
-            timeout: 3000,
+            timeout: 5000,
             json: true,
         }
         if (enableSS) {
-            options.agentClass = agent
+            options.agentClass = Agent
             options.agentOptions = {
                 socksHost: clientOpt.proxyOptions.localAddr || '127.0.0.1',
                 socksPort: clientOpt.proxyOptions.localPort || '1080',
             }
         }
         request(options, (error, response, body) => {
-            if (body) {
-                resolve(body.ip)
-            } else {
-                resolve('')
+            if (error) {
+                log.error(error)
+                return resolve('')
             }
+            resolve(body.ip)
         })
     })
 
