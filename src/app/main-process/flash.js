@@ -49,12 +49,11 @@ const enableFlashPlugin = async (app, clientOpt) => {
     })
 }
 
-
 /**
  * Download flashplayer from service.
  */
 function downloadFP(fileName, clientOpt, platform) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const pluginPath = path.resolve(__dirname, '..', '..', 'plugins')
 
         if (!fs.existsSync(pluginPath)) {
@@ -99,6 +98,10 @@ function downloadFP(fileName, clientOpt, platform) {
                                 ${transferredSize} KB of ${totalSize} KB (${percent} %)`
                 progressBar.value = percent
             })
+            .on('error', (err) => {
+                reject(err)
+                progressBar.close()
+            })
             .on('end', async () => {
                 if (platform === 'mac') {
                     await utils.upzip(dest, pluginPath)
@@ -116,10 +119,11 @@ function downloadFP(fileName, clientOpt, platform) {
 }
 
 const checkExistFlashPlugin = async (clientOpt) => {
-    const flashPath = settings.get('flash.path')
     let pluginName = settings.get('flash.pluginName')
+    const flashPath = settings.get('flash.path')
     const platform = settings.get('app.platform')
-    if (!fs.existsSync(flashPath)) {
+    const existFlash = fs.existsSync(flashPath)
+    if (!existFlash || (existFlash && fs.statSync(flashPath).size < 0)) {
         if (platform === 'mac') pluginName = `${pluginName}.zip`
         await downloadFP(pluginName, clientOpt, platform)
     }

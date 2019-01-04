@@ -3,7 +3,6 @@ const path = require('path')
 const url = require('url')
 const request = require('request')
 const commonOpt = require('../config/common.json')
-const settings = require('electron-settings')
 
 const getHomeurl = clientOpt =>
     new Promise((resolve) => {
