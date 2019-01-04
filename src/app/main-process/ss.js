@@ -69,8 +69,7 @@ const checkEnabledSSProxy = (homeUrl) => {
     try {
         const parseUrl = url.parse(homeUrl, true)
         const hostname = parseUrl.hostname
-        // Rule:
-        // * Return false if hostname include 't1t.games', otherwise return false
+        // * Rule: Return false if hostname include 't1t.games', otherwise return true
         if (hostname.indexOf('t1t.games') > -1) {
             return false
         }
@@ -98,12 +97,7 @@ const startShadowSocksServer = async (clientOpt) => {
     }
 
     // After start SS Server,
-    // verify public ip and client configuration serverAddr is the same.
-    dialog.showMessageBox({
-        type: 'warning',
-        title: i18n.__('Ss').SecurityWarning,
-        message: i18n.__('Ss').ServerNotWorking,
-    })
+    // verify that public ip and client configuration serverAddr are the same.
     if (isSSOk) {
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
         // The line must be placed after server started.
