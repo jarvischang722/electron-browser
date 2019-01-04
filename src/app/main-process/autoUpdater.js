@@ -9,6 +9,7 @@ const config = require('../config/common.json')
 const uuidV4 = require('uuid/v4')
 const Utils = require('../lib/utils')
 const fs = require('fs')
+const i18n = new (require('../lib/i18n'))()
 
 /**
  * 檢查用戶是不是今天第一次打開，避免每次打開都詢問，造成用戶困擾
@@ -33,7 +34,7 @@ const runFirstTimeToday = client =>
 const popupHint = (link, filePath) => {
     dialog.showMessageBox(
         {
-            message: '有更新可用, 点击确定开始安装',
+            message: i18n.__('AutoUpd').NeedUpdate,
             buttons: ['OK', 'Cancel'],
         },
         (res) => {
@@ -76,7 +77,6 @@ const getClientLatestVer = () =>
         }
     })
 
-
 /**
  * 檢查本機的版本是否為最新版
  * @param {String} currentVer 目前的版本
@@ -110,7 +110,11 @@ const checkUpdatesAndNotify = async (enableNotify) => {
             const filePath = path.join(app.getPath('userData'), `${uuidV4()}.exe`)
             popupHint(link, filePath)
         } else if (needUpdate === false && enableNotify === true) {
-            dialog.showMessageBox({ type: 'info', title: `${client} safety browser`, message: `您已安装最新版本  ${latestVer}` })
+            dialog.showMessageBox({
+                type: 'info',
+                title: `${client} safety browser`,
+                message: i18n.__('AutoUpd').AlreadyLatest,
+            })
         }
     } catch (err) {
         log.error(err)

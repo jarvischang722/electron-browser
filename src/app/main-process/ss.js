@@ -4,6 +4,8 @@ const url = require('url')
 const ssLocal = require('../lib/shadowsocks/ssLocal')
 const Utils = require('../lib/utils')
 const { dialog } = require('electron')
+const i18n = new (require('../lib/i18n'))()
+
 /**
  * Use net's socket module to check if ss server is working.
  * @param {Object} ssConf : shadowsocks's configuration
@@ -52,7 +54,7 @@ const checkAvailableSS = clientConf =>
             const validSS = results.filter(s => s.error === undefined)
 
             if (validSS.length === 0) {
-                throw new Error('Shadowsocks server is not working.')
+                throw new Error(i18n.__('Ss').ServerNotWorking)
             }
             resolve(validSS[0])
         } catch (error) {
@@ -85,7 +87,11 @@ const startShadowSocksServer = async (clientOpt) => {
     let sslocalServer
     const ssProxy = await checkAvailableSS(clientOpt)
     if (ssProxy.error) {
-        dialog.showMessageBox({ type: 'warning', title: 'Security warning', message: ssProxy.error.message })
+        dialog.showMessageBox({
+            type: 'warning',
+            title: i18n.__('Ss.SecurityWarning'),
+            message: ssProxy.error.message,
+        })
     } else {
         isSSOk = true
         clientOpt.proxyOptions = Object.assign({}, clientOpt.proxyOptions, ssProxy)
@@ -93,12 +99,21 @@ const startShadowSocksServer = async (clientOpt) => {
 
     // After start SS Server,
     // verify public ip and client configuration serverAddr is the same.
+    dialog.showMessageBox({
+        type: 'warning',
+        title: i18n.__('Ss').SecurityWarning,
+        message: i18n.__('Ss').ServerNotWorking,
+    })
     if (isSSOk) {
         sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
         // The line must be placed after server started.
         const pubIP = await Utils.getPubIP(clientOpt, true)
         if (pubIP !== clientOpt.proxyOptions.serverAddr) {
-            dialog.showMessageBox({ type: 'warning', title: 'Security warning', message: 'Shadowsocks server is not working.' })
+            dialog.showMessageBox({
+                type: 'warning',
+                title: i18n.__('Ss').SecurityWarning,
+                message: i18n.__('Ss').ServerNotWorking,
+            })
         }
     }
     return sslocalServer

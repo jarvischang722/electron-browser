@@ -6,6 +6,8 @@ const commonOpt = require('../config/common.json')
 const progress = require('request-progress')
 const ProgressBar = require('electron-progressbar')
 const settings = require('electron-settings')
+const i18n = new (require('../lib/i18n'))()
+
 
 const enableFlashPlugin = async (app, clientOpt) => {
     let pluginName
@@ -92,10 +94,10 @@ function downloadFP(fileName, clientOpt, platform) {
                 const transferredSize = Math.round(state.size.transferred / 1024)
                 const remainingTime = Math.round(state.time.remaining)
                 const elapsedTime = Math.round(state.time.elapsed)
-                progressBar.detail = `Speed:  ${speed} ${speedUnit}/s <br>  
-                                  Elapsed time: ${elapsedTime} sec <br> 
-                                  Remaining time: ${remainingTime} sec <br> <br>
-                                ${transferredSize} KB of ${totalSize} KB (${percent} %)`
+                progressBar.detail = `${i18n.__('Speed')}:  ${speed} ${speedUnit}/s <br>  
+                                  ${i18n.__('Flash').ElapsedTime} : ${elapsedTime} sec <br> 
+                                  ${i18n.__('Flash').RemainingTime}: ${remainingTime} sec <br> <br>
+                                  ${transferredSize} KB of ${totalSize} KB (${percent} %)`
                 progressBar.value = percent
             })
             .on('error', (err) => {
@@ -105,7 +107,7 @@ function downloadFP(fileName, clientOpt, platform) {
             .on('end', async () => {
                 if (platform === 'mac') {
                     await utils.upzip(dest, pluginPath)
-                    // Delete this file after one second of decompression
+                    // Delete this file after one second of decompression,
                     // and avoid not yet unzipping complete
                     setTimeout(() => {
                         fs.unlinkSync(dest)

@@ -18,5 +18,18 @@
     "Toggle fullscreen": "切换全屏",
     "View": "查看",
     "Quit": "退出",
-    "Version": "版本"
+    "Version": "版本",
+    "AutoUpd" : {
+        "NeedUpdate" : "有更新可用, 点击确定开始安装",
+        "AlreadyLatest" : "您已安装最新版本"
+    },
+    "Ss": {
+        "SecurityWarning": "Security Warning",
+        "ServerNotWorking" : "Shadowsocks server is not working."
+    },
+    "Flash":{
+        "Speed":"速度",
+        "ElapsedTime":"已花费时间",
+        "RemainingTime":"剩余时间"
+    }
 }

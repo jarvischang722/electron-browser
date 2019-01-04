@@ -18,5 +18,18 @@
     "Toggle fullscreen": "Toggle fullscreen",
     "View": "View",
     "Quit": "Quit",
-    "Version": "Version"
+    "Version": "Version",
+    "AutoUpd" : {
+        "NeedUpdate" : "There are updates available and click OK to start installing the latest version.",
+        "AlreadyLatest" : "You have installed the latest version."
+    },
+    "Ss": {
+        "SecurityWarning": "Security Warning",
+        "ServerNotWorking" : "Shadowsocks server is not working."
+    },
+    "Flash":{
+        "Speed":"Speed",
+        "ElapsedTime":"Elapsed time",
+        "RemainingTime":"Remaining time"
+    }
 }
