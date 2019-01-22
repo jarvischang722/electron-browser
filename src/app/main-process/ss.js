@@ -1,6 +1,7 @@
 require('date-utils')
 const net = require('net')
 const url = require('url')
+const path = require('path')
 const ssLocal = require('../lib/shadowsocks/ssLocal')
 const Utils = require('../lib/utils')
 const { dialog } = require('electron')
@@ -79,6 +80,30 @@ const checkEnabledSSProxy = (homeUrl) => {
     }
 }
 
+const startLocalServer = () =>
+    new Promise((resolve, reject) => {
+        const { spawn } = require('child_process')
+        const platform = 'windows'
+        const execFile = 'Shadowsocks.exe'
+        try {
+            const ssAppPath = path.resolve(
+                __dirname,
+                '..',
+                'tools',
+                'shadowsocks',
+                platform,
+                execFile,
+            )
+            const ssServer = spawn(ssAppPath, {
+                windowsHide: true,
+                timeout: 180000,
+            })
+            resolve(ssServer)
+        } catch (err) {
+            reject(err)
+        }
+    })
+
 const startShadowSocksServer = async (clientOpt) => {
     // Before start SS server,
     // verify that at least one of these shadowsocks server is available.
@@ -99,7 +124,8 @@ const startShadowSocksServer = async (clientOpt) => {
     // After start SS Server,
     // verify that public ip and client configuration serverAddr are the same.
     if (isSSOk) {
-        sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
+        // sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
+        sslocalServer = await startLocalServer()
         // The line must be placed after server started.
         const pubIP = await Utils.getPubIP(clientOpt, true)
         if (pubIP !== clientOpt.proxyOptions.serverAddr) {

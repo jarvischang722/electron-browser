@@ -29,9 +29,8 @@ function setBrowserSetting() {
 }
 
 function quitProcess() {
-    // close all
     if (sslocalServer) {
-        sslocalServer.closeAll()
+        sslocalServer.kill()
     }
 }
 

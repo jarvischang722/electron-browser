@@ -9,3 +9,5 @@ node_modules
 /dist/
 package-lock.json
 /src/clients/*
+
+/src/tools/shadowsocks/windows/ss_win_temp/*
