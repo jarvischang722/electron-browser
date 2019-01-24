@@ -24,22 +24,22 @@ module.exports = (options, callback) => {
             config: {
                 appId: options.clientId,
                 buildVersion: commonOpt.version,
-                electronVersion: pjson.devDependencies.electron.replace('\^', ''),
+                electronVersion: pjson.devDependencies.electron.replace('^', ''),
                 copyright: `Copyright © ${new Date().getFullYear()} Tripleone`,
                 artifactName: '${productName}.${ext}',
                 directories: {
                     app: path.join(__dirname, '..', '..', 'src', 'app'),
                     output: path.join(__dirname, '..', '..', 'dist', clientNam),
                 },
-                files: [
-                    `!tools/shadowsocks/${buildOfPlatform === 'win32' ? 'mac' : 'windows'}/*`,
-                ],
+                files: [`!tools/shadowsocks/${buildOfPlatform === 'win32' ? 'mac' : 'windows'}/*`],
             },
             x64: supportArch.includes('x64'),
             ia32: supportArch.includes('ia32'),
         }
 
-        // Windows conguration
+         /** ************************
+         ***  Windows conguration ***
+         ************************* */
         if (buildOfPlatform === 'win32') {
             builderConf.config.win = {
                 target: ['nsis'],
@@ -62,7 +62,9 @@ module.exports = (options, callback) => {
             }
         }
 
-        // Mac OS conguration
+        /** ************************
+         ***  Mac OS conguration ***
+         ************************* */
         if (['macOS', 'darwin'].indexOf('buildOfPlatform') > -1) {
             if (!fs.existsSync(macIconPath)) {
                 macIconPath = path.join(clientPath, 'icon.png')
@@ -87,7 +89,9 @@ module.exports = (options, callback) => {
             }
         }
 
-        // Linux conguration
+         /** ************************
+         ***  Linux conguration ***
+         ************************* */
         if (buildOfPlatform === 'linux') {
             builderConf.config.linux = true
             builderConf.linux = {

@@ -1,13 +1,13 @@
 {
   "name": "safetybrowser",
   "author": "Tripleonetech",
-  "version": "2.9.10",
-  "description": "Tripleonetech safety browser",
+  "version": "3.0.0",
+  "description": "Tripleonetech safety browser with Electron 4.0",
   "main": "main.js",
   "devDependencies": {
     "asar": "^0.13.0",
     "devtron": "^1.4.0",
-    "electron": "^2.0.14",
+    "electron": "^4.0.2",
     "electron-builder": "^19.5.1",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.0.1",
@@ -20,7 +20,7 @@
     "uuid": "^3.0.1"
   },
   "scripts": {
-    "asar": "asar e C:/Users/Jun/Desktop/app.asar  C:/Users/Jun/Desktop/asar",
+    "asar": "asar e /Users/Jun/desktop/app.asar  /Users/Jun/desktop/asar",
     "debug": "node --nolazy --inspect-brk=9229 ./build/install-script/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron ./src/app",

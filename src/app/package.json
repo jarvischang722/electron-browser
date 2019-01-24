@@ -1,6 +1,6 @@
 {
   "name": "tripleonetech-safety-browser",
-  "version": "2.9.9",
+  "version": "3.0.0",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
