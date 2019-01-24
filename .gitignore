@@ -11,4 +11,4 @@ package-lock.json
 /src/clients/*
 
 /src/app/tools/shadowsocks/windows/ss_win_temp/*
-/src/app/tools/shadowsocks/mac/shadowsocks.app/*
+/src/app/tools/shadowsocks/mac/ShadowsocksX-NG.app/*
