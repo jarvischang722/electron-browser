@@ -13,6 +13,8 @@ module.exports = (options, callback) => {
         const clientPath = path.join(__dirname, '..', '..', 'src', 'clients', clientNam)
         const winIconPath = path.join(clientPath, 'icon.ico')
         let macIconPath = path.join(clientPath, 'icon.icns')
+        const buildOfPlatform = options.platform || process.platform
+        const supportArch = options.supportArch ? options.supportArch : [process.arch]
         const builderConf = {
             extraMetadata: {
                 name: clientNam,
@@ -29,13 +31,13 @@ module.exports = (options, callback) => {
                     app: path.join(__dirname, '..', '..', 'src', 'app'),
                     output: path.join(__dirname, '..', '..', 'dist', clientNam),
                 },
+                files: [
+                    `!tools/shadowsocks/${buildOfPlatform === 'win32' ? 'mac' : 'windows'}/*`,
+                ],
             },
+            x64: supportArch.includes('x64'),
+            ia32: supportArch.includes('ia32'),
         }
-        const buildOfPlatform = options.platform || process.platform
-        const supportArch = options.supportArch ? options.supportArch : [process.arch]
-
-        builderConf.x64 = supportArch.includes('x64')
-        builderConf.ia32 = supportArch.includes('ia32')
 
         // Windows conguration
         if (buildOfPlatform === 'win32') {
@@ -61,7 +63,7 @@ module.exports = (options, callback) => {
         }
 
         // Mac OS conguration
-        if (buildOfPlatform === 'macOS' || buildOfPlatform === 'darwin') {
+        if (['macOS', 'darwin'].indexOf('buildOfPlatform') > -1) {
             if (!fs.existsSync(macIconPath)) {
                 macIconPath = path.join(clientPath, 'icon.png')
             }
