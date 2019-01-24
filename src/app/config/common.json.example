@@ -1,7 +1,0 @@
-{
-    "serviceAddr": "http://35.194.151.151:7801/",
-    "version": "2.9.10",
-    "legalCopyright": "Copyright 2017",
-    "projectHomeBase": "/path/to/browser/safetybrowser",
-    "serviceHomeBase": "/path/to/browser/service"
-}
