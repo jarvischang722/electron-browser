@@ -1,0 +1,41 @@
+{
+    "client": "tripleone",
+    "homeUrl": "http://www.demo.tripleonetech.com/",
+    "companyName": "Tripleonetech",
+    "productName": "合众安全浏览器",
+    "productNameEn": "Tripleone satefy browser",
+    "fileDescription": "Safety Browser",
+    "enabledFlash": true,
+    "enabledProxy": false,
+    "clientId": "E3C4E066-950D-47CB-946B-A202FB613878",
+    "proxyOptions": {
+        "localAddr": "127.0.0.1",
+        "localPort": 1080,
+        "serverAddr": "35.201.204.2",
+        "serverPort": 19999,
+        "password": "dBbQMP8Nd9vyjvN",
+        "method": "aes-256-cfb",
+        "timeout": 180
+    },
+    "ssServerList": [
+        {
+            "serverAddr": "35.201.204.2",
+            "serverPort": 19999,
+            "password": "dBbQMP8Nd9vyjvN"
+        },
+        {
+            "serverAddr": "106.75.166.72",
+            "serverPort": 19999,
+            "password": "nMvTdb7VXMPudFWH"
+        }
+    ],
+    "proxyUrls": [
+        "https://www.tripleonetech.com/",
+        "https://www.tripleonetech.net/"
+    ],
+    "platform" : "win32",
+    "supportArch": [
+        "x64",
+        "ia32"
+    ]
+}
