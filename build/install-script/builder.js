@@ -16,22 +16,28 @@ module.exports = (options, callback) => {
         const buildOfPlatform = options.platform || process.platform
         const supportArch = options.supportArch ? options.supportArch : [process.arch]
         const builderConf = {
-            extraMetadata: {
-                name: clientNam,
-                description: options.fileDescription,
-                author: 'Tripleone',
-            },
+
             config: {
                 appId: options.clientId,
                 buildVersion: commonOpt.version,
-                electronVersion: pjson.devDependencies.electron.replace('^', ''),
-                copyright: `Copyright © ${new Date().getFullYear()} Tripleone`,
+                extraMetadata: {
+                    name: clientNam,
+                    description: options.fileDescription,
+                    author: pjson.author,
+                },
+                electronVersion:
+                pjson.devDependencies.electron.replace('^', ''),
+                copyright: `Copyright © ${new Date().getFullYear()} ${pjson.author}`,
                 artifactName: '${productName}.${ext}',
                 directories: {
                     app: path.join(__dirname, '..', '..', 'src', 'app'),
                     output: path.join(__dirname, '..', '..', 'dist', clientNam),
                 },
-                files: [`!tools/shadowsocks/${buildOfPlatform === 'win32' ? 'mac' : 'windows'}/*`],
+                files: [
+                    `!tools/shadowsocks/${buildOfPlatform === 'win32' ? 'mac' : 'windows'}/*`,
+                    '!tools/shadowsocks/mac/ShadowsocksX-NG.app/*',
+                    '!tools/shadowsocks/windows/ss_win_temp/*',
+                ],
             },
             x64: supportArch.includes('x64'),
             ia32: supportArch.includes('ia32'),
@@ -65,7 +71,7 @@ module.exports = (options, callback) => {
         /** ************************
          ***  Mac OS conguration ***
          ************************* */
-        if (['macOS', 'darwin'].indexOf('buildOfPlatform') > -1) {
+        if (['macOS', 'darwin'].indexOf(buildOfPlatform) > -1) {
             if (!fs.existsSync(macIconPath)) {
                 macIconPath = path.join(clientPath, 'icon.png')
             }
