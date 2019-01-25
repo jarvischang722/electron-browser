@@ -10,5 +10,8 @@ node_modules
 package-lock.json
 /src/clients/*
 
+/src/plugins/shadowsocks/*
+
 /src/app/tools/shadowsocks/windows/ss_win_temp/*
+/src/app/tools/shadowsocks/windows/gui-config.json
 /src/app/tools/shadowsocks/mac/ShadowsocksX-NG.app/*

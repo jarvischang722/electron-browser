@@ -1,0 +1,74 @@
+{
+  "configs": [
+    {
+      "server": "119.9.106.90",
+      "server_port": 81,
+      "password": "sQ60P8Q8X4Zb7U",
+      "method": "chacha20-ietf-poly1305",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "119.9.106.90",
+      "timeout": 20
+    },
+    {
+      "server": "35.201.204.2",
+      "server_port": 19999,
+      "password": "dBbQMP8Nd9vyjvN",
+      "method": "aes-256-cfb",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "35.201.204.2",
+      "timeout": 5
+    },
+    {
+      "server": "106.75.166.72",
+      "server_port": 19999,
+      "password": "nMvTdb7VXMPudFWH",
+      "method": "aes-256-cfb",
+      "plugin": "",
+      "plugin_opts": "",
+      "plugin_args": "",
+      "remarks": "106.75.166.72",
+      "timeout": 20
+    }
+  ],
+  "strategy": null,
+  "index": 2,
+  "global": false,
+  "enabled": false,
+  "shareOverLan": false,
+  "isDefault": false,
+  "localPort": 1080,
+  "pacUrl": null,
+  "useOnlinePac": false,
+  "secureLocalPac": true,
+  "availabilityStatistics": false,
+  "autoCheckUpdate": false,
+  "checkPreRelease": false,
+  "isVerboseLogging": true,
+  "logViewer": {
+    "topMost": false,
+    "wrapText": false,
+    "toolbarShown": false,
+    "Font": "Consolas, 8pt",
+    "BackgroundColor": "Black",
+    "TextColor": "White"
+  },
+  "proxy": {
+    "useProxy": false,
+    "proxyType": 0,
+    "proxyServer": "",
+    "proxyPort": 0,
+    "proxyTimeout": 3
+  },
+  "hotkey": {
+    "SwitchSystemProxy": "",
+    "SwitchSystemProxyMode": "",
+    "SwitchAllowLan": "",
+    "ShowLogs": "",
+    "ServerMoveUp": "",
+    "ServerMoveDown": ""
+  }
+}

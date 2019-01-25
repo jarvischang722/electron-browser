@@ -4,10 +4,13 @@ const fs = require('fs')
 const url = require('url')
 const path = require('path')
 const Utils = require('../lib/utils')
-const { dialog } = require('electron')
+const { dialog, shell } = require('electron')
 const i18n = new (require('../lib/i18n'))()
 const settings = require('electron-settings')
 const open = require('mac-open')
+const { exec, spawn, execSync } = require('child_process')
+
+const PLATFORM = settings.get('app.platform')
 
 /**
  * Use net's socket module to check if ss server is working.
@@ -82,57 +85,111 @@ const checkEnabledSSProxy = (homeUrl) => {
     }
 }
 
-const macSsProcess = () => {
-    const obj = {
-        kill: () => {
-            const { execSync } = require('child_process')
-            const result = execSync(
-                "kill -9 $(ps -A | grep -m1 ShadowsocksX-NG | awk '{print $1}')",
-                { encoding: 'utf8' },
-            )
+const ssProcess = () => {
+    const killProcess = {
+        mac: () => {
+            const ssPID = execSync("ps -A | grep -m1 ShadowsocksX-NG | awk '{print $1}'", {
+                encoding: 'utf8',
+            })
+            const result = execSync(`kill -9 ${ssPID}`, { encoding: 'utf8' })
+            log.warn(`Killed PID [${ssPID}] for shadowsocks`)
             return result
         },
+        windows: () => {
+            try {
+                let processInfo = execSync('tasklist | findstr shadowsocks', { encoding: 'utf8' })
+                processInfo = processInfo.split(' ').filter(d => d !== '')
+                const ssPID = processInfo[1]
+                const result = execSync(`taskkill /f /PID ${ssPID}`)
+                log.warn(`Killed PID [${ssPID}] for shadowsocks`)
+                return result
+            } catch (ex) {
+                log.error(ex.stdout)
+            }
+        },
     }
-    return obj
+    return {
+        kill: killProcess[PLATFORM],
+    }
+}
+
+const writeSSConfig = async (proxyOptions) => {
+    const ssDirPath = path.resolve(__dirname, '..', '..', 'plugins', 'shadowsocks')
+    if (!fs.existsSync(ssDirPath)) {
+        const src = path.resolve(__dirname, '..', 'tools', 'shadowsocks')
+        await Utils.copy(src, ssDirPath)
+    }
+
+    const configPath = path.resolve(__dirname, '..', '..', 'plugins', 'shadowsocks', 'windows')
+    const ssConfigsPath = path.resolve(configPath, 'gui-config.json')
+    if (!fs.existsSync(ssConfigsPath)) {
+        const ssConfigsSrcPath = path.resolve(configPath, 'gui-config.json.sample')
+        await Utils.copy(ssConfigsSrcPath, ssConfigsPath)
+    }
+    const ssConfigs = require(ssConfigsPath)
+    const ssNewConfigs = [
+        {
+            server: proxyOptions.serverAddr,
+            server_port: proxyOptions.serverPort,
+            password: proxyOptions.password,
+            method: proxyOptions.method,
+            plugin: '',
+            plugin_opts: '',
+            plugin_args: '',
+            remarks: proxyOptions.serverAddr,
+            timeout: proxyOptions.timeout,
+        },
+    ]
+    ssConfigs.configs = ssNewConfigs
+    ssConfigs.index = ssNewConfigs.length - 1
+    ssConfigs.localPort = proxyOptions.localPort
+    if (PLATFORM === 'windows') {
+        fs.writeFileSync(ssConfigsPath, JSON.stringify(ssConfigs))
+    } else {
+        // TODO Write config for mac.
+    }
 }
 
 const runMacSS = () =>
     new Promise(async (resolve, reject) => {
-        const ssAppPath = path.resolve(__dirname, '..', 'tools', 'shadowsocks', 'mac')
+        const ssAppPath = path.resolve(__dirname, '..', '..', 'plugins', 'shadowsocks', 'mac')
         const appPath = `${ssAppPath}/ShadowsocksX-NG.app`
         if (!fs.existsSync(appPath)) {
             await Utils.upzip(`${ssAppPath}/shadowsocks.app.zip`, `${ssAppPath}/`)
-            await Utils.delay(3000)
+            await Utils.delay(1000)
         }
         open(appPath, { g: true }, (error) => {
             if (error) return reject(error)
-            resolve(macSsProcess())
+            resolve()
         })
     })
 
-const runWinSS = () => {
-    const { spawnSync } = require('child_process')
-    const ssAppPath = path.resolve(
-        __dirname,
-        '..',
-        'tools',
-        'shadowsocks',
-        'windows',
-        'shadowsocks.exe',
-    )
-    const ssServer = spawnSync(ssAppPath, {
-        windowsHide: true,
-        timeout: 180000,
+const runWinSS = () =>
+    new Promise(async (resolve, reject) => {
+        const ssAppPath = path.resolve(
+            __dirname,
+            '..',
+            '..',
+            'plugins',
+            'shadowsocks',
+            'windows',
+            'shadowsocks.exe',
+        )
+        shell.openItem(ssAppPath)
+        Utils.delay(1000)
+        resolve()
     })
-    return ssServer
-}
 
 const startLocalServer = () =>
     new Promise(async (resolve, reject) => {
-        const platform = settings.get('app.platform')
         try {
             let ssServer = {}
-            ssServer = platform === 'mac' ? await runMacSS() : await runWinSS()
+            if (PLATFORM === 'mac') {
+                await runMacSS()
+            } else {
+                await runWinSS()
+            }
+            ssServer = ssProcess()
             resolve(ssServer)
         } catch (err) {
             reject(err)
@@ -160,6 +217,7 @@ const startShadowSocksServer = async (clientOpt) => {
     // verify that public ip and client configuration serverAddr are the same.
     if (isSSOk) {
         // sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
+        await writeSSConfig(clientOpt.proxyOptions)
         sslocalServer = await startLocalServer()
         // The line must be placed after server started.
         let retryNum = 0
