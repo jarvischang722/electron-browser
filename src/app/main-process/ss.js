@@ -113,13 +113,67 @@ const ssProcess = () => {
     }
 }
 
-const writeSSConfig = async (proxyOptions) => {
-    const ssDirPath = path.resolve(__dirname, '..', '..', 'plugins', 'shadowsocks')
-    if (!fs.existsSync(ssDirPath)) {
-        const src = path.resolve(__dirname, '..', 'tools', 'shadowsocks')
-        await Utils.copy(src, ssDirPath)
-    }
+/*
+ * 复制目录中的所有文件包括子目录
+ * @param{ String } 需要复制的目录
+ * @param{ String } 复制到指定的目录
+ */
+const copy = (src, dst) => {
+    const { statSync } = fs
+    // 读取目录中的所有文件/目录
+    const paths = fs.readdirSync(src)
 
+    paths.forEach(async (_path) => {
+        const _src = `${src}/${_path}`
+        const _dst = `${dst}/${_path}`
+        let readable = {}
+        let writable = {}
+
+        const st = statSync(_src)
+
+        // 判断是否为文件
+        if (st.isFile()) {
+            // 创建读取流
+            readable = fs.createReadStream(_src)
+            // 创建写入流
+            writable = fs.createWriteStream(_dst)
+            // 通过管道来传输流
+            readable.pipe(writable)
+        }
+        // 如果是目录则递归调用自身
+        else if (st.isDirectory()) {
+            await copy(_src, _dst)
+        }
+    })
+}
+
+const checkExistPlugin = async () => {
+    const ssDirPath = path.resolve(__dirname, '..', '..', 'plugins', 'shadowsocks')
+    if (PLATFORM === 'windows') {
+        if (!fs.existsSync(ssDirPath)) {
+            fs.mkdirSync(ssDirPath)
+            const src = path.resolve(__dirname, '..', 'tools', 'shadowsocks')
+            const zipPath = `${__dirname}/../../plugins/shadowsocks.zip`
+            await Utils.copy(
+                `${src}/windows/shadowsocks.zip`,
+                zipPath,
+            )
+            await Utils.upzip(zipPath, ssDirPath)
+            await Utils.delay(1000)
+            fs.unlinkSync(zipPath)
+        }
+    } else if (PLATFORM === 'mac') {
+        const ssMacPath = path.resolve(ssDirPath, 'mac')
+        const appPath = `${ssMacPath}/ShadowsocksX-NG.app`
+        if (!fs.existsSync(appPath)) {
+            await Utils.upzip(`${ssMacPath}/shadowsocks.zip`, `${ssMacPath}/`)
+            await Utils.delay(1000)
+            fs.unlinkSync(`${ssMacPath}/shadowsocks.zip`)
+        }
+    }
+}
+
+const writeSSConfig = async (proxyOptions) => {
     const configPath = path.resolve(__dirname, '..', '..', 'plugins', 'shadowsocks', 'windows')
     const ssConfigsPath = path.resolve(configPath, 'gui-config.json')
     if (!fs.existsSync(ssConfigsPath)) {
@@ -217,6 +271,7 @@ const startShadowSocksServer = async (clientOpt) => {
     // verify that public ip and client configuration serverAddr are the same.
     if (isSSOk) {
         // sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
+        await checkExistPlugin()
         await writeSSConfig(clientOpt.proxyOptions)
         sslocalServer = await startLocalServer()
         // The line must be placed after server started.
@@ -233,7 +288,9 @@ const startShadowSocksServer = async (clientOpt) => {
                 retryNum = 3
             }
         }
-        if (pubIP !== clientOpt.proxyOptions.serverAddr) {
+        const ssList = clientOpt.ssServerList.map(c => c.serverAddr)
+        ssList.push(clientOpt.proxyOptions.serverAddr)
+        if (ssList.indexOf(pubIP) === -1) {
             dialog.showMessageBox({
                 type: 'warning',
                 title: i18n.__('Ss').SecurityWarning,

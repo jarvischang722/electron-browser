@@ -16,7 +16,6 @@ module.exports = (options, callback) => {
         const buildOfPlatform = options.platform || process.platform
         const supportArch = options.supportArch ? options.supportArch : [process.arch]
         const builderConf = {
-
             config: {
                 appId: options.clientId,
                 buildVersion: commonOpt.version,
@@ -25,8 +24,7 @@ module.exports = (options, callback) => {
                     description: options.fileDescription,
                     author: pjson.author,
                 },
-                electronVersion:
-                pjson.devDependencies.electron.replace('^', ''),
+                electronVersion: pjson.devDependencies.electron.replace('^', ''),
                 copyright: `Copyright © ${new Date().getFullYear()} ${pjson.author}`,
                 artifactName: '${productName}.${ext}',
                 directories: {
@@ -43,7 +41,7 @@ module.exports = (options, callback) => {
             ia32: supportArch.includes('ia32'),
         }
 
-         /** ************************
+        /** ************************
          ***  Windows conguration ***
          ************************* */
         if (buildOfPlatform === 'win32') {
@@ -95,7 +93,7 @@ module.exports = (options, callback) => {
             }
         }
 
-         /** ************************
+        /** ************************
          ***  Linux conguration ***
          ************************* */
         if (buildOfPlatform === 'linux') {
