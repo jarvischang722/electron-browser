@@ -149,27 +149,30 @@ const copy = (src, dst) => {
 
 const checkExistPlugin = async () => {
     const ssDirPath = path.resolve(__dirname, '..', '..', 'plugins', 'shadowsocks')
-    if (PLATFORM === 'windows') {
-        if (!fs.existsSync(ssDirPath)) {
-            fs.mkdirSync(ssDirPath)
-            const src = path.resolve(__dirname, '..', 'tools', 'shadowsocks')
-            const zipPath = `${__dirname}/../../plugins/shadowsocks.zip`
-            await Utils.copy(
-                `${src}/windows/shadowsocks.zip`,
-                zipPath,
-            )
-            await Utils.upzip(zipPath, ssDirPath)
-            await Utils.delay(1000)
-            fs.unlinkSync(zipPath)
-        }
-    } else if (PLATFORM === 'mac') {
-        const ssMacPath = path.resolve(ssDirPath, 'mac')
-        const appPath = `${ssMacPath}/ShadowsocksX-NG.app`
-        if (!fs.existsSync(appPath)) {
-            await Utils.upzip(`${ssMacPath}/shadowsocks.zip`, `${ssMacPath}/`)
-            await Utils.delay(1000)
-            fs.unlinkSync(`${ssMacPath}/shadowsocks.zip`)
-        }
+    if (!fs.existsSync(ssDirPath)) {
+        fs.mkdirSync(ssDirPath)
+    }
+    if (!fs.existsSync(`${ssDirPath}/${PLATFORM}`)) {
+        const zipSrc = path.resolve(
+            __dirname,
+            '..',
+            'tools',
+            'shadowsocks',
+            PLATFORM,
+            'shadowsocks.zip',
+        )
+        const zipPath = path.resolve(
+            __dirname,
+            '..',
+            '..',
+            'plugins',
+            'shadowsocks',
+            'shadowsocks.zip',
+        )
+        await Utils.copy(zipSrc, zipPath)
+        await Utils.upzip(zipPath, ssDirPath)
+        await Utils.delay(1000)
+        fs.unlinkSync(zipPath)
     }
 }
 

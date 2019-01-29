@@ -9,6 +9,7 @@ const logger = log4js.getLogger()
 
 module.exports = (options, callback) => {
     try {
+        const startTime = new Date()
         const { client: clientNam } = options
         const clientPath = path.join(__dirname, '..', '..', 'src', 'clients', clientNam)
         const winIconPath = path.join(clientPath, 'icon.ico')
@@ -111,12 +112,16 @@ module.exports = (options, callback) => {
                 const filename = `${clientNam}-setup-${commonOpt.version}.${ext}`
                 const destPath = `${commonOpt.serviceHomeBase}/deploy/${filename}`
                 fs.copyFileSync(filePath, destPath) // Copy file to service
+                const spentSecs = Math.round((new Date() - startTime) / 1000)
+                console.log(`==== Build Completed. Spend Time: ${spentSecs} sec ====`)
                 callback(null, filename)
             })
             .catch((err) => {
                 logger.error(err)
                 const errorIdx = err.message.indexOf('error:')
                 const errorMsg = err.message.substring(errorIdx)
+                const spentSecs = Math.round((new Date() - startTime) / 1000)
+                console.error(`==== Build Failure. Spend Time: ${spentSecs} sec ====`)
                 callback(new Error(errorMsg))
             })
     } catch (error) {
