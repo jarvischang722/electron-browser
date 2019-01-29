@@ -197,11 +197,8 @@ const writeSSConfig = async (proxyOptions) => {
     ssConfigs.configs = ssNewConfigs
     ssConfigs.index = ssNewConfigs.length - 1
     ssConfigs.localPort = proxyOptions.localPort
-    if (PLATFORM === 'windows') {
-        fs.writeFileSync(ssConfigsPath, JSON.stringify(ssConfigs))
-    } else {
-        // TODO Write config for mac.
-    }
+
+    fs.writeFileSync(ssConfigsPath, JSON.stringify(ssConfigs))
 }
 
 const runMacSS = () =>
@@ -272,7 +269,10 @@ const startShadowSocksServer = async (clientOpt) => {
     if (isSSOk) {
         // sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
         await checkExistPlugin()
-        await writeSSConfig(clientOpt.proxyOptions)
+
+        if (PLATFORM === 'windows') {
+            await writeSSConfig(clientOpt.proxyOptions)
+        }
         sslocalServer = await startLocalServer()
         // The line must be placed after server started.
         let retryNum = 0
