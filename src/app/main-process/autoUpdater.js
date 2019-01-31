@@ -6,6 +6,7 @@ const childProcess = require('child_process')
 const { dialog } = require('electron')
 const storage = require('electron-json-storage')
 const config = require('../config/common.json')
+const pjson = require('../../../package.json')
 const uuidV4 = require('uuid/v4')
 const Utils = require('../lib/utils')
 const fs = require('fs')
@@ -101,7 +102,7 @@ const checkUpdatesAndNotify = async (enableNotify) => {
         const isRunFirstTimeToday = true || (await runFirstTimeToday(client))
         if (!isRunFirstTimeToday) return
         let needUpdate = false
-        const currentVer = config.version
+        const currentVer = pjson.version
         const clientVerInfo = await getClientLatestVer()
         const { latestVer, link } = clientVerInfo
         const isLatestVer = checkLatestVersion(currentVer, latestVer)

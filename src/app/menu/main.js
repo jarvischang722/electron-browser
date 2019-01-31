@@ -1,6 +1,6 @@
 const i18n = new (require('../lib/i18n'))()
 const AutoUpdater = require('../main-process/autoUpdater')
-const commonOpt = require('../config/common.json')
+const pjson = require('../../../package.json')
 
 /* eslint-disable no-underscore-dangle */
 const getTemplate = () => {
@@ -80,7 +80,7 @@ const getTemplate = () => {
                     },
                 },
                 {
-                    label: `${i18n.__('Version')} ${commonOpt.version}`,
+                    label: `${i18n.__('Version')} ${pjson.version}`,
                     enabled: false,
                 },
             ],

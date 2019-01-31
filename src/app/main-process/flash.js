@@ -3,6 +3,7 @@ const path = require('path')
 const request = require('request')
 const utils = require('../lib/utils')
 const commonOpt = require('../config/common.json')
+const pjson = require('../../../package.json')
 const progress = require('request-progress')
 const ProgressBar = require('electron-progressbar')
 const settings = require('electron-settings')
@@ -66,7 +67,7 @@ function downloadFP(fileName, clientOpt, platform) {
         const dest = path.resolve(pluginPath, fileName)
         const progressBar = new ProgressBar({
             indeterminate: false,
-            title: `${clientOpt.client}-${commonOpt.version}`,
+            title: `${clientOpt.client}-${pjson.version}`,
             text: `Downloading ${fileName}...`,
             browserWindow: {
                 height: 250,

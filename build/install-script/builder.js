@@ -19,7 +19,7 @@ module.exports = (options, callback) => {
         const builderConf = {
             config: {
                 appId: options.clientId,
-                buildVersion: commonOpt.version,
+                buildVersion: pjson.version,
                 extraMetadata: {
                     name: clientNam,
                     description: options.fileDescription,
@@ -109,7 +109,7 @@ module.exports = (options, callback) => {
             .then(async () => {
                 const ext = buildOfPlatform === 'win32' ? 'exe' : 'dmg'
                 const filePath = `${__dirname}/../../dist/${clientNam}/${clientNam}.${ext}`
-                const filename = `${clientNam}-setup-${commonOpt.version}.${ext}`
+                const filename = `${clientNam}-setup-${pjson.version}.${ext}`
                 const destPath = `${commonOpt.serviceHomeBase}/deploy/${filename}`
                 fs.copyFileSync(filePath, destPath) // Copy file to service
                 const spentSecs = Math.round((new Date() - startTime) / 1000)

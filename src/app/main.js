@@ -7,7 +7,7 @@ const Utils = require('./lib/utils')
 
 const clientOptFile = path.join(__dirname, 'config', 'client.json')
 const clientOpt = require(clientOptFile)
-const commonOpt = require('./config/common.json')
+const pjson = require('../../package.json')
 
 let homeUrl = []
 let win
@@ -81,7 +81,7 @@ function initialize() {
                 session.defaultSession.webRequest.onBeforeSendHeaders(async (details, callback) => {
                     details.requestHeaders['User-Agent'] = `${
                         details.headers['User-Agent']
-                    } t1t_safetybrowser/${commonOpt.version}`
+                    } t1t_safetybrowser/${pjson.version}`
                     details.requestHeaders['X-SS-CLIENT-ADDR'] = await Utils.getPubIP(
                         clientOpt,
                         typeof sslocalServer === 'object',
