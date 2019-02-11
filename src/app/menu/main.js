@@ -1,6 +1,6 @@
 const i18n = new (require('../lib/i18n'))()
 const AutoUpdater = require('../main-process/autoUpdater')
-const pjson = require('../../../package.json')
+const pjson = require('../package.json')
 
 /* eslint-disable no-underscore-dangle */
 const getTemplate = () => {

@@ -7,7 +7,7 @@ const Utils = require('./lib/utils')
 
 const clientOptFile = path.join(__dirname, 'config', 'client.json')
 const clientOpt = require(clientOptFile)
-const pjson = require('../../package.json')
+const pjson = require('./package.json')
 
 let homeUrl = []
 let win
