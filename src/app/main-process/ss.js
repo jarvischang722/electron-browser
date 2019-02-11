@@ -8,9 +8,10 @@ const { dialog, shell } = require('electron')
 const i18n = new (require('../lib/i18n'))()
 const settings = require('electron-settings')
 const open = require('mac-open')
-const { exec, spawn, execSync } = require('child_process')
+const { execSync } = require('child_process')
 
 const PLATFORM = settings.get('app.platform')
+
 
 /**
  * Use net's socket module to check if ss server is working.
@@ -73,13 +74,14 @@ const checkAvailableSS = clientConf =>
  */
 const checkEnabledSSProxy = (homeUrl) => {
     try {
+        const clientOpt = settings.get('app.clientOpt')
         const parseUrl = url.parse(homeUrl, true)
         const hostname = parseUrl.hostname
         // * Rule: Return false if hostname include 't1t.games', otherwise return true
         if (hostname.indexOf('t1t.games') > -1) {
             return false
         }
-        return true
+        return clientOpt.enabledProxy
     } catch (ex) {
         throw new Error(ex)
     }

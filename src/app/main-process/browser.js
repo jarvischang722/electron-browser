@@ -40,15 +40,13 @@ const getHomeurl = clientOpt =>
 /**
  * Generate pac file by homeurl of client for the client
  * @param {Object} clientOpts client's configuration
- * @param {String|Array} homeUrl client's homeurl
  */
-const writePacFile = async (clientOpts, homeUrl) => {
-    const { localPort } = clientOpts.proxyOptions
-    if (!Array.isArray(homeUrl)) {
-        homeUrl = [homeUrl]
-    }
+const writePacFile = async (clientOpts) => {
+    const { homeUrl, proxyOptions, ssDomain } = clientOpts
+    const { localPort } = proxyOptions
+    const urls = [...homeUrl, ...ssDomain]
     let filterString = ''
-    for (const page of homeUrl) {
+    for (const page of urls) {
         const pageUrl = url.parse(page)
         let host = pageUrl.host || pageUrl.path
         const idx = host.lastIndexOf('.')
@@ -107,9 +105,19 @@ const getUserPlatform = () => {
     return platform
 }
 
+const getClientData = clientName =>
+    new Promise((resolve, reject) => {
+        const reqUrl = `${commonOpt.serviceAddr}/browser/clientData?clientName=${clientName}`
+        request.get({ url: reqUrl, json: true }, (requestErr, res, body) => {
+            if (requestErr) return reject(requestErr)
+            if (body.error) return reject(body.error)
+            resolve(body)
+        })
+    })
 
 module.exports = {
     getHomeurl,
     writePacFile,
     getUserPlatform,
+    getClientData,
 }
