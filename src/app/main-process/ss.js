@@ -9,9 +9,9 @@ const i18n = new (require('../lib/i18n'))()
 const settings = require('electron-settings')
 const open = require('mac-open')
 const { execSync } = require('child_process')
+const ssLocal = require('../lib/shadowsocks/ssLocal')
 
 const PLATFORM = settings.get('app.platform')
-
 
 /**
  * Use net's socket module to check if ss server is working.
@@ -22,14 +22,10 @@ const checkSSIsAvail = ssConf =>
         try {
             const socket = new net.Socket()
             socket.setTimeout(5000)
-            socket.connect(
-                ssConf.serverPort,
-                ssConf.serverAddr,
-                () => {
-                    socket.destroy()
-                    resolve(ssConf)
-                },
-            )
+            socket.connect(ssConf.serverPort, ssConf.serverAddr, () => {
+                socket.destroy()
+                resolve(ssConf)
+            })
             socket.on('timeout', () => {
                 socket.destroy()
                 reject(new Error('timeout'))
@@ -221,7 +217,7 @@ const runMacSS = () =>
     })
 
 const runWinSS = () =>
-    new Promise(async (resolve, reject) => {
+    new Promise(async (resolve) => {
         const ssAppPath = path.resolve(
             __dirname,
             '..',
@@ -279,6 +275,7 @@ const startShadowSocksServer = async (clientOpt) => {
             await writeSSConfig(clientOpt.proxyOptions)
         }
         sslocalServer = await startLocalServer()
+
         // The line must be placed after server started.
         let retryNum = 0
         let pubIP = await Utils.getPubIP(clientOpt, true)

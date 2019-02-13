@@ -26,6 +26,8 @@ function getClientOpt() {
             clientOpt = require(clientOptFile)
             const dynamicClient = await Browser.getClientData(clientOpt.client)
             clientOpt = Object.assign({}, clientOpt, dynamicClient)
+            clientOpt.updateTime = new Date()
+            fs.writeFileSync(clientOptFile, JSON.stringify(clientOpt), { encoding: 'utf8' })
             resolve(clientOpt)
         } catch (err) {
             reject(err)
@@ -115,7 +117,10 @@ async function createWindow() {
 
             event.preventDefault()
             const newWin = new BrowserWindow(winOpt)
-            newWin.once('ready-to-show', () => newWin.show())
+            newWin.once('ready-to-show', () => {
+                newWin.show()
+                newWin.focus()
+            })
             newWin.loadURL(url)
 
             newWin.webContents.on('new-window', (newEvent, newUrl) => {
