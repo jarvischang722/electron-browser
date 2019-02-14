@@ -59,7 +59,7 @@ const checkAvailableSS = clientConf =>
             if (validSS.length === 0) {
                 throw new Error(i18n.__('Ss').ServerNotWorking)
             }
-            resolve(validSS[0])
+            resolve(validSS[Math.floor(Math.random() * validSS.length)])
         } catch (error) {
             resolve({ error })
         }
@@ -228,7 +228,7 @@ const runWinSS = () =>
             'shadowsocks.exe',
         )
         shell.openItem(ssAppPath)
-        Utils.delay(1000)
+        await Utils.delay(1000)
         resolve()
     })
 
@@ -276,7 +276,6 @@ const startShadowSocksServer = async (clientOpt) => {
         }
         sslocalServer = await startLocalServer()
 
-        // The line must be placed after server started.
         let retryNum = 0
         let pubIP = await Utils.getPubIP(clientOpt, true)
         while (pubIP === '' && retryNum < 3) {
