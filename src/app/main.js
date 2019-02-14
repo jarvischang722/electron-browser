@@ -10,6 +10,7 @@ const pjson = require('./package.json')
 
 let homeUrl = []
 let win
+let loadingWin
 let sslocalServer
 
 const debug = process.argv.indexOf('--debug') > -1
@@ -53,6 +54,7 @@ function quitProcess() {
 async function createWindow() {
     try {
         const winOpt = {
+            show: false,
             width: 1024,
             height: 768,
             title: clientOpt.productName,
@@ -147,6 +149,8 @@ async function createWindow() {
             require('devtron').install() // inspect, monitor, and debug our Electron app
         }
 
+        loadingWin.hide()
+        win.show()
         win.maximize()
     } catch (err) {
         log.error(err)
@@ -155,8 +159,20 @@ async function createWindow() {
     }
 }
 
+function openInfoPage() {
+    const winOpt = {
+        width: 720,
+        height: 415,
+        frame: false,
+        alwaysOnTop: true,
+    }
+    loadingWin = new BrowserWindow(winOpt)
+    loadingWin.loadURL(`${__dirname}/view/startPage.html`)
+}
+
 function initialize() {
     app.on('ready', async () => {
+        openInfoPage()
         loadModule()
         await setBrowserSetting()
         // Enable flash plugin for app

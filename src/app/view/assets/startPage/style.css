@@ -1,0 +1,43 @@
+body {
+    background: #FFFFFF;
+    font-family:monospace;
+}
+
+span {
+    color: #FFFFFF
+}
+
+div.main {
+    width:100%; 
+    background-size:cover;
+    background-position:center;
+    position:relative;
+}
+
+#status-bar {
+    position:absolute;
+    color:#000000; 
+    font-weight:bold; 
+    font-size:20px; 
+    bottom:0%;
+    right: 0%;
+    transform: translate(-64%, -74%); 
+    z-index:1000;
+}
+
+#version {
+    position:absolute;
+    color:#195fcc; 
+    font-weight:bold; 
+    font-size:20px; 
+    bottom:0%;
+    right:0%;
+    transform: translate(-64%, -74%); 
+    z-index:1000;
+}
+
+img.main-bg {
+    display:block;
+    max-width:100%;
+    margin:0 auto;
+}
