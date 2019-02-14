@@ -232,17 +232,29 @@ const runWinSS = () =>
         resolve()
     })
 
-const startLocalServer = () =>
+const startLocalServer = clientOpt =>
     new Promise(async (resolve, reject) => {
+        let sslocalServer
         try {
-            let ssServer = {}
-            if (PLATFORM === 'mac') {
-                await runMacSS()
-            } else {
+            const ssOptions = clientOpt.proxyOptions
+            const cipherList = require('crypto').getCiphers()
+            // 如果 getCiphers() 裡有支持ss method name的演算法，就用net啟動程式
+            // 或是PLATFORM 是mac的話也用net啟動，因為mac 的ss application不能夠改變configuration
+            if (cipherList.indexOf(ssOptions.method) > -1 || PLATFORM === 'mac') {
+                sslocalServer = ssLocal.startServer(ssOptions, true)
+                return resolve(sslocalServer)
+            }
+
+            // 檢查有沒有SS application套件
+            await checkExistPlugin()
+
+            if (PLATFORM === 'windows') {
+                await writeSSConfig(ssOptions)
                 await runWinSS()
             }
-            ssServer = ssProcess()
-            resolve(ssServer)
+
+            sslocalServer = ssProcess()
+            resolve(sslocalServer)
         } catch (err) {
             reject(err)
         }
@@ -268,14 +280,7 @@ const startShadowSocksServer = async (clientOpt) => {
     // After start SS Server,
     // verify that public ip and client configuration serverAddr are the same.
     if (isSSOk) {
-        // sslocalServer = ssLocal.startServer(clientOpt.proxyOptions, true)
-        await checkExistPlugin()
-
-        if (PLATFORM === 'windows') {
-            await writeSSConfig(clientOpt.proxyOptions)
-        }
-        sslocalServer = await startLocalServer()
-
+        sslocalServer = await startLocalServer(clientOpt)
         let retryNum = 0
         let pubIP = await Utils.getPubIP(clientOpt, true)
         while (pubIP === '' && retryNum < 3) {
