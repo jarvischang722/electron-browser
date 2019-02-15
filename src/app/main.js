@@ -68,7 +68,7 @@ async function createWindow() {
                 : null,
         }
         // Check if the safetybrowser needs to be updated.
-        AutoUpdater.checkUpdatesAndNotify()
+        await AutoUpdater.checkUpdatesAndNotify()
 
         await Flash.checkExistFlashPlugin(clientOpt)
 
