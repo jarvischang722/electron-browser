@@ -12,7 +12,7 @@ const { execSync } = require('child_process')
 const ssLocal = require('../lib/shadowsocks/ssLocal')
 
 const PLATFORM = settings.get('app.platform')
-
+const CIPHER_LIST = require('crypto').getCiphers()
 /**
  * Use net's socket module to check if ss server is working.
  * @param {Object} ssConf : shadowsocks's configuration
@@ -45,9 +45,13 @@ const checkSSIsAvail = ssConf =>
 const checkAvailableSS = clientConf =>
     new Promise(async (resolve) => {
         try {
-            const ssList = clientConf.ssServerList || []
+            let ssList = clientConf.ssServerList || []
             if (clientConf.proxyOptions) {
                 ssList.unshift(clientConf.proxyOptions)
+            }
+            // 因為mac版不打開ss application, 所以只能開啟crypto有支持的演算法
+            if (PLATFORM === 'mac') {
+                ssList = ssList.filter(s => CIPHER_LIST.indexOf(s.method) > -1)
             }
             const promiseArr = ssList.map(ssConf =>
                 checkSSIsAvail(ssConf).catch(err => ({ error: err })),
@@ -202,6 +206,7 @@ const writeSSConfig = async (proxyOptions) => {
     fs.writeFileSync(ssConfigsPath, JSON.stringify(ssConfigs))
 }
 
+// Destroyed, not working
 const runMacSS = () =>
     new Promise(async (resolve, reject) => {
         const ssAppPath = path.resolve(__dirname, '..', '..', 'plugins', 'shadowsocks', 'mac')
@@ -237,10 +242,9 @@ const startLocalServer = clientOpt =>
         let sslocalServer
         try {
             const ssOptions = clientOpt.proxyOptions
-            const cipherList = require('crypto').getCiphers()
             // 如果 getCiphers() 裡有支持ss method name的演算法，就用net啟動程式
             // 或是PLATFORM 是mac的話也用net啟動，因為mac 的ss application不能夠改變configuration
-            if (cipherList.indexOf(ssOptions.method) > -1 || PLATFORM === 'mac') {
+            if (CIPHER_LIST.indexOf(ssOptions.method) > -1 || PLATFORM === 'mac') {
                 sslocalServer = ssLocal.startServer(ssOptions, true)
                 return resolve(sslocalServer)
             }

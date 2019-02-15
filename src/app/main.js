@@ -167,7 +167,7 @@ function openInfoPage() {
         alwaysOnTop: true,
     }
     loadingWin = new BrowserWindow(winOpt)
-    loadingWin.loadURL(`${__dirname}/view/startPage.html`)
+    loadingWin.loadURL(`file://${__dirname}/view/startPage.html`)
 }
 
 function initialize() {
