@@ -111,7 +111,7 @@ const ssProcess = () => {
         },
     }
     return {
-        kill: killProcess[PLATFORM],
+        closeAll: killProcess[PLATFORM],
     }
 }
 

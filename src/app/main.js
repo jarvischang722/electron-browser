@@ -47,7 +47,7 @@ async function setBrowserSetting() {
 
 function quitProcess() {
     if (sslocalServer) {
-        sslocalServer.kill()
+        sslocalServer.closeAll()
     }
 }
 
