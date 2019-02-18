@@ -9,47 +9,14 @@ const ProgressBar = require('electron-progressbar')
 const settings = require('electron-settings')
 const i18n = new (require('../lib/i18n'))()
 
-
 const enableFlashPlugin = async (app, clientOpt) => {
-    let pluginName
-    let flashVersion
-    const platform = settings.get('app.platform')
-    switch (platform) {
-    case 'windows':
-        flashVersion = '25.0.0.171'
-        if (process.arch === 'x64') {
-            pluginName = 'pepflashplayer64_25_0_0_171.dll'
-        } else {
-            pluginName = 'pepflashplayer32_25_0_0_171.dll'
-        }
-        break
-    case 'mac':
-        pluginName = 'PepperFlashPlayer.plugin'
-        flashVersion = '29.0.0.140'
-        break
-    case 'linux':
-        flashVersion = '25.0.0.171'
-        if (process.arch === 'x64') {
-            pluginName = 'libpepflashplayer64_25_0_0_171.so'
-        } else {
-            pluginName = 'libpepflashplayer32_25_0_0_171.so'
-        }
-        break
-    default:
-        break
-    }
-
-    const flashPath = path.join(__dirname, '..', '..', 'plugins', pluginName)
+    const flashPath = settings.get('flash.path')
+    const flashVersion = settings.get('flash.version')
 
     if (clientOpt.enabledFlash) {
         app.commandLine.appendSwitch('ppapi-flash-path', flashPath)
         app.commandLine.appendSwitch('ppapi-flash-version', flashVersion)
     }
-
-    settings.set('flash', {
-        path: flashPath,
-        pluginName,
-    })
 }
 
 /**
@@ -122,10 +89,42 @@ function downloadFP(fileName, clientOpt, platform) {
 }
 
 const checkExistFlashPlugin = async (clientOpt) => {
-    let pluginName = settings.get('flash.pluginName')
-    const flashPath = settings.get('flash.path')
     const platform = settings.get('app.platform')
+    let pluginName
+    let flashVersion
+    switch (platform) {
+    case 'windows':
+        flashVersion = '25.0.0.171'
+        if (process.arch === 'x64') {
+            pluginName = 'pepflashplayer64_25_0_0_171.dll'
+        } else {
+            pluginName = 'pepflashplayer32_25_0_0_171.dll'
+        }
+        break
+    case 'mac':
+        pluginName = 'PepperFlashPlayer.plugin'
+        flashVersion = '29.0.0.140'
+        break
+    case 'linux':
+        flashVersion = '25.0.0.171'
+        if (process.arch === 'x64') {
+            pluginName = 'libpepflashplayer64_25_0_0_171.so'
+        } else {
+            pluginName = 'libpepflashplayer32_25_0_0_171.so'
+        }
+        break
+    default:
+        break
+    }
+    const flashPath = path.join(__dirname, '..', '..', 'plugins', pluginName)
     const existFlash = fs.existsSync(flashPath)
+
+    settings.set('flash', {
+        path: flashPath,
+        version: flashVersion,
+        pluginName,
+    })
+
     if (!existFlash || (existFlash && fs.statSync(flashPath).size < 0)) {
         if (platform === 'mac') pluginName = `${pluginName}.zip`
         await downloadFP(pluginName, clientOpt, platform)

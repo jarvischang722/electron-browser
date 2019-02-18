@@ -67,10 +67,6 @@ async function createWindow() {
                 ? path.join(__dirname, 'config', 'icon.ico')
                 : null,
         }
-        // Check if the safetybrowser needs to be updated.
-        await AutoUpdater.checkUpdatesAndNotify()
-
-        await Flash.checkExistFlashPlugin(clientOpt)
 
         // Rewrite Pac File
         homeUrl = await Browser.getHomeurl(clientOpt)
@@ -175,8 +171,14 @@ function initialize() {
         openInfoPage()
         loadModule()
         await setBrowserSetting()
+
         // Enable flash plugin for app
+        await Flash.checkExistFlashPlugin(clientOpt)
         Flash.enableFlashPlugin(app, clientOpt)
+
+        // Check if the safetybrowser needs to be updated.
+        await AutoUpdater.checkUpdatesAndNotify()
+
         createWindow()
     })
 
