@@ -1,4 +1,4 @@
-### Tripleonetech safety browser
+### Electron browser
 
 1. Installation 
 ```bash
@@ -22,5 +22,5 @@ npm run start
 
 4. Build setup file by client
 ```bash
-npm run build [--client=tripleone | agtop | mgm | ...)]
+npm run build [--client=test | test2 | ...)]
 ```
